@@ -90,7 +90,7 @@ Alternative designs aim to enhance robustness or integrate new functionalities. 
 
 High-$T_c$ superconductors, such as NbN, have been explored for kinetic inductance detectors~\cite{zmuidzinas2012superconducting} and Josephson Junctions~\cite{tafuriHIGH-TC2014}, showing potential for operation at above 4~K. Recent developments in epitaxial NbN/AlN/NbN junctions have demonstrated significant progress: Nakamura et al.~\cite{kim2021} achieved $T_1 = 16.3$~$\mu$s and $T_2$, echo = 21.5~$\mu$s in all-nitride qubits on silicon substrates, with Tc $\approx $ 16~K and superconducting gap 2$\Delta \approx $ 5.2~meV. While these coherence times of NbN-based Josephson Junction qubits remain below those of conventional Al/AlO$_x$/Al junctions ($\approx 300$ $\mu$s), as demonstrated by Nakamura et al.~\cite {nakamura2011epitaxialNbN}, the larger superconducting gap significantly suppresses quasiparticle generation. Such qubits could co-locate with cryogenic CMOS electronics~\cite{yang2019cryoBGR}, reducing control latency and wiring complexity.
 
-Cavity quantum electrodynamics (cQED) provides a robust framework for qubit readout and interaction~\cite{blais2021circuit}. Dispersive coupling to superconducting resonators enables high-fidelity, quantum non-demolition measurements~\cite{Schuster2005PRL,blais2021circuit}. Multi-qubit gates, such as CNOTs, have been demonstrated with fidelities above 99\% using microwave-activated interactions~\cite{Barends2014}. %Nonetheless, scaling beyond $\mathcal{O}(100)$ qubits faces challenges in control line routing, thermal management, and frequency crowding.%
+Circuit quantum electrodynamics (cQED), the on-chip superconducting analogue of Cavity QED (CQED), provides a robust framework for qubit readout and interaction~\cite{blais2021circuit}. Dispersive coupling to superconducting resonators enables high-fidelity, quantum non-demolition measurements~\cite{Schuster2005PRL,blais2021circuit}. Multi-qubit gates, such as CNOTs, have been demonstrated with fidelities above 99\% using microwave-activated interactions~\cite{Barends2014}.
 
 Experimental efforts toward elevated-temperature Josephson Junctions remain limited. Yamashita \emph{et al.} demonstrated NbN-based Josephson devices operating up to 10~K~\cite{yamashita17highTc}. Recent breakthroughs have significantly pushed the operating temperature frontier. 
 Anferov et al.~\cite{Anferov2024HighTemp} demonstrated niobium-based transmon qubits operating at frequencies up to 24 GHz with coherence times of $\sim 1 \mu$s at temperatures exceeding 200~mK, showing that quasiparticle decoherence can be suppressed up to approximately 1~K when using high-gap superconductors. This work aims to validate the fundamental approach of combining elevated frequencies with high-Tc materials for higher-temperature operation, though our target of 4-10~K at 300~GHz represents a further $\sim$40× increase in operating temperature beyond the current state-of-the-art. More recent approaches propose hybrid systems, embedding High-$T_c$ junctions in low-loss resonator environments, or leveraging materials such as NbTiN and granular aluminum for reduced surface loss~\cite{grunhaupt2019granular}. The main obstacles remain dielectric losses, quasiparticle generation at higher temperatures, and maintaining anharmonicity for gate operations~\cite{Martinis2005TLS, Muller2019TLS, Catelani2011QP, Wang2014QP, Koch2007Transmon, Peterer2015Multilevel}.
@@ -105,6 +105,8 @@ These constraints motivate exploring alternative operating regimes, provided tha
 
 % ========================= 2. GOALS AND EXPECTED OUTCOME ========
 \section{The NbN-based elevated temperature transmon qubit project}
+
+We refer to this project as \textbf{HEATS-Q} (\textbf{H}igh-temperature \textbf{E}levated \textbf{A}symmetric-SQUID \textbf{T}ransmon \textbf{S}uperconducting \textbf{Q}ubit), and we use the acronym throughout the rest of this chapter.
 
 The system under study is based on a capacitively coupled transmon-like qubit,  implemented as an asymmetric dc SQUID to enable in-situ frequency tunability via magnetic flux bias. 
 The asymmetry prevents the Josephson energy from vanishing exactly at half a flux quantum, thereby stabilizing the qubit frequency against flux noise at the so-called \emph{sweet spot}~\cite{Koch2007Transmon, nakamura2011epitaxialNbN}.
@@ -1631,14 +1633,15 @@ for the choice of two-qubit gate protocol (\S\ref{sec:gate_strategy}).
 
 \begin{table}[htbp]
 \centering
-\begin{tabular}{lccc}
+\small
+\begin{tabularx}{\linewidth}{@{}L c c c@{}}
 \toprule
 System & $J/2\pi$ (MHz) & $\zeta_{zz}/2\pi$ (kHz) & Ratio $|J/\zeta_{zz}|$ \\
 \midrule
-Baseline mK ($\Delta_q\!=\!280$~MHz, $\alpha\!=\!-200$~MHz) & $-6.5$ & $\sim 1700$ & $4$ \\
-Innovation 300~GHz ($\Delta_q\!=\!600$~MHz, $\alpha\!=\!-1000$~MHz) & $-9.4$ & $\sim 880$ & $11$ \\
+Baseline mK ($\Delta_q\!=\!280$~MHz, $\alpha\!=\!-200$~MHz)         & $-6.5$ & $\sim 1700$ & $4$  \\
+Innovation 300~GHz ($\Delta_q\!=\!600$~MHz, $\alpha\!=\!-1000$~MHz) & $-9.4$ & $\sim 880$  & $11$ \\
 \bottomrule
-\end{tabular}
+\end{tabularx}
 \caption{Transverse exchange coupling $J$ and longitudinal cross-Kerr
 $\zeta_{zz}$ for the redesigned HEATS-Q system parameters
 (\S\ref{sec:system_params}). The dominance of $J$ over $\zeta_{zz}$ informs
@@ -1988,23 +1991,13 @@ Sapphire (high-Q)  & $3 \times 10^{-8}$ & $5.66 \times 10^{3}$ & 177~$\mu$s   & 
 \end{tabular}
 \end{table}
 
-\textbf{Key observations:}
-\begin{table}[h]
-\centering
-\begin{tabular}{@{}lll@{}}
-\toprule
-\textbf{Substrate} & \textbf{Loss tangent $\tan\delta$} & \textbf{Resulting $T_{1,\text{diel}}$} \\
-\midrule
-Standard Si           & $\sim 10^{-5}$       & $< 1~\mu$s — unsuitable even with 3D cavities \\
-High-resistivity Si   & $\sim 5\times 10^{-8}$ & $\sim 106~\mu$s — viable but more expensive \\
-Sapphire (c-axis)     & $\sim 10^{-7}$ standard, $< 10^{-8}$ high-purity & $\sim 53~\mu$s standard, $> 530~\mu$s high-purity \\
-\bottomrule
-\end{tabular}
-\caption{Substrate options for the HEATS-Q transmon. Sapphire offers the best
-trade-off between availability, cost, and dielectric quality. The
-high-resistivity Si values assume $\rho > 10~\text{k}\Omega\cdot\text{cm}$.}
-\label{tab:substrate_comparison}
-\end{table}
+\textbf{Key observations.} The data of Table~\ref{tab:substrate_t1_diel}
+make the design choice unambiguous: standard silicon gives $T_{1,\text{diel}}<1~\mu$s
+and is unsuitable even with 3D cavities; high-resistivity silicon
+($\tan\delta \sim 5\times 10^{-8}$, $\rho > 10~\text{k}\Omega\cdot\text{cm}$)
+yields $\sim 106~\mu$s and is viable but more expensive; crystalline c-axis
+sapphire is the recommended substrate, with $T_{1,\text{diel}}\sim 53~\mu$s
+in the standard grade and exceeding $530~\mu$s in the high-purity variant.
 
 \paragraph{Gate Fidelity Implications.}
 For typical gate times $t_{\text{gate}} \sim 150$~ns and $T_{1,\text{diel}} = 53~\mu$s (sapphire with $p=0.1$), the dielectric-induced decoherence error is:
