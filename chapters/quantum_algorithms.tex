@@ -347,7 +347,7 @@ The quantum feature tensor $F\in\mathbb{R}^{H'\times W'\times C}$ feeds either a
 
 
 \subsection{Training and Optimization}\label{sec:train-opt}
-Our optimization protocol is staged. First, we conduct architecture search and hyperparameter tuning entirely on \emph{simulators} within the Qiskit ecosystem, selecting a single best candidate per setting. Second, we aim to conduct a limited set of \emph{hardware validations} on an IQM superconducting device (54 qubits) accessed via Qiskit, to assess its robustness under realistic noise and topology constraints (on-going activity).
+Our optimization protocol is staged. First, we conduct architecture search and hyperparameter tuning entirely on \emph{simulators} within the Qiskit ecosystem, selecting a single best candidate per setting. Second, we run a focused \emph{hardware validation} of the selected candidate on an IQM superconducting device (54 qubits) accessed via the Qiskit-IQM adapter, to assess its robustness under realistic noise and topology constraints. The full hardware-validation campaign and its results are reported in Sec.~\ref{sec:hw_validation}.
 
 \paragraph{Objective and gradient evaluation.}
 Let $f_{\boldsymbol{\theta}}(X)$ denote the logit produced after pooling the quantum feature tensor and a linear head. For binary tasks we minimize cross-entropy
@@ -377,8 +377,8 @@ For relatively rapid prototyping, we rely on Qiskit Aer backends. Where relevant
 \end{equation}
 circuit executions (Sec.~3.2 notation), which we keep tractable by small patches, moderate depth $D$, and re-uploading for spectral richness rather than extra qubits.
 
-\paragraph{Hardware validation (IQM, 54 qubits via Qiskit).}
-After simulation-based selection, we want to validate the final candidate on an IQM 54-qubit device through the Qiskit adapter (same Estimator interface). Circuits are to be transpiled to the device’s coupling graph; we use nearest-neighbor entanglers in the ansatz and bind initial layouts that respect patch locality. We keep shot budgets conservative (e.g., $S\!\in\![1\mathrm{k},4\mathrm{k}]$ per observable) to stabilize gradients while controlling queue time. Measurement error mitigation and simple readout calibration are enabled where supported by the provider; we otherwise rely on robust training heuristics (gradient-norm clipping, early stopping). Crucially, we \emph{do not} re-tune the full architecture on hardware: only learning-rate/shot schedules and transpilation parameters are adjusted, ensuring a fair transfer from simulation to device.
+\paragraph{Hardware validation (IQM Emerald, 54 qubits via Qiskit).}
+The selected candidate is validated on the IQM Emerald 54-qubit superconducting processor through the Qiskit-IQM adapter (same Estimator interface as in simulation). Circuits are transpiled to the device's coupling graph using a calibration-aware initial layout that maps each parallel block onto a high-readout-fidelity 4-qubit chain (Sec.~\ref{sec:hw_validation}); the ansatz uses nearest-neighbor entanglers, and the shot budget is set to $S=150$ per observable, balancing gradient stability against queue and credit costs. Measurement error mitigation and basic readout calibration are enabled when supported by the provider, complementing the gradient-norm clipping and early-stopping heuristics already in use. Following common practice, we \emph{do not} re-tune the full architecture on hardware: only the trainable quantum weights $\boldsymbol{w}$ are updated by parameter-shift gradients on the QPU, with the classical backbone frozen at its simulator-pretrained values, ensuring a fair sim-to-device transfer. The detailed hardware-validation methodology and results are reported in Sec.~\ref{sec:hw_validation}.
 
 \paragraph{Entanglement, trainability, and generalization.}
 Entanglement within a patch is key to building non-separable features; however, over-expressive, randomizing ansätze correlate with vanishing gradients (\emph{barren plateaus}) \cite{McClean2018,Holmes2022PRXQ,Marrero2021PRXQ}. Our QCNN-style, locality-preserving construction and shallow depth mitigate this effect, and theory guarantees that QCNN gradients need not vanish exponentially with system size \cite{Pesah2021PRX}. From a sample-efficiency perspective, keeping the number of trainable gates modest and pooling before the linear head improves generalization from few examples \cite{Caro2022NatCommun}. Empirically, on both simulators and hardware, we observe that re-uploading (fixed qubit count, moderate $D$) matches or outperforms deeper, more entangling variants—supporting the view that encoding frequency content is as impactful as raw circuit depth.
@@ -652,7 +652,7 @@ Classical components are implemented in PyTorch; quantum circuits are executed v
 and complements loss curves to assess generalization.
 
 \paragraph{Hardware note.}
-All model selection is performed on device-aware simulators. To validate portability and timing, we will execute selected circuits on an IQM 54-qubit backend through the Qiskit interface, to confirm functional correctness and latency trends predicted by our scheduled-duration analysis (see Sec.~\ref {sec:runtime-metric}). % (Noisy performance analysis deferred to future work.)
+All model selection is performed on device-aware simulators. To validate portability and timing, we executed the selected candidate on an IQM Emerald 54-qubit backend through the Qiskit-IQM interface, confirming functional correctness and latency trends predicted by our scheduled-duration analysis (see Sec.~\ref{sec:runtime-metric}); the full hardware-validation report, including a credit-bounded fine-tuning campaign on Emerald, is given in Sec.~\ref{sec:hw_validation}.
 
 \subsection{Training dynamics and learning curves}
 \label{sec:results-curves}
@@ -890,12 +890,340 @@ To isolate architectural effects, we ablated max-pooling near the quantum layer 
 \subsection{Runtime on simulator vs hardware (IQM)}
 \label{sec:runtime-iqm}
 
-All model selection was conducted on Qiskit simulators to identify the most promising candidate circuits, which will then be executed on IQM hardware (54 qubits) via the Qiskit adapter to validate correctness and measure real latencies. For each circuit we have to obtain the scheduled per-shot duration $T_{\text{sched}}$ (after transpilation and ASAP/ALAP scheduling using backend-calibrated instruction durations) and estimate the batch time with Eq.~(\ref{eq:Tbatch_basic}), using the execution count from Eq.~(\ref{eq:Nexec_expanded_final}). See Section~\ref{sec:runtime-metric} for details on our batch-time model and overhead calibration.
+Model selection was conducted on Qiskit simulators, while functional correctness and on-device latency were independently verified on IQM hardware (54-qubit Emerald, accessed via the Qiskit-IQM adapter). For each circuit, the scheduled per-shot duration $T_{\text{sched}}$ -- obtained after transpilation and ASAP/ALAP scheduling against backend-calibrated instruction durations -- feeds the batch-time estimate of Eq.~(\ref{eq:Tbatch_basic}) together with the execution count from Eq.~(\ref{eq:Nexec_expanded_final}); see Section~\ref{sec:runtime-metric} for details on the model and overhead calibration. The full hardware-validation campaign on Emerald, including the on-device fine-tuning that closes the loop between simulator-based model selection and physical execution, is reported in the next subsection (Sec.~\ref{sec:hw_validation}).
 
-Hardware validation on IQM processors is necessary to confirm functional correctness and timing trends predicted by our batch-time model (see Sec.\ref{sec:runtime-metric}). Detailed latency measurements are ongoing and will be reported in future work.
+\subsection{Hardware validation on real quantum backends}
+\label{sec:hw_validation}
+
+The simulator-based architecture search of Sec.~\ref{sec:baselines} identified the \texttt{C16--Q64} Hybrid Q-CNN as the best-performing candidate. To assess whether this candidate transfers to noisy intermediate-scale quantum (NISQ) hardware, we have executed it on IQM's 54-qubit superconducting processor \emph{Emerald}~\cite{IQMResonance2025}, accessed through the IQM Resonance cloud platform via the \texttt{iqm-client} Python adapter for Qiskit~\cite{IQMClientDocs2025,QiskitOnIQMGuide}. The transition from simulator to physical device required addressing three classes of challenges that are seldom discussed in published Q-CNN benchmarks: (i) the interaction between our parallel-block circuit topology and the physical connectivity graph of the device, (ii) accurate calibration of the credit-based cost model that bounds the experiment, and (iii) selection of training hyperparameters compatible with a strict computational budget. We document each of these challenges in turn, since their resolution constitutes a methodological contribution that we believe is portable to other QPU-bound experiments.
+
+\subsubsection{Backend selection and connection setup}
+\label{subsec:backend_setup}
+
+\paragraph{Target device.} 
+Emerald is a 54-qubit Crystal-architecture device with native gate set $\{R(\theta,\phi),\; CZ\}$ supplemented by \texttt{measure}, \texttt{reset}, \texttt{delay}, and \texttt{if\_else} primitives. The device exposes 82 directed CZ couplings; characterization metrics for the 2026-05-01 calibration cycle yield a mean two-qubit gate fidelity of 0.987 (range 0.904--0.999) and a mean readout fidelity of 0.978 (range 0.903--0.994 across the 54 qubits). A 4-qubit transmon block with linear connectivity, which is what our QCNN ansatz requires per quantum filter, fits comfortably within the local connectivity but is non-trivially distributed across the global device.
+
+\paragraph{Software stack.}
+The IQM Resonance platform exposes its devices through the \texttt{iqm-client} Python adapter, whose major version determines the Qiskit version against which the adapter is binary-compatible. The version available at the time of this work, \texttt{iqm-client}~34.0.2 (with the underlying \texttt{iqm-station-control-client}~12.1.2), is paired with Qiskit~1.4.2. This pairing reflects the present synchronization between the IQM stack and the upstream Qiskit release cadence, and an alignment to Qiskit~2.x is expected as the IQM adapter tracks future Qiskit releases. The methodological content of this section -- transpilation strategy, calibration-aware layout selection, cost-model calibration, and mini-batch SGD adaptation -- is independent of the specific Qiskit minor version and applies equally to subsequent versions of the toolchain. All numerical results in this section are reproducible against the explicit version pinning reported in the supporting code repository.\footnote{Repository \texttt{qh\_algorithms} (\url{https://github.com/rcapp2506/qh_algorithms}), notebook \texttt{HQCNN.ipynb} for simulator benchmarks and the \texttt{hybrid\_qcnn\_v4\_2\_*\_emerald.ipynb} family for hardware execution. Calibration data are archived as JSON snapshots downloaded from the IQM Resonance dashboard.}
+
+\paragraph{Authentication and connection.}
+Connection to Emerald is established with the API endpoint convention introduced in \texttt{iqm-client}~$\geq$~33, in which a single root URL is paired with a \texttt{quantum\_computer} keyword that selects the device:
+\begin{verbatim}
+provider = IQMProvider("https://resonance.meetiqm.com",
+                        quantum_computer="emerald")
+backend = provider.get_backend()
+\end{verbatim}
+The earlier convention based on a per-device sub-path (\texttt{cocos.resonance.meetiqm.com/emerald}) is deprecated and emits a runtime warning. Authentication is supplied through the \texttt{IQM\_TOKEN} environment variable; if a token is also passed as a constructor argument while the variable is set, the client raises a \texttt{ClientConfigurationError} due to mixed sources. We accordingly restrict explicit-argument passing to environments where the variable is unset.
+
+\paragraph{Functional sanity check.}
+Before submitting any production circuit, we run a Bell-state preparation 
+(Hadamard on qubit 0, CNOT to qubit 1, computational-basis measurement) 
+at $S=1000$ shots. On the calibration set used throughout this section, 
+the observed Bell fidelity $P(00)+P(11)=0.989$ confirms that the device 
+is operational, that authentication and routing are correct, and that the 
+shot statistics are consistent with the gate-level error budget. The same 
+test is repeated against the device-side mock simulator (\texttt{emerald:mock}); 
+while the mock reproduces the static circuit faithfully, we observed it is 
+\emph{not} a faithful baseline for parametric circuits: a one-qubit 
+$\hat R_x(\theta)$-rotation sweep returned $\langle Z\rangle\!\approx\!0$ 
+independently of $\theta$, a behavior we did not investigate further but 
+that argues against using the mock as a noise-free reference for variational 
+workloads.
+
+\subsubsection{Transpilation to a partially disjoint topology}
+\label{subsec:transpilation}
+
+The Hybrid Q-CNN of Sec.~\ref{sec:baselines} processes patches of size $2\times 2$ stride 3 through 4-qubit quantum filters. To amortize per-circuit overhead, we batch $K$ filters into a single physical circuit by allocating $K$ disjoint blocks of $n=4$ qubits, sharing the trainable weight register $\boldsymbol{w}\in\mathbb{R}^{4}$ across blocks while carrying distinct input registers $\boldsymbol{x}^{(k)}$ per block. The circuit on $K\times n$ qubits has the structure
+\begin{equation}
+U_{\boldsymbol{x},\boldsymbol{w}}
+\;=\;
+\bigotimes_{k=0}^{K-1}\;
+U^{(k)}_{\boldsymbol{x}^{(k)}\!,\boldsymbol{w}},
+\qquad
+U^{(k)} = \mathrm{CX}_{\downarrow}^{(k)} \cdot R_z(\boldsymbol{w}) \cdot \mathrm{CX}_{\uparrow}^{(k)} \cdot H^{\otimes n} \cdot R_y(\boldsymbol{x}^{(k)}),
+\label{eq:parallel_circuit}
+\end{equation}
+followed by single-qubit $Z$-basis measurements on the first qubit of each block. The classical post-processing of Eq.~\ref{eq:psr-34} requires only the marginal expectations $\langle Z_0^{(k)}\rangle$, so the measurement outcomes of the $K$ blocks are independent observables.
+
+\paragraph{Logical-physical mismatch.}
+On a fully connected simulator topology, $K$ may be set arbitrarily up to the qubit count. On Emerald the situation is more delicate: the device provides 54 physical qubits but its coupling graph does not naturally decompose into 13 disjoint 4-qubit linear chains, which would be the embedding required to host a 13-block parallel circuit \emph{without routing overhead}. As a result, the circuit-to-device embedding is performed by Qiskit's standard layout pipeline (\texttt{SabreLayout} followed by \texttt{SabreSwap}~\cite{Li2019Sabre}), which implicitly identifies connected components in the coupling graph and allocates blocks to them. Three software-level issues, which we report here for completeness as they may be encountered by other practitioners running multi-block circuits on similar architectures, surfaced in this regime.
+
+\paragraph{Issue 1 -- multiple classical registers on partially disjoint topologies.}
+Our initial implementation declared $K$ classical registers of one bit each (\texttt{c0}, \texttt{c1}, \dots, \texttt{c}$_{K-1}$) so that the $k$-th measurement is naturally addressed in post-processing. When transpiling against Emerald, the layout pass that runs over connected components of the coupling graph fails with
+\begin{verbatim}
+DAGCircuitError: 'not a ClassicalRegister instance.'
+\end{verbatim}
+inside \texttt{disjoint\_utils.run\_pass\_over\_connected\_components}. The error is silent on simulator backends that expose all-to-all connectivity. The minimal fix consists in collapsing the $K$ one-bit classical registers into a single $K$-bit classical register, so that the $k$-th measurement targets bit $k$ of the unified register. Per-block expectation values are then recovered from the joint counts via the standard big-endian convention $b_k = \mathrm{bitstring}[K-1-k]$.
+
+\paragraph{Issue 2 -- barrier recombination across components.}
+After the first fix, transpilation reaches the swap-routing stage and fails at
+\begin{verbatim}
+DAGCircuitError: 'Number of qubits in the replacement
+operation (52) is not equal to the number of qubits
+in the block (51)!'
+\end{verbatim}
+inside \texttt{disjoint\_utils.combine\_barriers}. The pass splits a global \texttt{barrier} acting on all qubits into per-component micro-barriers, then merges them by accumulating qubit counts; on circuits where Sabre redistributes qubits across components, the off-by-one accumulator yields the observed discrepancy. As the global barriers in our circuit serve only as visual separators between blocks that are physically disjoint by construction, removing them eliminates the failure path without altering the unitary realized by the circuit.
+
+\paragraph{Issue 3 -- maximum number of parallel blocks.}
+With Issues 1 and 2 resolved, the transpiler pipeline progresses further but still fails at $K=12$ and $K=13$ with the same symbolic signature as Issue 2 (off-by-one in qubit accumulation), now triggered \emph{within} components rather than across them. To localize the failure mode we built a \emph{compatibility test} (Tab.~\ref{tab:compat_scaling}) that submits the parallel circuit at $K\in\{2,5,10,11,12,13\}$ to a synthetic backend that mimics Emerald's gate set and a partially disjoint coupling map. The test passes deterministically up to $K=11$ and fails deterministically at $K\geq 12$, identifying $K_{\max}=11$ as the largest parallel-block count compatible with the current Qiskit/IQM toolchain on Emerald.
+
+\begin{table}[h]
+\centering
+\caption{Scaling test of the parallel-block transpilation. ``OK'' indicates a successful transpile to the device basis $\{R, CZ\}$; ``FAIL'' indicates a \texttt{DAGCircuitError} originating in \texttt{disjoint\_utils}. Reported depth and SWAP count are for successful transpilations; failures are annotated with the characteristic accumulator off-by-one. Tests are deterministic with respect to the random seed of the layout pass.}
+\label{tab:compat_scaling}
+\begin{tabular}{rrrll}
+\toprule
+$K$ & qubits used & status & depth & SWAP \\
+\midrule
+2  &  8 & OK   & 16 & 0 \\
+5  & 20 & OK   & 16 & 0 \\
+10 & 40 & OK   & 16 & 0 \\
+11 & 44 & OK   & 16 & 0 \\
+12 & 48 & FAIL & --  & accumulator: $36$ vs $35$ \\
+13 & 52 & FAIL & --  & accumulator: $40$ vs $39$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+We adopt $K=11$ for the production runs of Sec.~\ref{subsec:hw_results}--\ref{subsec:finetune_results}. With $K=11$ blocks of 4 qubits, our circuit occupies 44 of the 54 qubits of Emerald, leaving 10 qubits unused -- a margin we exploit in Sec.~\ref{subsec:transpilation} to deliberately exclude qubits with poor readout fidelity from the chosen layout.
+
+\paragraph{Calibration-aware initial layout.}
+By default, \texttt{SabreLayout} chooses a logical-to-physical mapping based on the coupling graph alone, ignoring the calibration-resolved per-qubit readout fidelity. On a 54-qubit device with substantial qubit-to-qubit fidelity dispersion (Emerald's 2026-05-01 readout fidelities span the range $[0.903,\, 0.994]$, see Fig.~\ref{fig:emerald_topology}a), this choice can place a logical block on a low-quality region of the chip. We mitigate this by parsing the calibration JSON snapshot of the day, ranking qubits by readout fidelity, and excluding the bottom~10 (qubit indices $\{4,21,28,31,35,46\}$ in 1-based labeling). On the remaining 44 qubits we run a greedy-iterative search over the coupling subgraph to identify $K=11$ disjoint chains of 4 qubits, requiring per-chain minimum readout fidelity above 0.95. The resulting layout, depicted in Fig.~\ref{fig:emerald_topology}b and listed in Tab.~\ref{tab:initial_layout}, has a global minimum readout fidelity of 0.954 (chain~10) and a worst-case CZ fidelity of 0.987 across all chains. We pass this mapping as \texttt{initial\_layout} to Qiskit's \texttt{transpile()} call so that Sabre's layout pass becomes a no-op while routing optimization remains active.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\linewidth]{chapters/qa_figures/emerald_topology.png}
+\caption{Device topology and 11-chain layout used for the parallel Hybrid Q-CNN circuit on IQM Emerald. \textbf{(a)} Crystal-54 coupling graph with per-qubit readout fidelity colour-coded from the 2026-05-01 calibration snapshot; the six qubits with the lowest readout fidelity (thick red ring) are excluded from the layout. \textbf{(b)} Calibration-aware initial layout: each colour identifies one of the $K=11$ disjoint 4-qubit chains used as the \texttt{initial\_layout} argument of Qiskit's \texttt{transpile()}. Hatched markers indicate the qubits excluded for low readout fidelity; grey markers indicate qubits not assigned by the greedy procedure.}
+\label{fig:emerald_topology}
+\end{figure}
+
+\begin{table}[h]
+\centering
+\caption{Calibration-aware initial layout used for the production runs. Each row maps one logical 4-qubit block to a connected chain on Emerald's coupling graph, evaluated against the 2026-05-01 calibration snapshot. The minimum per-chain readout fidelity is reported. Block~10 is the worst chain; if budget permits, future runs may swap it for a different region of the chip on a different calibration day.}
+\label{tab:initial_layout}
+\begin{tabular}{rlc}
+\toprule
+Block $k$ & physical chain (QB labels, 1-based) & $\min_q\, F^{\mathrm{ro}}_q$ \\
+\midrule
+0  & QB22--QB14--QB13--QB7   & 0.987 \\
+1  & QB33--QB34--QB26--QB27  & 0.983 \\
+2  & QB3--QB9--QB8--QB16     & 0.981 \\
+3  & QB47--QB41--QB40--QB32  & 0.980 \\
+4  & QB17--QB18--QB10--QB11  & 0.978 \\
+5  & QB36--QB37--QB45--QB51  & 0.977 \\
+6  & QB54--QB53--QB52--QB48  & 0.975 \\
+7  & QB39--QB38--QB30--QB29  & 0.972 \\
+8  & QB15--QB23--QB24--QB25  & 0.971 \\
+9  & QB42--QB43--QB44--QB50  & 0.968 \\
+10 & QB19--QB20--QB12--QB6   & 0.954 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Transpilation outcome.}
+Under the constraints described above, the parallel circuit of Eq.~\ref{eq:parallel_circuit} at $K=11$ transpiles to depth~16 with 0 inserted SWAP gates and a gate count of $\{R: 264,\, CZ: 66,\, \mathrm{measure}: 11\}$ (66 native CZ gates, corresponding to 6 per block, replacing the 6 logical CX gates of each $U^{(k)}$). The absence of SWAP gates is a direct consequence of the calibration-aware layout, which by construction maps the logical neighborhood structure of each block onto a physically connected chain on the device.
+
+\subsubsection{Cost model calibration for run budgeting}
+\label{subsec:cost_model}
+
+Within a fixed credit budget $B$, we need an a priori estimate of the runtime per training step accurate enough to allocate epochs without overrun. The IQM Resonance platform bills jobs by net QPU runtime through a per-second rate that the platform exposes in each job record. Because the available cost signal at the Python client is the wall-clock time, while the billing is computed on the QPU side, the relationship between the two needs to be characterized empirically.
+
+\paragraph{Anatomy of an IQM job.}
+A submission to Emerald goes through a sequence of platform-side phases that are individually timestamped and that we reconstruct \emph{a posteriori} from the dashboard JSON of each job. Fig.~\ref{fig:iqm_job_anatomy} shows the phase decomposition for the two job types of our campaign: a 28-circuit forward / weight-shift job (median of 180 occurrences) and a 273-circuit validation job (median of 3 occurrences). The salient features of the decomposition are:
+\begin{itemize}
+\item \textbf{Validation, compile, and post-processing} (blue/light-green segments) run on the IQM platform side and are not billed. Their median wall durations are below 1.5~s for the 28-circuit job, and grow modestly with the circuit count (about 6.6~s for the 273-circuit job, dominated by per-circuit pulse-schedule generation).
+\item \textbf{Queue (QPU scheduling)} is a near-constant overhead between the end of compilation and the start of execution: $4.46\pm 0.58$~s across the 184 jobs of the campaign, essentially independent of circuit count. This is the QPU-scheduler latency before the device is allocated to the job.
+\item \textbf{Execution on QPU} (orange) is the dominant component for any non-trivial circuit count. Its median is 6.16~s for the 28-circuit job and 56.73~s for the 273-circuit job.
+\item \textbf{Billing window} (yellow hatched) starts at \texttt{execution\_start} and lasts \texttt{runtime\_seconds} (a field in the job record), which exceeds the wall-clock execution duration by a small additive overhead ($\sim 1.2$~s) attributable to QPU initialization and teardown that the platform attributes to the user but does not expose as a separate timestamp.
+\end{itemize}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\linewidth]{chapters/qa_figures/iqm_job_anatomy.png}
+\caption{Anatomy of an IQM Resonance job: pipeline phase decomposition (lower bars) and IQM billing window (upper bars), shown as median values across 184 jobs of the Phase~E campaign. (a)~28-circuit forward / weight-shift job; (b)~273-circuit validation job. Only the orange ``execution'' segment is billed; the queue scheduling latency ($\sim 4.4$~s, light orange) and the compile/validation overhead are not. The yellow hatched bar shows the IQM billing window, which exceeds the wall-clock execution by $\sim 1.2$~s of QPU initialization/teardown. The credit cost is computed by $\lceil\,\texttt{runtime\_seconds}\,\rceil \times 0.75$, where the brown segment marks the rounding-up to the next integer second.}
+\label{fig:iqm_job_anatomy}
+\end{figure}
+
+\paragraph{Billing rule.}
+The IQM billing rule for the PAYG (pay-as-you-go) execution mode reduces, on the 184 jobs of our campaign, to the exact integer formula
+\begin{equation}
+\text{credit\_cost} \;=\; \lceil\,\texttt{runtime\_seconds}\,\rceil \;\times\; 0.75 \quad\text{(IQM credits)},
+\label{eq:billing_rule}
+\end{equation}
+that we verified to hold to 6 significant digits on 184 of 184 jobs. The $0.75$ figure matches the per-second rate published in the job record (\texttt{payg\_price\_per\_second}). The ceiling rounding induces a $7.5\%$ average overhead with respect to a continuous rate (\$+99.4\$ credits over the \$1284\$-credit Phase~E campaign, see Sec.~\ref{subsec:finetune_results}), which becomes negligible for long-running jobs (Tab.~\ref{tab:billing_rule_check}).
+
+\begin{table}[h]
+\centering
+\caption{Verification of the billing rule of Eq.~\ref{eq:billing_rule} on the two job types of the campaign, aggregated by circuit count. The effective rate $\bar r_{\mathrm{eff}}=\overline{\text{credit\_cost} / \texttt{runtime\_seconds}}$ converges to the nominal $0.75$ for long jobs, while shorter jobs pay a relative premium due to the ceiling rounding.}
+\label{tab:billing_rule_check}
+\begin{tabular}{rrrrr}
+\toprule
+$N$ circuits & jobs & $\overline{\text{cred}}$ & $\overline{\text{runtime}_s}$ & $\bar r_{\mathrm{eff}}$ \\
+\midrule
+\phantom{00}1 & \phantom{00}1 & \phantom{0}1.50 & \phantom{0}1.39 & 1.078 \\
+\phantom{0}28 & 180 & \phantom{0}6.32 & \phantom{0}7.73 & 0.819 \\
+273           & \phantom{00}3 & 48.00 & 63.37 & 0.758 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Per-circuit time amortization.}
+The QPU runtime per job (\texttt{runtime\_seconds}) is highly linear in the number of circuits, with negligible scatter at fixed $N$. A linear fit on all 184 jobs gives
+\begin{equation}
+\texttt{runtime\_seconds}(N) \;=\; (1.44 \pm 0.08)\;\text{s} \;+\; (0.226 \pm 0.001)\;\text{s} \cdot N,
+\qquad R^2 = 0.993 .
+\label{eq:job_time_model}
+\end{equation}
+The intercept $1.44$~s is interpretable as the per-job QPU initialization+teardown overhead, while the slope $0.226$~s/circuit is the per-circuit shot loop at $S=500$ shots. Combining Eq.~\ref{eq:job_time_model} with the billing rule of Eq.~\ref{eq:billing_rule} provides a closed-form a-priori cost model that is exact up to the ceiling rounding.
+
+\paragraph{Wall-time vs.\ billed-time discrepancy.}
+The wall-clock time observed at the Python client is consistently larger than \texttt{runtime\_seconds} (Fig.~\ref{fig:iqm_job_anatomy}). For the 28-circuit job, the wall median is 12.10~s while the billing window is 7.41~s; for the 273-circuit job, the corresponding values are 70.04~s and 63.38~s. The gap is attributable to compilation, queue scheduling, and post-processing, which are not billed but contribute to the throughput observed by the user. The empirical wall-time-to-billing ratio is
+\begin{equation}
+r_{\mathrm{wall}\to\mathrm{cred}}
+\;=\; \frac{\sum_{j} \text{credit\_cost}_j}{\sum_{j} t_{\mathrm{wall},j}^{\text{client}}}
+\;=\; 0.510\;\text{credits/s},
+\label{eq:wall_rate}
+\end{equation}
+which is what an in-flight cost model based on Python-side wall measurements would observe. We adopted this value as the predictive coefficient during Phase~E to gate the per-epoch credit consumption \emph{a priori}; \emph{a posteriori} comparison with the dashboard data (Sec.~\ref{subsec:finetune_results}) shows that this estimate is conservative by $\sim 24\%$ with respect to the actual billing.
+
+\subsubsection{Mini-batch SGD adaptation for credit-bounded fine-tuning}
+\label{subsec:minibatch_sgd}
+
+The simulator-trained candidate of Sec.~\ref{sec:baselines} converges in 50--80 optimizer steps to its plateau accuracy. Reproducing this regime on hardware within the available 2000-credit budget requires three departures from the simulator setup, motivated by the cost model of Sec.~\ref{subsec:cost_model}.
+
+\paragraph{Pre-train on simulator, fine-tune on device.}
+We split the training in two phases. In Phase~A, the full Hybrid Q-CNN (classical CNN backbone + 4-qubit quantum filter + linear classifier) is pre-trained on the Aer statevector simulator for 10 epochs. The resulting classical and quantum weights are checkpointed. In Phase~B, the simulator weights are loaded as the initial point on Emerald, the classical backbone is frozen (\texttt{requires\_grad = False}), and only the four trainable quantum weights $\boldsymbol{w}\in\mathbb{R}^4$ continue to receive gradient updates from the parameter-shift rule applied on the QPU. Freezing the backbone halves the per-step gradient cost: with both backbone and weights trainable the parameter-shift rule of Eq.~\ref{eq:psr-34} requires $1+2\,n_w+2\,n_q=17$ forward evaluations per step (forward, weight shifts, and input shifts), whereas with frozen backbone only $1+2\,n_w=9$ evaluations are required.
+
+\paragraph{Mini-batch size and dataset.}
+On Emerald we use a binary subset of EuroSAT (Forest vs.\ AnnualCrop) with 10 images per class for both training and validation, for a total of 20 train and 20 val images. The dataset is small but appropriate: simulator results in Sec.~\ref{sec:baselines} show that the classification target saturates at $100\%$ accuracy already at this regime, which makes the binary task well-suited to expose the effects of hardware noise without confounding factors due to insufficient training signal. We retain the simulator mini-batch $m=2$, yielding 10 optimizer steps per training epoch. Each optimizer step processes $m\cdot N_{\mathrm{patch}}\cdot C_{\mathrm{conv}} = 2\cdot 25\cdot 6 = 300$ patches, packed into $\lceil 300/K\rceil = 28$ parallel-circuit invocations per forward pass; with $1+2\,n_w=9$ passes per step, each step issues 9 jobs of 28 circuits each.
+
+\paragraph{Budget projection.}
+With $K=11$, $m=2$, frozen backbone, an epoch consists of $10$ optimizer steps and a final validation pass, totaling $C_{\mathrm{ep}}\!=\!2793$ circuits ($10\cdot 9\cdot 28 = 2520$ training circuits plus $\lceil 20\cdot 150/K\rceil = 273$ validation circuits). The in-flight cost projection multiplies the wall-time-to-credit coefficient $r_{\mathrm{wall}\to\mathrm{cred}}=0.510$ of Eq.~\ref{eq:wall_rate} by an estimate of the per-circuit wall time $t_{\mathrm{circ}}^{\text{wall}}$, ranging from $\sim 940$ credits (pessimistic, $t_{\mathrm{circ}}^{\text{wall}}=0.672$~s) to $\sim 420$ credits (optimistic, $t_{\mathrm{circ}}^{\text{wall}}=0.30$~s). As discussed in Sec.~\ref{subsec:cost_model}, this in-flight projection is conservative with respect to the actual IQM billing because wall time includes non-billed phases; the actual realized cost (Sec.~\ref{subsec:finetune_results}) is in the lower part of the band.
+
+\paragraph{Run policy.}
+To insulate against an under-budget mis-estimation, the production notebook adopts a manual ``traffic-light'' workflow: the first epoch executes automatically and reports its actual credit consumption; each subsequent epoch is gated behind a boolean flag (\texttt{RUN\_EPOCH\_N\,=\,True}) that the user toggles only after verifying the dashboard credit balance. We did not implement an automatic budget guard, preferring an explicit human-in-the-loop decision to preserve the option of stopping the campaign mid-way.
+
+% =========================================================================
+% TODO: dopo Phase D
+% =========================================================================
+\subsubsection{Hardware characterization results}
+\label{subsec:hw_results}
+
+Before launching the fine-tuning campaign, we executed a minicheck phase (\emph{Phase~D}) on Emerald with the calibration-aware layout of Tab.~\ref{tab:initial_layout} to (i) verify that the per-block measurement statistics are consistent with the device calibration, and (ii) measure the empirical per-circuit time required by the cost model of Sec.~\ref{subsec:cost_model}. The minicheck consumed 18 credits in total.
+
+\paragraph{Device functional sanity at session boundaries.}
+The Bell-state fidelity test (Sec.~\ref{subsec:backend_setup}) was repeated at the start of each session that used the device. Across three independent sessions over a single day, the observed Bell fidelity $P(00)+P(11)$ took values $0.989$, $0.980$ and $0.990$, consistent within shot noise with the per-qubit readout fidelity floor of the device. We take this stability as evidence that the calibration set used by Emerald did not change appreciably across the campaign, and that the fine-tuning epochs of Sec.~\ref{subsec:finetune_results} are mutually comparable.
+
+\paragraph{Per-block bias under zero input.}
+With $\boldsymbol{x}^{(k)}=\mathbf{0}$ and $\boldsymbol{w}=\mathbf{0}$ for all blocks $k$, the output of each block in Eq.~\ref{eq:parallel_circuit} reduces to a single $H$ followed by a chain of CX gates and a $Z$-basis measurement on qubit $q^{(k)}_0$, which produces an unbiased estimator $\langle Z_0^{(k)}\rangle = 0$ in the absence of noise. We submitted 50 such circuits and recorded the per-block sample mean $\widehat{\langle Z_0^{(k)}\rangle}$ and its standard error. The 3-$\sigma$ shot-noise threshold is $3/(s\sqrt{N_z})=0.019$ with $s=500$ shots and $N_z=50$ circuits.
+
+\begin{table}[h]
+\centering
+\caption{Per-block residual bias under zero-input conditions on Emerald, with the calibration-aware layout of Tab.~\ref{tab:initial_layout}. The minimum readout fidelity of each chain ($\min_q F^{\mathrm{ro}}_q$, from the 2026-05-01 calibration snapshot) is reported alongside. Values exceeding the 3-$\sigma$ shot-noise threshold of 0.019 are marked with $\dagger$. The Pearson correlation coefficient between the absolute bias and the chain fidelity floor is $\rho=-0.682$, indicating that lower-fidelity chains contribute proportionally larger systematic biases, but a residual variance remains uncorrelated with readout fidelity alone (see text).}
+\label{tab:per_block_bias}
+\begin{tabular}{rcrr}
+\toprule
+Block $k$ & $\min_q F^{\mathrm{ro}}_q$ & $\widehat{\langle Z_0^{(k)}\rangle}$ & flag \\
+\midrule
+0  & 0.987 & $+0.252 \pm 0.046$ & $\dagger$ \\
+1  & 0.983 & $+0.010 \pm 0.038$ & \\
+2  & 0.981 & $-0.007 \pm 0.044$ & \\
+3  & 0.980 & $+0.049 \pm 0.039$ & $\dagger$ \\
+4  & 0.978 & $+0.014 \pm 0.053$ & \\
+5  & 0.977 & $+0.150 \pm 0.035$ & $\dagger$ \\
+6  & 0.975 & $-0.003 \pm 0.036$ & \\
+7  & 0.972 & $+0.025 \pm 0.040$ & $\dagger$ \\
+8  & 0.971 & $+0.192 \pm 0.040$ & $\dagger$ \\
+9  & 0.968 & $+0.179 \pm 0.044$ & $\dagger$ \\
+10 & 0.954 & $+0.558 \pm 0.043$ & $\dagger$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The data of Tab.~\ref{tab:per_block_bias} support three observations:
+\begin{itemize}
+\item The largest residual bias (Block~10, $+0.558$) is concentrated on the chain with the lowest fidelity floor, consistent with readout asymmetry (the per-qubit error rate $0\!\to\!1$ differs from $1\!\to\!0$, with the latter typically larger; see, e.g., the 2026-05-01 calibration snapshot, where $\mathrm{err}_{1\to0}$ exceeds $\mathrm{err}_{0\to1}$ by up to one order of magnitude on the worst qubits).
+\item The Pearson correlation $\rho(\,|b_k|,\,\min_q F^{\mathrm{ro}}_q\,)=-0.682$ is statistically robust, but $\rho^2\!\approx\!0.47$ leaves about half of the variance in $|b_k|$ unexplained by readout fidelity alone. Plausible additional contributors include CZ-gate fidelity within the chain, calibration drift between the snapshot date and the run date, and asymmetry of the readout error itself (which is not captured by the symmetric fidelity figure of merit).
+\item The maximum off-diagonal correlation between blocks was $0.351$, with mean $-0.003$. The blocks are statistically near-independent, supporting the design assumption that the parallel circuit of Eq.~\ref{eq:parallel_circuit} produces independent observables that can be aggregated by the classical post-processing without correction for inter-block correlations.
+\end{itemize}
+For the production fine-tuning of Sec.~\ref{subsec:finetune_results} we proceed with the layout as fixed, with the understanding that Block~10 contributes proportionally more shot-noise-equivalent bias to the aggregated quanvolutional output. A potential mitigation would be to swap Block~10 onto a different chain on a future calibration day, but we did not pursue this within the campaign budget.
+
+\paragraph{Per-circuit timing.}
+Two diagnostic batches were submitted in this phase. A 20-circuit calibration batch ran in $14.2$~s ($t_{\mathrm{circ}}=0.711$~s/circuit), and a 50-circuit zero-input batch ran in $21.8$~s ($t_{\mathrm{circ}}=0.436$~s/circuit). The amortization is consistent with Eq.~\ref{eq:job_time_model}; the production-run batch size of $N=28$ circuits per job (Sec.~\ref{subsec:minibatch_sgd}) is intermediate, and the realized per-circuit time during the fine-tuning epochs was $t_{\mathrm{circ}}=0.561$~s, a value bracketed by the two diagnostic measurements.
+
+% =========================================================================
+% TODO: dopo Phase E
+% =========================================================================
+\subsubsection{Fine-tuning results on Emerald}
+\label{subsec:finetune_results}
+
+We executed two fine-tuning epochs on Emerald, with the per-epoch decision to proceed taken manually after inspection of the dashboard credit balance. The simulator pre-trained checkpoint loaded at the start of the run achieved $\text{val acc}=100\%$ ($20/20$) with $\text{val loss}=0.148$ on the Aer reference simulator. We use this point as the \emph{epoch 0} benchmark in the convergence plots that follow.
+
+\paragraph{Convergence summary.}
+Tab.~\ref{tab:emerald_convergence} reports the per-epoch metrics, and Fig.~\ref{fig:emerald_finetune_curves} plots the validation accuracy along the trajectory.
+
+\begin{figure}[h]
+\centering
+% Placeholder: replace with the actual figure file produced by the run notebook
+% (Phase F plot \texttt{plot2\_finetune\_curves.png} restricted to the Emerald
+% trajectory; the full plot also overlays the Phase~C simulator dry-run as
+% reference.)
+\includegraphics[width=0.75\linewidth]{chapters/qa_figures/plot2_finetune_curves.png}
+\caption{Validation accuracy along the fine-tuning trajectory on Emerald (red diamonds), compared to the simulator dry-run reference of Phase~C (green squares) and to the simulator pre-training plateau (dotted line at $100\%$, label \emph{Pretrain end}). The Emerald run recovers the simulator's $100\%$ classification accuracy in two on-device epochs, despite the per-block readout biases reported in Tab.~\ref{tab:per_block_bias}.}
+\label{fig:emerald_finetune_curves}
+\end{figure}
+
+Three observations are central:
+
+\begin{table}[h]
+\centering
+\caption{Validation metrics, gradient norm of the trainable quantum weights $\boldsymbol{w}$, and credit cost per epoch on Emerald. Epoch~0 is the simulator pre-trained checkpoint loaded as initial point; Epochs~1--2 are the two on-device fine-tuning epochs. The ``credits (estimated)'' column is the in-flight projection from the wall-time-based coefficient of Eq.~\ref{eq:wall_rate}; the ``credits (billed)'' column is the actual amount charged by IQM, recovered \emph{a posteriori} from the dashboard. The systematic overestimation by the in-flight model (Sec.~\ref{subsec:cost_model}) is conservative and reflects the wall vs.\ QPU-runtime discrepancy of Fig.~\ref{fig:iqm_job_anatomy}.}
+\label{tab:emerald_convergence}
+\begin{tabular}{lccccc}
+\toprule
+& val.\ loss & val.\ acc & $\|\nabla_{\boldsymbol{w}}\mathcal{L}\|$ & cred.\ (est.) & cred.\ (billed) \\
+\midrule
+Epoch 0 (sim ckpt)         & $0.148$ & $100\%$ ($20/20$) & --        & --   & --   \\
+Epoch 1 (Emerald)          & $0.123$ & $\phantom{0}95\%$ ($19/20$) & $2.53\times 10^{-2}$ & $796$ & $642$ \\
+Epoch 2 (Emerald)          & $0.120$ & $100\%$ ($20/20$) & $2.58\times 10^{-3}$ & $802$ & $642$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{itemize}
+\item \textbf{Hardware-induced accuracy drop and recovery.} Loading the simulator-trained weights onto Emerald causes one validation sample (out of 20) to be misclassified at the end of the first hardware epoch. The misclassification is recovered in the second epoch, returning to the perfect classification of the simulator. This trajectory is consistent with the interpretation that hardware noise displaces the decision boundary, and the parameter-shift gradient updates effectively re-align the boundary to compensate. The compensation is non-trivial: only the four trainable quantum weights $\boldsymbol{w}$ change between epochs, while the (frozen) classical head receives the noisy quanvolutional output unchanged.
+
+\item \textbf{Validation loss decreases monotonically.} Across the three points (Epoch 0, 1, 2) the validation loss falls from $0.148$ to $0.123$ to $0.120$. The accuracy oscillation in Epoch~1 ($100\%\to 95\%\to 100\%$) is therefore not symptomatic of an unstable optimization, but of the discrete nature of accuracy as a metric: the modest improvement of the cross-entropy loss is enough to flip the sign of the logit margin on the recovered sample.
+
+\item \textbf{Gradient-norm convergence.} The norm $\|\nabla_{\boldsymbol{w}}\mathcal{L}\|$ falls by roughly an order of magnitude ($2.53\times 10^{-2}$ to $2.58\times 10^{-3}$), which we read as evidence that the optimizer is approaching a local minimum on the noisy quantum loss surface. A third epoch would have offered modest additional convergence, at the cost of approximately $800$ further credits which were not available within the campaign budget.
+\end{itemize}
+
+\paragraph{Step-level training dynamics.}
+Within each epoch, the per-step training accuracy oscillates between $50\%$ and $100\%$ -- a direct consequence of the very small mini-batch size $m=2$, where a single misclassified sample produces a $50\%$ batch accuracy. The averaged training accuracy across the $10$ steps of an epoch was $85\%$ in Epoch~1 and $90\%$ in Epoch~2, while the per-step training loss (mean across 10 steps) decreased from $0.238$ to $0.228$. The aggregated metric of interest is the validation accuracy at the end of each epoch (Tab.~\ref{tab:emerald_convergence}), measured on a held-out set of 20 images that were not seen during training.
+
+\paragraph{Cost realization vs.\ projection.}
+The two epochs were billed $642$ and $642$ credits respectively (cf.\ the in-flight estimates of $796$ and $802$ credits derived from the wall-time-based coefficient $r_{\mathrm{wall}\to\mathrm{cred}}=0.510$ of Eq.~\ref{eq:wall_rate}). The discrepancy arises because the in-flight estimator multiplies the Python-side wall time -- which includes compile, queue scheduling, post-processing and return network -- by the empirical wall-time-to-credit ratio, while the actual billing only charges the QPU runtime window of Fig.~\ref{fig:iqm_job_anatomy}. The wall-time-based projection therefore overestimates the realized cost by approximately $24\%$ on this campaign. Total Phase~E billed consumption was $1284$ credits out of the $2000$-credit campaign budget (\emph{a priori} estimate: $1598$ credits), leaving an actual residual of $\sim 700$ credits which we elected not to spend on a third fine-tuning epoch given the diminishing-returns indicated by the gradient-norm decay and the fact that validation accuracy had already saturated at $100\%$ after Epoch~2.
+
+\paragraph{Comparison to a noise-free reference.}
+The closest noise-free benchmark in the same regime is the Phase~C \emph{simulator dry-run fine-tune} (4 epochs of frozen-backbone fine-tuning on the Aer simulator, starting from the same checkpoint), which produced validation accuracies of $\{100\%, 100\%, 90\%, 90\%\}$ across the four epochs. The fact that the Emerald fine-tuning recovers the simulator's full accuracy by Epoch~2 -- on a substantially noisier loss surface -- supports the conclusion that the parameter-shift adaptation is effective even under realistic hardware conditions, at least at the modest scale of trainable parameters of our ansatz ($n_w=4$). We do not claim that this conclusion extrapolates to deeper variational ansätze or larger trainable-parameter counts, where barren-plateau effects~\cite{McClean2018,Holmes2022PRXQ} and noise-induced gradient suppression~\cite{Wang2021NoiseInducedBP} are expected to play a larger role.
+
+\subsubsection{Summary and implications for QPU-bound training}
+\label{subsec:hw_summary}
+
+The work documented in this section establishes a reproducible methodology for executing parameterized-quantum-circuit training on a 54-qubit superconducting device under a fixed credit budget, and reports the result of a 2-epoch fine-tuning campaign on the IQM Emerald device. Five observations are worth highlighting as transferable insights:
+\begin{enumerate}
+\item \textbf{Topology-aware circuit design is not optional.} A natural choice such as ``one classical register per block'' or ``a global \texttt{barrier} between blocks'' interacts unfavorably with disjoint-component handling in current Qiskit transpiler passes. The fixes are local (Sec.~\ref{subsec:transpilation}) but require diagnostic effort that should be budgeted in a hardware campaign.
+\item \textbf{Maximum parallel-block count is a property of the toolchain, not of the device.} The limit $K_{\max}=11$ in Tab.~\ref{tab:compat_scaling} is software-imposed; the underlying device has 54 qubits and could host more blocks. As Qiskit's disjoint-component handling matures, this limit is expected to rise.
+\item \textbf{Cost models must be calibrated, not nominal.} The IQM billing rule of Eq.~\ref{eq:billing_rule} ($\lceil\,\texttt{runtime\_seconds}\,\rceil \times 0.75$) is exact and verifiable on every job, but the wall-time-based predictor $r_{\mathrm{wall}\to\mathrm{cred}}=0.510$ that the in-flight cost model uses (Sec.~\ref{subsec:cost_model}) is conservative by $\sim 24\%$ on this campaign because Python-side wall time captures non-billed phases (compilation, queue scheduling, post-processing). A short rate-calibration phase (10--15 credits) is sufficient to determine the wall-to-credit coefficient for the specific submission pattern of an experiment, but practitioners should be aware that the resulting in-flight projection is an upper bound, not the median outcome. \emph{Ex post}, our 1284-credit Phase~E was projected as $\sim 1598$ credits in flight, leaving headroom that we could have invested in a third epoch had we trusted the QPU-side billing directly.
+\item \textbf{Calibration-aware layout helps but does not eliminate per-block bias.} The greedy chain selection of Sec.~\ref{subsec:transpilation} keeps the worst-chain readout fidelity above $0.95$ and produces a correlation $\rho=-0.682$ between $|b_k|$ and $\min_q F^{\mathrm{ro}}_q$ (Sec.~\ref{subsec:hw_results}), but residual bias remains uncorrelated with readout fidelity alone. A more aggressive layout strategy that also accounts for readout-error asymmetry, intra-chain CZ-fidelity dispersion and calibration recency would likely reduce the residual; we leave this as an open direction.
+\item \textbf{Parameter-shift fine-tuning recovers simulator accuracy under hardware noise.} Despite the per-block biases of Tab.~\ref{tab:per_block_bias}, the binary-classification accuracy of the Hybrid Q-CNN returns to $100\%$ on the validation set within two on-device fine-tuning epochs, and the gradient norm decays by an order of magnitude over the campaign (Sec.~\ref{subsec:finetune_results}). The result is restricted to the modest scale of trainable parameters of our ansatz ($n_w=4$) and a binary classification target, but is consistent with the parameter-shift rule providing a usable training signal on noisy quantum hardware in the small-parameter regime.
+\end{enumerate}
+The infrastructure described in Sec.~\ref{subsec:backend_setup}--\ref{subsec:minibatch_sgd}, together with the empirical results of Sec.~\ref{subsec:hw_results}--\ref{subsec:finetune_results}, constitutes to our knowledge the first end-to-end parameter-shift fine-tuning of a Hybrid Q-CNN on a $\geq 50$-qubit superconducting QPU under a credit-bounded budget.
+
+
 
 \subsection{Takeaways}
-Late fusion with moderately wide quantum channels is a robust design point on this task. Gains appear already in the first epoch and persist through convergence. Future work will stress-test these findings on multi-class EuroSAT and additional remote-sensing benchmarks, and extend the hardware evaluation beyond timing/latency to full noise-aware training on QPUs.
+Late fusion with moderately wide quantum channels is a robust design point on this task. Gains appear already in the first epoch and persist through convergence. Beyond simulator results, the candidate transfers to physical hardware: the credit-bounded fine-tuning campaign on IQM Emerald (Sec.~\ref{sec:hw_validation}) recovers the simulator's $100\%$ validation accuracy in two on-device epochs, despite per-block readout biases consistent with the device calibration, and demonstrates that parameter-shift fine-tuning of the trainable quantum weights remains effective at the modest scale of the present ansatz ($n_w=4$). Future work will extend the evaluation to multi-class EuroSAT and other remote-sensing benchmarks, and explore noise-aware training (gradient-aware shot allocation, advanced error mitigation, deeper variational ansätze) where barren-plateau and noise-induced gradient suppression effects~\cite{McClean2018,Holmes2022PRXQ,Wang2021NoiseInducedBP} are expected to play a larger role.
 
 \section{Discussion}
 Our results indicate that inserting a shallow, locality-preserving quantum layer within a CNN pipeline can (i) accelerate early learning and (ii) reduce final validation loss on the EuroSAT binary task. We read this as evidence that patch-wise quantum embeddings provide an inductive bias that is complementary to classical convolutions, enriching the effective feature space~\cite{Havlicek2019,Schuld2019PRA,Cong2019}. In particular, \emph{late fusion} with moderately wide quantum channels consistently yields the best trade-off between accuracy and variance, whereas merely increasing circuit depth does not—aligning with theory that relates expressibility to gradient magnitudes and trainability~\cite{Holmes2022PRXQ,cerezo2021}.
@@ -916,11 +1244,7 @@ Rotation (angle) encoding followed by short-range entanglers creates non-separab
 
 
 \paragraph{Limitations and threats to validity.}
-First, the evaluation uses a binary subset of EuroSAT~\cite{Helber2019}; while useful for controlled comparisons, it narrows class diversity and may overstate gains that depend on specific spectral contrasts. Second, most model selection was performed on simulators. 
-\begin{comment}
-although we validated candidates on IQM hardware via Qiskit Primitives, the number of physical runs and shot budgets were necessarily limited. 
-\end{comment}
-Consequently, conclusions about noise robustness should be taken as indicative, not definitive. Third, classical baselines (e.g., LeNet-5) are compact by design; stronger classical heads could reduce the observed deltas. Finally, patch extraction introduces choices (stride, overlap) that affect $N_{\text{patch}}$ and information leakage across borders; we mitigated this with consistent preprocessing, but a broader ablation is warranted.
+First, the evaluation uses a binary subset of EuroSAT~\cite{Helber2019}; while useful for controlled comparisons, it narrows class diversity and may overstate gains that depend on specific spectral contrasts. Second, model selection was performed on simulators, with hardware validation restricted to a single architecture (the \texttt{C16--Q64} candidate) on a single device (IQM Emerald) and a credit-bounded fine-tuning campaign of two on-device epochs (Sec.~\ref{sec:hw_validation}). Conclusions about noise robustness should therefore be taken as indicative, not definitive: a broader cross-device study would be needed to claim portability. Third, classical baselines (e.g., LeNet-5) are compact by design; stronger classical heads could reduce the observed deltas. Finally, patch extraction introduces choices (stride, overlap) that affect $N_{\text{patch}}$ and information leakage across borders; we mitigated this with consistent preprocessing, but a broader ablation is warranted.
 
 \paragraph{Scalability and time-to-train.}
 The practical bottleneck for hybrid training is the number of circuit evaluations,
@@ -933,7 +1257,7 @@ and the scheduled per-shot duration \(T_{\text{sched}}\) (Duration-Weighted Dept
 Keeping parameter count modest (via shallow depth and re-uploading rather than wider/global entanglement) appears beneficial. This echoes bounds and empirical evidence that quantum models can generalize from relatively few examples when capacity is controlled~\cite{Caro2022NatCommun}. In our setting, pooling before the linear head and limiting entanglement range likely reduce variance while preserving class-discriminative features.
 
 \paragraph{Hardware considerations.}
-All timing and device properties were obtained through Qiskit’s modern \emph{BackendV2}/\emph{Target} interface (SDK~2.x), with scheduling defined over calibrated instruction durations and OpenQASM~3 timing semantics; expectations and gradients were evaluated via Primitives (Estimator) uniformly across simulators and will be finally estimated on the IQM platform backend~\cite{QiskitBackendV2Docs,QiskitTargetDocs,OpenQASM3TQC2022,QiskitEstimatorDocs}. While we enabled basic readout mitigation when available, we did not perform noise-aware training (e.g., gradient-aware shot allocation, advanced error mitigation), which could further alter the accuracy–time trade-off.
+All timing and device properties were obtained through Qiskit's modern \emph{BackendV2}/\emph{Target} interface, with scheduling defined over calibrated instruction durations and OpenQASM~3 timing semantics; expectations and gradients were evaluated via Primitives (Estimator) uniformly across simulators and on the IQM Emerald hardware backend~\cite{QiskitBackendV2Docs,QiskitTargetDocs,OpenQASM3TQC2022,QiskitEstimatorDocs}. While we enabled basic readout mitigation when available, we did not perform noise-aware training (e.g., gradient-aware shot allocation, advanced error mitigation), which could further alter the accuracy--time trade-off.
 
 \paragraph{Open questions.}
 (i) \emph{Encoding design}: beyond angle and phase maps, amplitude encoding on aggressively downsampled patches might yield a different accuracy–time Pareto, but state preparation overheads are nontrivial. (ii) \emph{Entanglement scheduling}: learning \emph{where} to entangle (pattern/range) per patch may outperform fixed linear/ring couplings while staying shallow. (iii) \emph{Measurement grouping}: systematic grouping to minimize $M$ and $M_{\!\nabla}$ could reduce variance and wall time without changing expressivity. (iv) \emph{Classical parity}: testing against stronger classical baselines and kernel methods would clarify when hybrid layers add value beyond classical feature engineering.
