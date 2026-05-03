@@ -1,0 +1,178 @@
+\documentclass[12pt,a4paper,oneside]{report}
+
+% --- Packages ---
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{graphicx}
+\usepackage{authblk}
+%\usepackage{cite}
+\usepackage[sort, numbers]{natbib}
+\usepackage{geometry}
+\usepackage{physics}
+\AtBeginDocument{\RenewCommandCopy\qty\SI}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\geometry{margin=2.5cm}
+\usepackage{comment}
+\usepackage{booktabs}
+\usepackage{siunitx}
+\usepackage[T1]{fontenc}
+\usepackage{inconsolata} % monospace leggibile (facoltativo)
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{pgfplots,pgfplotstable,subcaption}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{xcolor}
+\usepackage{tcolorbox}
+\usepackage{longtable}
+\usepackage{titlesec}
+\usepackage{pgfgantt}
+\usepackage{eurosym}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{eurosym}
+\usepackage{bm}
+\usepackage{setspace}
+%\usepackage[backend = biber, style = numeric, refsection=chapter, natbib]{biblatex}
+%\usepackage[backend = biber, style  numeric, natbib]{biblatex}
+%\addbibresource{full_references_checked.bib}
+%\addbibresource{qh_references.bib}
+%\addbibresource{qh_methodology_references.bib}
+%\addbibresource{qh_synergies.bib}
+\pgfplotsset{compat=1.18}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=black,
+  urlcolor=blue,
+  citecolor=black,
+  pdftitle={CSN5 Grant Giovani Proposal},
+  pdfauthor={}
+}
+\definecolor{correction}{rgb}{0.8,0,0}
+
+% --- Handy column types for tables ---
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\newcolumntype{C}{>{\centering\arraybackslash}p{2cm}}
+\newcolumntype{R}{>{\raggedleft\arraybackslash}p{2.5cm}}
+
+% Custom boxes for highlighting
+
+
+\lstdefinestyle{py}{
+  language=Python,
+  basicstyle=\ttfamily\footnotesize,
+  columns=fullflexible,
+  keepspaces=true,
+  showstringspaces=false,
+  upquote=true,
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=2,
+  frame=tb,
+  rulecolor=\color{black!15},
+  xleftmargin=1em,
+  belowskip=0.8\baselineskip,
+  aboveskip=0.8\baselineskip,
+  % niente unicode strani dentro i blocchi!
+}
+\lstnewenvironment{pycode}[1][]{\lstset{style=py,#1}}{}
+
+
+%\title{New Perspectives on Quantum Technologies: \\ Progress on Quantum Sensing and Quantum Computation}
+%\author{Roberto Cappuccio}
+%\date{2024/2025}
+
+\begin{document}
+\include{frontespizio}
+%\maketitle
+
+%\input{chapters/abstract.tex}
+\input{chapters/abstract_revised}
+
+
+
+\newtcolorbox{innovationbox}{
+    colback=yellow!10,
+    colframe=orange!80,
+    title=Novel Innovation,
+    fonttitle=\bfseries
+}
+
+\newtcolorbox{baselinebox}{
+    colback=green!10,
+    colframe=green!60,
+    title=Proven Baseline,
+    fonttitle=\bfseries
+}
+
+\makeatletter
+% contatore in lettere maiuscole
+\renewcommand\thepart{\Alph{part}}
+\renewcommand\partname{Part}
+% ridefinizione di \@part con [#1]#2 come nella classe standard
+\def\@part[#1]#2{%
+  \ifnum \c@secnumdepth > -2\relax
+    \refstepcounter{part}%
+    \markboth{}{}%
+    % titolo nel testo
+    {\centering
+      \Huge\bfseries
+      \partname~\thepart\\[1ex]
+      #2\par}%
+  \else
+    {\centering
+      \Huge\bfseries
+      #2\par}%
+  \fi
+  \vspace{2ex}%
+}
+\makeatother
+
+\makeatletter
+\newcommand{\partnopage}[2][]{%
+  \ifnum \c@secnumdepth > -2\relax
+    % aumenta il contatore PART esattamente come \@part
+    \refstepcounter{part}%
+    % inserisce l'intestazione vuota come nel tuo comando
+    \markboth{}{}%
+    % voce nel TOC: Part A + eventuale titolo corto
+%    \addcontentsline{toc}{part}{\partname~\thepart\hspace{1em}#1}%
+    % titolo visibile
+    {\centering
+      \Huge\bfseries
+      \partname~\thepart\\[1ex]
+      #2\par}%
+  \else
+    {\centering
+      \Huge\bfseries
+      #2\par}%
+  \fi
+  \vspace{2ex}%
+}
+\makeatother
+
+
+
+\newcommand{\kB}{k_{\mathrm{B}}}
+
+
+{
+  \setcounter{tocdepth}{1}
+  \tableofcontents
+}
+
+\include{chapters/introduction_revised}
+\include{chapters/quantum_hw}
+\include{chapters/quantum_algorithms}
+\include{chapters/quantum_sensing}
+%\include{chapters/comparative_analysis}
+\include{chapters/conclusions}
+
+\appendix
+\include{chapters/code_and_plots}
+
+\bibliographystyle{unsrt}
+\bibliography{chapters/full_references_checked}
+\end{document}
