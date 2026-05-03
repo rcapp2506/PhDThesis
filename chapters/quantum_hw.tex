@@ -167,7 +167,6 @@ This level bunching is characteristic of a Morse-like potential and is fundament
 
 The negative anharmonicity reflects the ``softening'' of the potential at large phase excursions. As the system is excited to higher energy levels, the wavefunction extends into regions where the cosine potential deviates significantly from its harmonic (parabolic) approximation near the minimum. The reduced curvature at larger $\varphi$ leads to decreased level spacings, manifesting as $\alpha < 0$.
 
-
 \subsection{Qubit characterization}
 
 Qubit characterization will be carried out at the 
@@ -186,7 +185,6 @@ criteria for subsequent experimental validation, following protocols such as
 Ramsey fringes, echo sequences, and Purcell-filtered spectroscopy as described in 
 literature~\cite{Paik2011,Jeffrey2014}.
 
-
 \subsection{Models and Simulations}
 
 To capture the dynamics of our coupled qubit–resonator system we employ the 
@@ -195,7 +193,6 @@ open quantum systems interacting with their environment~\cite{Breuer2002,blais20
 This approach is essential since superconducting qubits are never perfectly isolated: 
 energy relaxation, pure dephasing, and cavity photon loss all contribute to 
 non-unitary dynamics.
-
 
 The time evolution of the system density matrix $\rho$ is governed by
 \begin{equation}
@@ -245,7 +242,6 @@ The Lindblad framework, combined with QuTiP~\cite{qutip5} simulations, will prov
 a quantitatively reliable method to predict the coherence properties, gate 
 performance, and readout fidelity of our elevated-temperature NbN qubits.
 
-
 \subsection{Resonator coupling}
 Each transmon qubit is coupled with a planar superconducting resonator bus.
 The superconducting resonator bus of frequency $\omega_r$ is modeled as a harmonic oscillator:
@@ -268,8 +264,6 @@ H = H_r + \sum_{i=1}^N H_{q,i} + \sum_{i=1}^N H_{qr,i} + H_{qq},
 \end{equation}
 where the terms respectively describe the resonator, the qubits, their coupling to the resonator, and possible direct qubit–qubit interactions.
 
-
-
 \subsection{Dispersive regime}
 
 \paragraph{Conventions.}
@@ -290,7 +284,6 @@ At elevated temperature (4--10~K), the thermal occupation of the qubit transitio
 \bar{n}(T) = \frac{1}{\exp(\hbar \omega_{01}/k_BT)-1}
 \end{equation}
 must remain small. Our design must ensures $\hbar\omega_{01} \gg k_BT$, so that $\bar{n}(T)<0.05$ even at 4~K.
-
 
 \subsection{Control electronics critical aspects and possible solutions}
 \label{subsec:control-electronics}
@@ -328,12 +321,21 @@ The baseline provides proof of concept and validates our design approach. The in
 \section{System Design and Parameters}
 
 We analyze a representative high-$T_c$ NbN transmon with:
-\begin{itemize}
-\item Charging energy: $E_C = \SI{0.2}{GHz}$
-\item Junction energies: $E_{J1} = \SI{15.0}{GHz}$, $E_{J2} = \SI{12.0}{GHz}$
-\item Asymmetry: $\eta = (E_{J1} - E_{J2})/(E_{J1} + E_{J2}) = 11.1\%$
-\item Ratio: $E_J/E_C|_{\Phi=0} = 135$ (firmly in transmon regime)
-\end{itemize}
+\begin{table}[h]
+\centering
+\begin{tabular}{@{}lc@{}}
+\toprule
+\textbf{Quantity} & \textbf{Value} \\
+\midrule
+Charging energy $E_C$                                       & $\SI{0.2}{GHz}$ \\
+Junction energies $E_{J1},\,E_{J2}$                          & $\SI{15.0}{GHz},\,\SI{12.0}{GHz}$ \\
+Asymmetry $\eta=(E_{J1}-E_{J2})/(E_{J1}+E_{J2})$            & $11.1\%$ \\
+Ratio $E_J/E_C$ at $\Phi=0$                                  & $135$ (firmly transmon-regime) \\
+\bottomrule
+\end{tabular}
+\caption{Reference SQUID parameters used in the system-design analysis.}
+\label{tab:squid_design_params}
+\end{table}
 
 \subsubsection{Spectrum at the Flux Sweet Spot}
 
@@ -540,7 +542,6 @@ This leads to enhanced pure dephasing time $T_2^*$ due to suppression of low-fre
 \item Stable operating point for high-fidelity gates
 \end{itemize}
 
-
 \section{Two-Qubit Cavity QED System Analysis}
 \subsubsection{Physical Interpretation}
 
@@ -555,12 +556,21 @@ The Hamiltonian consists of three parts:
 \label{sec:system_params}
 
 We consider the following representative parameters:
-\begin{itemize}
-\item Cavity frequency: $\omega_r/2\pi = \SI{6.5}{GHz}$
-\item Qubit 1 frequency: $\omega_{q1}/2\pi = \SI{5.8}{GHz}$
-\item Qubit 2 frequency: $\omega_{q2}/2\pi = \SI{5.2}{GHz}$
-\item Coupling strengths: $g_1/2\pi = g_2/2\pi = \SI{80}{MHz}$
-\end{itemize}
+\begin{table}[h]
+\centering
+\begin{tabular}{@{}lc@{}}
+\toprule
+\textbf{Quantity} & \textbf{Value} \\
+\midrule
+Cavity frequency $\omega_r/2\pi$       & $\SI{6.5}{GHz}$ \\
+Qubit 1 frequency $\omega_{q1}/2\pi$    & $\SI{5.8}{GHz}$ \\
+Qubit 2 frequency $\omega_{q2}/2\pi$    & $\SI{5.2}{GHz}$ \\
+Qubit--cavity couplings $g_1/2\pi=g_2/2\pi$ & $\SI{80}{MHz}$ \\
+\bottomrule
+\end{tabular}
+\caption{Baseline-mK HEATS-Q nominal parameters.}
+\label{tab:heatsQ_baseline_params}
+\end{table}
 
 The detunings are:
 \begin{align}
@@ -625,7 +635,6 @@ approximated by
 \end{equation}
 where \(\Delta_i = \omega_i-\omega_r\) and \(\alpha_i=\omega_{12,i}-\omega_{01,i}<0\).
 
-
 The renormalized frequencies are:
 \begin{align}
 \tilde{\omega}_r &= \omega_r + \chi_1 + \chi_2 \\
@@ -669,8 +678,6 @@ exchange $J$, not the longitudinal cross-Kerr $\zeta_{zz}$, and the
 operating point has been redesigned to $\Delta_q = 280$~MHz to enable a
 fast, high-fidelity cross-resonance gate.
 
-
-
 The frequency differences (relevant for dispersive readout) are:
 \begin{align}
 \omega_r(\ket{00}) - \omega_r(\ket{01}) &= 2\chi_2 = \SI{+48.6}{MHz} \\
@@ -685,12 +692,11 @@ in IQ space and is favourable for high-fidelity readout.
 
 \subsubsection{Readout Protocol}
 
-\begin{enumerate}
-\item Drive cavity with weak coherent tone at $\omega_r$
-\item Measure transmitted/reflected signal using IQ demodulation
-\item Phase and amplitude depend on qubit state
-\item Discriminate states based on measured IQ point
-\end{enumerate}
+The readout proceeds in four steps: \emph{(i)} the cavity is driven with a weak
+coherent tone at $\omega_r$; \emph{(ii)} the transmitted (or reflected) signal is
+measured by IQ demodulation; \emph{(iii)} the measured phase and amplitude depend
+on the qubit state; \emph{(iv)} the state is then discriminated based on the
+measured IQ point.
 
 \subsubsection{Resolution Criterion}
 
@@ -755,15 +761,15 @@ where the controlled-Z (CZ) gate is:
 \subsection{Method 1: $\sqrt{i\text{SWAP}}$ Gate (Resonant Interaction)}
 
 \subsubsection*{Physical Mechanism}
-The $\sqrt{i\text{SWAP}}$ approach uses \textit{resonant} coupling between the two qubits. The key steps are:
+The $\sqrt{i\text{SWAP}}$ approach uses \textit{resonant} coupling between the two qubits.
 
-\begin{enumerate}[noitemsep]
-    \item Apply flux pulses to tune qubit frequencies into resonance: $\omega_{q1} \approx \omega_{q2}$
-    \item Strong exchange interaction at rate $g_{\text{eff}} \approx g \sim 80$ MHz
-    \item Partial swap operation for time $t = \pi/(4g_{\text{eff}})$
-    \item Return qubits to original frequencies
-    \item Apply single-qubit corrections
-\end{enumerate}
+The protocol consists of five steps: \emph{(i)} flux pulses are applied to bring
+the two qubit frequencies into resonance ($\omega_{q1} \approx \omega_{q2}$);
+\emph{(ii)} the resulting strong exchange interaction (rate
+$g_{\text{eff}} \approx g \sim 80$~MHz) is allowed to evolve for a time
+$t = \pi/(4 g_{\text{eff}})$, performing a partial swap; \emph{(iii)} the qubits
+are returned to their original frequencies; \emph{(iv)} single-qubit corrections
+are then applied to obtain the desired entangling operation.
 \subsubsection*{Gate Time Calculation}
 For a single $\sqrt{i\text{SWAP}}$ operation:
 \begin{equation}
@@ -777,12 +783,7 @@ t_{\text{CNOT}} = 2t_{\sqrt{i\text{SWAP}}} + t_{\text{rotations}} \approx 20 + 4
 
 \subsubsection*{Advantages and Disadvantages}
 \textbf{Advantages:}
-\begin{itemize}
-    \item Fast gate time (80 ns)
-    \item High coupling strength
-    \item Mature technology (used by Google, Rigetti)
-    \item Experimentally demonstrated with high fidelity
-\end{itemize}
+Its main advantages are a fast gate time ($\sim 80$~ns), a high coupling strength, the maturity of the technology (already used by Google and Rigetti), and a high experimentally demonstrated fidelity.
 
 \textbf{Disadvantages:}
 \begin{itemize}
@@ -816,7 +817,6 @@ With our parameters:
     &= 6.4~ \times (-2.198 \times 10^{-3})~\text{MHz} \\
     &= -7.03~\text{MHz}
 \end{align}
-
 
 A controlled-phase (CZ) gate requires a conditional phase of $\pi/2$:
 \begin{equation}
@@ -857,10 +857,7 @@ Numerically: $224/80 \approx 2.8$ (including overhead from different protocols).
 \end{itemize}
 
 \textbf{Disadvantages:}
-\begin{itemize}[noitemsep]
-    \item Slower gate time (224 ns vs 80 ns)
-    \item Weaker coupling strength
-\end{itemize}
+The trade-offs are a slower gate time ($\sim 224$~ns vs $\sim 80$~ns) and a weaker effective coupling strength.
 
 \subsubsection*{Performance Comparison}
 
@@ -902,7 +899,6 @@ Best for & Maximum speed & Robustness \\
 
 For the HEATS-Q project operating at standard mk temperatures, we recommend the \textcolor{methodtwo}{\textbf{ZZ-coupling approach (224~ns)}} for the following reasons:
 
-
 \subsubsection*{Performance}
 
 Despite the 144~ns longer gate time:
@@ -931,18 +927,26 @@ Both reported gate times are potentially valid choices:
 
 The final choice between methods represents a trade-off between speed and simplicity. For HEATS-Q, the ZZ-coupling approach could be preferred because:
 
-\begin{enumerate}[noitemsep]
-    \item Compatible with flux-bias-free asymmetric SQUID design
-    \item More robust at elevated temperatures (4--6~K)
-    \item Simpler hardware and calibration
-    \item Achieves excellent performance (99.55\% fidelity)
-    \item Better suited for scalable architectures
-\end{enumerate}
+\begin{table}[h]
+\centering
+\begin{tabular}{@{}lp{0.65\textwidth}@{}}
+\toprule
+\textbf{Property} & \textbf{Rationale} \\
+\midrule
+Flux-bias-free design  & compatible with the asymmetric SQUID architecture \\
+Robustness at $4$--$6$~K & no flux-control electronics required at the cold stage \\
+Hardware simplicity      & fewer control lines, simpler calibration \\
+Performance              & achieves a CNOT fidelity around the target $99.5\%$ \\
+Scalability              & better suited to large-scale architectures \\
+\bottomrule
+\end{tabular}
+\caption{Reasons for adopting the cross-resonance strategy for HEATS-Q.}
+\label{tab:heatsq_gate_rationale}
+\end{table}
 
 The 30~ns increase in gate time is a small price to pay for significantly reduced system complexity and improved robustness -- essential considerations for practical quantum computing at elevated temperatures.
 
 This analysis demonstrates that both gate implementations are valid and have been successfully demonstrated in state-of-the-art superconducting quantum processors. The $\sqrt{i\text{SWAP}}$ approach is used by Google~\cite{Barends2014} and Rigetti, while the ZZ-coupling approach has been extensively studied by IBM~\cite{Gambetta2011,Paik2016} and others. The choice between them depends on system priorities: speed vs. simplicity and robustness.
-
 
 \begin{table}[h]
 \centering
@@ -960,16 +964,13 @@ CNOT (resonant swap) & \SI{80}{ns} & $>99\%$ & Flux-tunable coupling \\
 \caption{Summary of quantum operation metrics for two-qubit cavity QED system.}
 \end{table}
 
-
 \section{Two-Qubit System Numerical Analysis}
 
 In this section, we present the numerical analysis summary of two transmon qubits coupled through a microwave cavity resonator in the dispersive regime, optimized for operation at \SIrange{10}{20}{mK} temperatures.
 
-
 \subsection{System Architecture}
 
 Figure~\ref{fig:system_schematic} shows the physical architecture of the two-qubit system. Two transmon qubits (Q1 and Q2) are coupled to a common cavity resonator with coupling strengths $g_1$ and $g_2$. The qubits are detuned from the cavity frequency, placing the system in the dispersive regime where virtual photon exchange mediates an effective qubit-qubit interaction with strength $J_{zz} = 7.03$~MHz.
-
 
 \begin{figure}[htbp]
     \centering
@@ -978,8 +979,6 @@ Figure~\ref{fig:system_schematic} shows the physical architecture of the two-qub
     Two transmon qubits (Q1 at 5.8~GHz, Q2 at 5.2~GHz) couple to a shared cavity resonator at 6.5~GHz with coupling strengths $g_1 = g_2 = 80$~MHz. The qubits are red-detuned from the cavity ($\Delta_1 = -0.7$~GHz, $\Delta_2 = -1.3$~GHz), enabling dispersive operation. Virtual photon exchange through the cavity creates an effective ZZ coupling of 7.03~MHz between the qubits, which enables two-qubit gates without direct interaction.}
     \label{fig:system_schematic}
 \end{figure}
-
-
 
 \subsection{System Parameters}
 
@@ -1041,7 +1040,6 @@ Figure~\ref{fig:dispersive_shifts} demonstrates the dispersive frequency shifts 
 
 \clearpage
 
-
 \subsection{ZZ Coupling and Gate Operations}
 
 Figure~\ref{fig:zz_coupling_timing} characterizes the effective qubit-qubit interaction and gate performance. Panel~(a) shows the ZZ coupling energy spectrum, where states $\ket{00}$ and $\ket{11}$ have the same energy shift ($-7.03$~MHz), and states $\ket{01}$ and $\ket{10}$ have the opposite shift ($+7.03$~MHz). This pattern of conditional energy shifts enables entangling operations. Panel~(b) compares the timing of various quantum operations, showing that the CNOT gate time of 224~ns is still fast enough to maintain high fidelity while remaining simple to implement without flux control.
@@ -1061,14 +1059,25 @@ The system operates without flux control, using only fixed-frequency qubits and 
 
 The two-qubit system demonstrates excellent performance for fault-tolerant quantum computing:
 
-\begin{itemize}
-    \item \textbf{Dispersive regime:} $|\Delta_1|/g_1 = 8.8$ and $|\Delta_2|/g_2 = 16.2$ (requirement: $> 5$)
-    \item \textbf{ZZ coupling:} $J_{zz} = 7.03$~MHz (formula verified against Gambetta et al., 2011)
-    \item \textbf{CNOT gate time:} 224~ns (a bit over 200~ns fast gate threshold)
-    \item \textbf{Gate fidelity:} $F = \exp(-t_{\text{gate}}/T_2) = 99.55\%$ with $T_2 = 50~\mu$s
-    \item \textbf{Error rate:} $\epsilon = 0.45\%$ (below 1\% surface code threshold)
-    \item \textbf{Readout:} All four two-qubit states distinguishable (minimum separation 1.31~MHz)
-\end{itemize}
+\begin{table}[h]
+\centering
+\begin{tabular}{@{}lp{0.62\textwidth}@{}}
+\toprule
+\textbf{Aspect} & \textbf{Result} \\
+\midrule
+Dispersive regime         & $|\Delta_1|/g_1 = 8.8$ and $|\Delta_2|/g_2 = 16.2$ (above the $|\Delta|/g > 5$ requirement) \\
+Transverse exchange $J$   & $|J|/2\pi = 6.5$~MHz (Eq.~\eqref{eq:J_dispersive}; cross-Kerr $|\zeta_{zz}|/2\pi \simeq 1.7$~MHz from Eq.~\eqref{eq:zeta_zz_correct}) \\
+Two-qubit gate            & echo-CR (Sheldon~\textit{et~al.}~\cite{Sheldon2016}); see Section~\ref{subsec:echoCR} \\
+Predicted $t_{\mathrm{CNOT}}$ & $\sim 250$~ns at the redesigned operating point ($\Delta_q/2\pi = 280$~MHz) \\
+Predicted gate fidelity   & $F_{\mathrm{avg}} \gtrsim 99\%$ with full pulse-engineering (Table~\ref{tab:fidelity_budget}) \\
+Readout                   & all four computational states distinguishable (Section~\ref{sec:dispersive}) \\
+\bottomrule
+\end{tabular}
+\caption{Performance summary of the baseline-mK two-qubit system at the redesigned
+$\Delta_q = 280$~MHz operating point. Gate-protocol details and fidelity budget
+are discussed in Section~\ref{sec:gate_strategy}.}
+\label{tab:performance_summary_baseline}
+\end{table}
 
 The system operates without flux control, using only fixed-frequency qubits and microwave pulses, making it well-suited for elevated-temperature operation at 4--6~K where thermal stability is important.
 
@@ -1079,39 +1088,43 @@ The CNOT gate time is then:
 
 \subsection{Two-Qubit Operation Take-away}
 
-The four figures presented demonstrate that this two-qubit cavity QED system achieves:
-\begin{enumerate}[noitemsep]
-    \item Clean dispersive operation with large detuning ratios
-    \item State-dependent cavity shifts enabling high-fidelity readout
-    \item Distinguishability of all four two-qubit computational basis states
-    \item Strong effective ZZ coupling (7.03)~MHz for fast entangling gates
-    \item CNOT gate performance (224~ns, 99.55\% fidelity) exceeding fault-tolerance requirements
-\end{enumerate}
+The four figures presented characterise the two-qubit cavity-QED system.
+In summary, the two-qubit subsystem operates cleanly in the dispersive regime
+(large detuning ratios, all four computational basis states distinguishable),
+relies on the dominant transverse exchange coupling $J/2\pi \simeq 6.5$~MHz
+identified in Section~\ref{sec:cavity_mediated_couplings}, and uses the echo
+cross-resonance protocol of Section~\ref{sec:gate_strategy} to deliver a CNOT
+gate whose target performance ($\sim 250$~ns, $F_{\mathrm{avg}} \gtrsim 99\%$
+with full pulse engineering) lies above the surface-code threshold.
 
 These results validate the design for two-qubit quantum operations at elevated temperatures, with performance parameters consistent with state-of-the-art superconducting quantum processors operating at millikelvin temperatures.
 
-
-
 \begin{baselinebox}
 \textbf{Baseline Performance Summary at 10--20 mK:}
-\begin{itemize}
-    \item Single-qubit gates: $F > 99.9\%$
-    \item Two-qubit CNOT: $F = 99.55\%$
-    \item Thermal effects: Negligible ($< 10^{-5}\%$)
-    \item Status: \textbf{Competitive with state-of-the-art}
-\end{itemize}
+Single-qubit gates achieve $F > 99.9\%$ and the two-qubit CNOT reaches $F = 99.55\%$; thermal effects are negligible ($< 10^{-5}\%$). The system is therefore \textbf{competitive with state-of-the-art} platforms.
 \end{baselinebox}
 
 \section{Baseline Validation}
 
 Our baseline analysis demonstrates that asymmetric SQUID qubits at 5--6~GHz operating at 10--20~mK achieve:
 
-\begin{enumerate}
-    \item \textbf{High gate fidelities:} Single-qubit $> 99.9\%$, two-qubit $> 99.5\%$
-    \item \textbf{Fast gates:} 20~ns single-qubit, 224~ns two-qubit
-    \item \textbf{Robust dispersive operation:} $|\Delta|/g > 8$
-    \item \textbf{Negligible thermal noise:} $n_{\text{th}} < 10^{-5}$
-\end{enumerate}
+\begin{table}[h]
+\centering
+\begin{tabular}{@{}lc@{}}
+\toprule
+\textbf{Metric} & \textbf{Value} \\
+\midrule
+Single-qubit fidelity   & $> 99.9\%$ \\
+Two-qubit fidelity      & $> 99.5\%$ \\
+Single-qubit gate time  & $20$~ns \\
+Two-qubit gate time     & $\sim 250$~ns (echo CR, see Section~\ref{sec:gate_strategy}) \\
+Dispersive ratio        & $|\Delta|/g > 8$ \\
+Thermal noise           & $n_{\text{th}} < 10^{-5}$ \\
+\bottomrule
+\end{tabular}
+\caption{Baseline-validation metrics at the redesigned operating point.}
+\label{tab:baseline_validation_metrics}
+\end{table}
 
 \textbf{Conclusion:} The baseline design is sound and achieves performance comparable to leading quantum processors.
 
@@ -1119,25 +1132,28 @@ Our baseline analysis demonstrates that asymmetric SQUID qubits at 5--6~GHz oper
 
 \section{High-frequency, high-temperature environment system}
 
-Standard quantum processors operating at 10--20~mK face significant challenges:
+The contrast between conventional dilution-refrigerator-based platforms and the
+proposed pulse-tube-cooled architecture is summarized in
+Table~\ref{tab:dilution_vs_pulsetube}.
 
-\begin{itemize}[noitemsep]
-    \item \textbf{Cooling cost:} Dilution refrigerators cost \$500k--\$2M
-    \item \textbf{Cooling time:} Days to reach operating temperature
-    \item \textbf{Power consumption:} kW-scale at room temperature
-    \item \textbf{Scalability:} Difficult to scale beyond hundreds of qubits
-    \item \textbf{Integration:} Cannot co-locate with classical electronics
-\end{itemize}
-
-Operating at 4--10~K would enable:
-
-\begin{itemize}
-    \item \textbf{Pulse-tube coolers:} \$50k--\$100k (10× cheaper)
-    \item \textbf{Fast cooldown:} Hours instead of days
-%    \item \textbf{Lower power:} 100~W scale
-    \item \textbf{Scalability:} Modular, distributed systems
-    \item \textbf{Integration:} Co-locate with cryo-CMOS control
-\end{itemize}
+\begin{table}[h]
+\centering
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Aspect} & \textbf{Dilution refrigerator} & \textbf{Pulse-tube cooler (HEATS-Q)} \\
+\midrule
+Cooling cost      & \$500\,k--\$2\,M                       & \$50\,k--\$100\,k ($10\times$ cheaper) \\
+Cool-down time    & days                                  & hours \\
+Power consumption & kW-scale at room temperature          & $\sim 100$~W scale \\
+Scalability       & limited beyond hundreds of qubits     & modular, distributed systems \\
+Integration       & cannot co-locate classical electronics & co-located with cryo-CMOS control \\
+\bottomrule
+\end{tabular}
+\caption{Operational comparison between dilution-refrigerator and pulse-tube
+cooling for superconducting-qubit platforms. The HEATS-Q innovation targets
+the right-hand column.}
+\label{tab:dilution_vs_pulsetube}
+\end{table}
 
 \textbf{The Challenge:} Thermal energy at 4~K is much higher. We need a radically different approach.
 
@@ -1190,7 +1206,6 @@ The coupling strength $g$ must balance two competing requirements:
 \item \textbf{Strong enough} for fast two-qubit gates: $J_{zz} \propto g^2/\Delta$
 \item \textbf{Weak enough} for valid dispersive regime: $|\Delta|/g > 5$
 \end{enumerate}
-
 
 \textbf{Comparison with conventional systems:}
 \begin{itemize}
@@ -1267,7 +1282,6 @@ This six-panel analysis of Fig.\ref{fig:thermal_comprehensive_300ghz} provides a
 \textbf{Panel (f)}: Minimum required qubit frequency versus temperature to maintain specified thermal population thresholds (1\%, 2\%, 5\%, 10\%). The 300~GHz-Q design points (blue circles) lie well above the 2\% curve and comfortably above the 5\% threshold, providing margin for parameter drift and environmental fluctuations. The traditional 20~mK transmon at 5~GHz (green square at left edge) achieves $<1\%$ thermal population despite low frequency due to extreme temperature suppression. To extend 300~GHz-Q operation to 15~K while maintaining $<2\%$ thermal population would require increasing frequency to $\sim$450~GHz (red dashed line extrapolation).
 Overall, this comprehensive analysis establishes that 300~GHz operation at 4--6~K represents an optimal design point, balancing quantum regime requirements ($\hbar\omega \gg k_B T$) against experimental feasibility, enabling a transformative reduction in cryogenic complexity while maintaining performance compatible with fault-tolerant quantum error correction.
 
-
 \subsubsection{CNOT Gate Time Analysis}
 
 For a CNOT gate implemented via ZZ coupling, the gate time is:
@@ -1296,8 +1310,6 @@ g \approx \sqrt{2 \Delta_{\text{avg}} \cdot J_{zz}} = \sqrt{2 \times 30 \text{ G
 
 However, we adopt a more conservative value of $g = 500$ MHz to ensure robust operation in the dispersive regime, yielding $J_{zz} = 9.4$ MHz and $t_{\text{CNOT}} = 168$ ns.
 
-
-
 \subsubsection{Detuning Selection}
 
 The detunings are:
@@ -1325,7 +1337,6 @@ Both ratios greatly exceed the requirement $|\Delta|/g > 5$, confirming valid di
 \textbf{(e)} Transmon energy level diagram showing anharmonicity $\alpha = -1$ GHz. Energy spacings deviate from harmonic oscillator (dashed), enabling selective addressing of $|0\rangle \leftrightarrow |1\rangle$ transition. Thermal populations at 4 K are indicated (left side).}
 \label{fig:system_parameters}
 \end{figure}
-
 
 \subsubsection{Energy Scales}
 
@@ -1395,7 +1406,6 @@ d = \sqrt{\frac{4A}{\pi}} = \sqrt{\frac{4I_c}{\pi J_c}}
 
 Table~\ref{tab:junction_sizes} shows junction dimensions for various current densities.
 
-
 \begin{table}[H]
 \centering
 \caption{Junction dimensions versus current density for $I_c = 30.2$ $\mu$A}
@@ -1419,7 +1429,6 @@ $J_c$ (A/cm$^2$) & Area ($\mu$m$^2$) & Diameter (nm) & Feasibility \\
     \item Ultra-thin AlN$_x$ barriers ($< 0.8$ nm)~\cite{nakamura2011epitaxialNbN}
     \item At the edge of current fabrication capability
 \end{itemize}
-
 
 \subsubsection{Optimal Design Point}
 
@@ -1463,13 +1472,21 @@ Config & $N_{\text{junc}}$ & $I_{c,\text{single}}$ ($\mu$A) & $d_{\text{single}}
 \textbf{Recommendation:} 5$\times$5 or 7$\times$7 array with individual junction diameters of 63--88 nm, well within fabrication capabilities ($>$ 50 nm).
 
 \subsubsection{Array Advantages}
-\begin{itemize}
-    \item \textbf{Fabrication yield:} Larger individual junctions easier to fabricate
-    \item \textbf{Tunability:} Can tune individual junctions for uniformity
-    \item \textbf{Redundancy:} Fault-tolerant to single junction defects
-    \item \textbf{Uniformity:} Better control of total $E_J$
-\end{itemize}
-
+\begin{table}[h]
+\centering
+\begin{tabular}{@{}lp{0.65\textwidth}@{}}
+\toprule
+\textbf{Property} & \textbf{Advantage} \\
+\midrule
+Fabrication yield & individually larger junctions are easier to fabricate \\
+Tunability        & each junction can be tuned individually for uniformity \\
+Redundancy        & the array is fault-tolerant to single-junction defects \\
+Uniformity        & the total $E_J$ is more accurately controlled \\
+\bottomrule
+\end{tabular}
+\caption{Advantages of an $N \times N$ array of small junctions over a single large junction.}
+\label{tab:array_advantages}
+\end{table}
 
 % =====
 \section{Dispersive Regime and Two-Qubit Operations}
@@ -1522,21 +1539,22 @@ From Eq.~\ref{eq:dispersive_shift}, the dispersive shift for each qubit is:
 
 \subsection{Physical Interpretation}
 
-The dispersive shift $\chi_i$ has several important consequences:
+The dispersive shift $\chi_i$ has three physically important consequences that we now
+describe in turn.
 
-\begin{enumerate}
-\item \textbf{Quantum Non-Demolition Readout:} The cavity frequency shifts by $2\chi$ when the qubit transitions $|0\rangle \rightarrow |1\rangle$:
+\textbf{Quantum non-demolition readout.} The cavity frequency shifts by $2\chi$
+when the qubit transitions $\ket{0} \to \ket{1}$:
 \begin{equation}
-\omega_r(\text{state}) = \begin{cases}
-\omega_r - \chi & \text{if qubit in } |0\rangle \\
-\omega_r + \chi & \text{if qubit in } |1\rangle
-\end{cases}
+\omega_r(\text{state}) = \begin{cases} \omega_r - \chi & \text{if qubit in } \ket{0} \\ \omega_r + \chi & \text{if qubit in } \ket{1} \end{cases}
 \end{equation}
 
-\item \textbf{Readout Fidelity:} Larger $|\chi|$ enables faster, higher-fidelity readout. Typical targets are $|\chi| > 1$ MHz. Our values ($|\chi_1| = 0.6$ MHz, $|\chi_2| = 0.15$ MHz) are modest but workable.
+\textbf{Readout fidelity.} A larger $|\chi|$ enables faster, higher-fidelity readout.
+Typical targets are $|\chi| > 1$~MHz; our baseline values
+($|\chi_1| = 0.6$~MHz, $|\chi_2| = 0.15$~MHz, before the Section~\ref{sec:gate_strategy}
+redesign) are modest but workable.
 
-\item \textbf{Stark Shift:} Readout photons in the cavity cause AC Stark shifts of qubit frequencies, which must be calibrated out.
-\end{enumerate}
+\textbf{Stark shift.} Readout photons in the cavity cause AC Stark shifts of the
+qubit frequencies, which must be calibrated out before each operation.
 
 Figure~\ref{fig:two_qubit}(c) illustrates the dispersive frequency shifts for different two-qubit states.
 
@@ -1892,12 +1910,7 @@ For the dispersive approximation to be valid, we require $|\Delta|/g \gg 1$, typ
 \end{align}
 
 Both ratios greatly exceed the requirement, confirming we are in the \textit{strongly dispersive regime}. This ensures:
-\begin{itemize}
-\item Perturbation theory is highly accurate
-\item Lamb shift corrections are small ($< 1\%$)
-\item Qubit-cavity hybridization is negligible
-\item Two-qubit gates have high fidelity
-\end{itemize}
+This guarantees that perturbation theory is highly accurate, Lamb shift corrections are small ($< 1\%$), qubit--cavity hybridization is negligible, and two-qubit gates can reach high fidelity.
 
 Figure~\ref{fig:two_qubit}(d) shows the dispersive ratio versus coupling strength, confirming operation in the valid regime.
 
@@ -2013,13 +2026,22 @@ Sapphire (high-Q)  & $3 \times 10^{-8}$ & $5.66 \times 10^{3}$ & 177~$\mu$s   & 
 \end{table}
 
 \textbf{Key observations:}
-\begin{itemize}[noitemsep]
-    \item \textbf{Standard Si:} With $\tan\delta \sim 10^{-5}$, dielectric loss yields $T_1 < 1~\mu$s, rendering it unsuitable for 300~GHz operation even with 3D cavities.
-    
-    \item \textbf{High-resistivity Si:} Using silicon with resistivity $\rho > 10~\text{k}\Omega\cdot\text{cm}$ reduces $\tan\delta$ to $\sim 5 \times 10^{-8}$, yielding $T_{1,\text{diel}} \sim 106~\mu$s. While marginally adequate, this requires exceptional material quality and processing.
-    
-    \item \textbf{Sapphire:} Crystalline c-axis sapphire offers the best combination of availability, cost, and performance. Standard-grade sapphire achieves $T_{1,\text{diel}} \sim 53~\mu$s, while high-purity samples can reach $T_{1,\text{diel}} \sim 177~\mu$s with $\tan\delta \sim 3 \times 10^{-8}$.
-\end{itemize}
+\begin{table}[h]
+\centering
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Substrate} & \textbf{Loss tangent $\tan\delta$} & \textbf{Resulting $T_{1,\text{diel}}$} \\
+\midrule
+Standard Si           & $\sim 10^{-5}$       & $< 1~\mu$s — unsuitable even with 3D cavities \\
+High-resistivity Si   & $\sim 5\times 10^{-8}$ & $\sim 106~\mu$s — viable but more expensive \\
+Sapphire (c-axis)     & $\sim 10^{-7}$ standard, $< 10^{-8}$ high-purity & $\sim 53~\mu$s standard, $> 530~\mu$s high-purity \\
+\bottomrule
+\end{tabular}
+\caption{Substrate options for the HEATS-Q transmon. Sapphire offers the best
+trade-off between availability, cost, and dielectric quality. The
+high-resistivity Si values assume $\rho > 10~\text{k}\Omega\cdot\text{cm}$.}
+\label{tab:substrate_comparison}
+\end{table}
 
 \paragraph{Gate Fidelity Implications.}
 For typical gate times $t_{\text{gate}} \sim 150$~ns and $T_{1,\text{diel}} = 53~\mu$s (sapphire with $p=0.1$), the dielectric-induced decoherence error is:
@@ -2031,15 +2053,23 @@ This contribution is manageable within fault-tolerance thresholds ($< 1\%$), con
 
 \paragraph{Design Requirements Summary.}
 To achieve $T_{1,\text{diel}} \sim 50$--$180~\mu$s at 300~GHz, the following conditions must be satisfied:
-\begin{enumerate}[noitemsep]
-    \item \textbf{Substrate:} Crystalline sapphire (c-axis orientation) with $\tan\delta \leq 10^{-7}$
-    \item \textbf{Architecture:} 3D electromagnetic cavity providing field confinement to vacuum
-    \item \textbf{Participation ratio:} $p \leq 0.1$ through air-bridge capacitors and optimized geometry
-    \item \textbf{Interface quality:} Ultra-thin barriers ($d_{\text{AlN}} \sim 1$~nm) and minimal surface contamination
-\end{enumerate}
+\begin{table}[h]
+\centering
+\begin{tabular}{@{}lp{0.62\textwidth}@{}}
+\toprule
+\textbf{Element} & \textbf{Requirement} \\
+\midrule
+Substrate            & crystalline sapphire (c-axis), $\tan\delta \le 10^{-7}$ \\
+Architecture         & 3D electromagnetic cavity providing field confinement to vacuum \\
+Participation ratio  & $p \le 0.1$ via air-bridge capacitors and optimised geometry \\
+Interface quality    & ultra-thin barriers ($d_{\text{AlN}} \sim 1$~nm) and minimal surface contamination \\
+\bottomrule
+\end{tabular}
+\caption{Design requirements summary for the elevated-temperature transmon.}
+\label{tab:design_requirements_summary}
+\end{table}
 
 These requirements are challenging but achievable with current fabrication technology, as demonstrated by recent millikelvin qubits achieving $T_1 > 100~\mu$s on sapphire substrates~\cite{place2021}.
-
 
 \subsubsection{Quasiparticle Tunneling (Independent of $\omega$)}
 
@@ -2154,7 +2184,7 @@ Figure~\ref{fig:decoherence}(a,b) shows the frequency scaling of $T_1$ mechanism
 
 \subsubsection{Pure Dephasing Sources}
 
-Pure dephasing ($1/T_\phi$ term in Eq.~\ref{eq:t2_relation}) arises from:
+Pure dephasing (the $1/T_\phi$ term in Eq.~\ref{eq:t2_relation}) arises from several mechanisms.
 
 \textbf{1. Charge Noise:} Exponentially suppressed in transmon regime:
 \begin{equation}
@@ -2173,7 +2203,6 @@ With pure dephasing from flux noise ($T_\phi^{\text{flux}} = 30$ $\mu$s):
 \begin{equation}
 \boxed{T_2 = 13.2 \text{ }\mu\text{s}, \quad T_{2,\text{echo}} = 26.3 \text{ }\mu\text{s}}
 \end{equation}
-
 
 \begin{figure}[htbp]
     \centering
@@ -2200,12 +2229,23 @@ T_{2,\text{echo}} \sim 2T_2 \approx 30 \text{ $\mu$s}
 \subsection{Temperature Dependence}
 
 Figure~\ref{fig:decoherence}(g) shows CNOT fidelity versus temperature. Key observations:
-\begin{itemize}
-\item \textbf{At 2 K:} Thermal population 0.07\% $\Rightarrow$ F$_{\text{CNOT}} = 98.7\%$ (excellent)
-\item \textbf{At 3 K:} Thermal population 0.56\% $\Rightarrow$ F$_{\text{CNOT}} = 98.3\%$ (above threshold)
-\item \textbf{At 4 K:} Thermal population 2.81\% $\Rightarrow$ F$_{\text{CNOT}} = 97.3\%$ (near threshold)
-\item \textbf{At 5 K:} Thermal population 7.52\% $\Rightarrow$ F$_{\text{CNOT}} = 95.8\%$ (below threshold)
-\end{itemize}
+\begin{table}[h]
+\centering
+\begin{tabular}{@{}cccl@{}}
+\toprule
+\textbf{$T$} & \textbf{Thermal population} & \textbf{$F_{\text{CNOT}}$} & \textbf{Status} \\
+\midrule
+$2$~K & $0.07\%$ & $98.7\%$ & excellent \\
+$3$~K & $0.56\%$ & $98.3\%$ & above threshold \\
+$4$~K & $2.81\%$ & $97.3\%$ & near threshold \\
+$5$~K & $7.52\%$ & $95.8\%$ & below threshold \\
+\bottomrule
+\end{tabular}
+\caption{Temperature dependence of the thermal population and predicted CNOT
+fidelity for the innovation HEATS-Q point ($\omega_q\sim 300$~GHz). Above $\sim 4$~K
+the thermal-induced error rate exceeds the surface-code threshold.}
+\label{tab:thermal_population_vs_T}
+\end{table}
 
 The optimal operating window is 3--4 K, balancing thermal errors against refrigeration complexity.
 
@@ -2233,11 +2273,20 @@ The optimal operating window is 3--4 K, balancing thermal errors against refrige
 \subsubsection{Error Model}
 
 Single-qubit gates (X, Y, Z rotations) have errors from:
-\begin{enumerate}
-\item \textbf{Decoherence:} $\epsilon_{\text{decoh}} = t_{\text{gate}}/T_2$
-\item \textbf{Control errors:} $\epsilon_{\text{control}} \sim 10^{-4}$ (calibration, pulse distortion)
-\item \textbf{Leakage:} $\epsilon_{\text{leak}} \sim (\alpha/\omega_q)^2$ (excitation to $|2\rangle$)
-\end{enumerate}
+\begin{table}[h]
+\centering
+\begin{tabular}{@{}lc@{}}
+\toprule
+\textbf{Error source} & \textbf{Approximate magnitude} \\
+\midrule
+Decoherence    & $\epsilon_{\text{decoh}} = t_{\text{gate}}/T_2$ \\
+Control errors & $\epsilon_{\text{control}} \sim 10^{-4}$ (calibration, pulse distortion) \\
+Leakage        & $\epsilon_{\text{leak}} \sim (\alpha/\omega_q)^2$ (excitation to $\ket{2}$) \\
+\bottomrule
+\end{tabular}
+\caption{Per-gate error budget contributions used in the analysis.}
+\label{tab:error_budget}
+\end{table}
 
 \subsubsection{Numerical Estimates}
 
@@ -2248,7 +2297,6 @@ For $t_{\text{gate}} = 20$ ns:
 \varepsilon_{\text{control}} &= 0.010\% \\
 \varepsilon_{\text{leak}} &= \left(\frac{1.49 \text{ GHz}}{300 \text{ GHz}}\right)^2 \times 0.1 = \left(\frac{\alpha}{\omega_q}\right)^2 \times 0.1 = 0.025\%
 \end{align}
-
 
 Total single-qubit error:
 \begin{equation}
@@ -2267,12 +2315,21 @@ This meets typical targets $> 99.9\%$ for fault-tolerant quantum computing.
 \subsubsection{Error Model}
 
 CNOT gates have additional error sources:
-\begin{enumerate}
-\item \textbf{Decoherence:} Longer gate time increases impact
-\item \textbf{Thermal excitation:} $\epsilon_{\text{thermal}} \sim 0.5 \times n_{\text{th}}$
-\item \textbf{Leakage:} Higher due to two-qubit dynamics
-\item \textbf{Control errors:} Larger due to crosstalk and calibration complexity
-\end{enumerate}
+\begin{table}[h]
+\centering
+\begin{tabular}{@{}lp{0.55\textwidth}@{}}
+\toprule
+\textbf{Error contribution} & \textbf{Comment} \\
+\midrule
+Decoherence          & longer gate time increases impact \\
+Thermal excitation   & $\epsilon_{\text{thermal}} \sim 0.5 \times n_{\text{th}}$ \\
+Leakage              & higher than single-qubit, due to two-qubit dynamics \\
+Control errors       & larger due to crosstalk and calibration complexity \\
+\bottomrule
+\end{tabular}
+\caption{Two-qubit error contributions used in the analysis.}
+\label{tab:two_qubit_error_model}
+\end{table}
 
 \subsubsection{Numerical Estimates}
 
@@ -2312,7 +2369,6 @@ $\mathcal{F}_{\text{CNOT}}$ & $>$99\% & 95.95\% & -- \\
 \bottomrule
 \end{tabular}
 \end{table}
-
 
 \subsubsection{Gap to Threshold}
 
@@ -2362,9 +2418,6 @@ $+0.15\%$ \\
 \end{tabular}
 \end{table}
 
-
-
-
 \subsubsection{Combined Approach}
 
 Implementing Strategies 1--3:
@@ -2391,7 +2444,6 @@ vs Threshold & $-0.10\%$ & $+0.20\%$ & $+0.50\%$ & $+0.85\%$ \\
 \bottomrule
 \end{tabular}
 \end{table}
-
 
 \section{Frequency Trade-off at Elevated Temperature}
 \label{sec:frequency_tradeoff}
@@ -2525,21 +2577,14 @@ This favors \textit{intermediate} frequencies where $T_1$ is maximized. At \SI{8
 \subsection{The Dual-Frequency Strategy}
 
 The asymmetric SQUID transmon resolves this dilemma through \textbf{flux-tunable frequency}:
-\begin{enumerate}
-\item \textbf{Storage phase:} Flux-bias to $f_{\text{idle}} = \SI{300}{\giga\hertz}$
-   \begin{itemize}
-   \item $n_{\text{th}} \approx 0$ → minimal thermal excitation
-   \item Qubit remains in computational basis
-   \end{itemize}
-   
-\item \textbf{Gate phase:} Flux-tune to $f_{\text{gate}} = \SI{8}{\giga\hertz}$--\SI{20}{\giga\hertz}
-   \begin{itemize}
-   \item $T_1$ maximized → highest gate fidelity
-   \item Execute gate operations
-   \end{itemize}
-   
-\item \textbf{Return to storage:} Flux-bias back to \SI{300}{\giga\hertz}
-\end{enumerate}
+The dual-frequency strategy proceeds in three phases. In the
+\emph{storage phase} the qubit is flux-biased to $f_{\text{idle}} = \SI{300}{\giga\hertz}$,
+where the thermal population is essentially zero and the qubit remains safely
+in the computational basis. For the \emph{gate phase} the qubit is flux-tuned
+down to $f_{\text{gate}} = \SI{8}{\giga\hertz}$--$\SI{20}{\giga\hertz}$, where
+$T_1$ is maximised and gate operations can be performed at the highest available
+fidelity. After the gate the qubit is returned to the storage frequency by
+flux-biasing it back to $\SI{300}{\giga\hertz}$.
 
 This requires a large frequency tunability:
 \begin{equation}
@@ -2560,7 +2605,7 @@ With asymmetry $\eta = (E_{J1} - E_{J2})/(E_{J1} + E_{J2}) \sim 0.95$, the ratio
 
 \subsection{Alternative Approaches}
 
-If flux tunability is unavailable, alternative strategies include:
+If flux tunability is unavailable, the following alternative strategies can be considered.
 
 \subsubsection{Compromise Frequency}
 
@@ -2610,19 +2655,10 @@ T_{1,\text{rad}} &\propto \frac{1}{\omega^2} \quad &\Rightarrow \quad &2675\time
 \end{itemize}
 
 \textbf{2. 3D Electromagnetic Cavity (Essential)}
-\begin{itemize}
-\item Full shielding: copper or aluminum cavity
-\item Target: 60 dB suppression of radiative loss
-\item Design: Quarter-wave or half-wave coaxial cavity
-\item Expected: $T_{1,\text{rad}} > 400$ $\mu$s
-\end{itemize}
+Full shielding with a copper or aluminum cavity targets a $60$~dB suppression of radiative losses. The design uses a quarter- or half-wave coaxial cavity, and is expected to give $T_{1,\text{rad}} > 400~\mu$s.
 
 \textbf{3. Reduced Participation Ratio}
-\begin{itemize}
-\item Maximize capacitance to vacuum (not dielectric)
-\item 3D architecture naturally achieves $p < 0.1$
-\item Air-bridge capacitors
-\end{itemize}
+The strategy is to maximize the capacitance to vacuum (rather than to a dielectric), exploiting the fact that a 3D architecture naturally achieves a participation ratio $p < 0.1$, possibly augmented by air-bridge capacitors.
 
 \textbf{Success Probability:} 70\% with all mitigations
 
@@ -2632,12 +2668,8 @@ Figure~\ref{fig:challenges}(a) compares loss mechanism scaling between baseline 
 
 \subsubsection{Problem Statement}
 
-Required junction diameter (620--880 nm) with:
-\begin{itemize}
-\item Critical current: $I_c = 30$ $\mu A$
-\item Uniformity: $< 5\%$ variation
-\item Current density: $J_c = 1000-1500$ A/cm$^2$
-\end{itemize}
+The required junction diameter is $620$--$880$~nm.
+The target parameters are a critical current $I_c = 30~\mu$A with $< 5\%$ uniformity, achieved at a current density $J_c = 1000$--$1500$~A/cm$^2$.
 
 \subsubsection{Impact Assessment}
 
@@ -2648,31 +2680,16 @@ Required junction diameter (620--880 nm) with:
 \subsubsection{Mitigation Strategies}
 
 \textbf{1. Advanced Lithography}
-\begin{itemize}
-\item E-beam lithography: 10 nm resolution
-\item Dolan bridge (shadow evaporation) technique
-\item Multiple test fabrication runs
-\end{itemize}
+The required precision is achieved through e-beam lithography with $10$~nm resolution, the Dolan-bridge shadow-evaporation technique, and multiple test fabrication runs.
 
 \textbf{2. High Current Density}
-\begin{itemize}
-\item Thin barriers: $d_{\text{ox}} \sim 1$ nm
-\item Precise oxidation: in-situ monitoring
-\item ALD for uniformity
-\end{itemize}
+Control of the barrier thickness is obtained with thin barriers ($d_{\text{ox}} \sim 1$~nm), precise oxidation under in-situ monitoring, and ALD for uniformity.
 
 \textbf{3. Junction Arrays}
-\begin{itemize}
-\item $N \times N$ array of smaller junctions
-\item Example: $4 \times 4$ array of 250 nm junctions
-\item Improves yield and uniformity
-\end{itemize}
+An $N \times N$ array of smaller junctions (e.g.\ a $4 \times 4$ array of $250$~nm junctions) improves both yield and uniformity.
 
 \textbf{4. Flux Tunability}
-\begin{itemize}
-\item SQUID loop allows $\pm 5\%$ frequency tuning
-\item Compensates for fabrication variations
-\end{itemize}
+A SQUID loop, finally, allows $\pm 5\%$ in-situ frequency tuning to compensate for any residual fabrication variations.
 
 \textbf{Success Probability:} 70--80\% with specialized facility
 
@@ -2682,12 +2699,8 @@ Figure~\ref{fig:challenges}(b) compares substrates. Figure~\ref{fig:system_param
 
 \subsubsection{Problem Statement}
 
-Limited commercial availability of:
-\begin{itemize}
-\item 300 GHz sources and amplifiers
-\item Low-noise cryogenic components
-\item Waveguide and transition components
-\end{itemize}
+Commercial availability is limited:
+The required components include $300$~GHz sources and amplifiers, low-noise cryogenic stages, and dedicated waveguide and transition components.
 
 \subsubsection{Impact Assessment}
 
@@ -2698,26 +2711,13 @@ Limited commercial availability of:
 \subsubsection{Mitigation Strategies}
 
 \textbf{1. Leverage mm-Wave Astronomy}
-\begin{itemize}
-\item ALMA telescope: 300 GHz technology mature
-\item Virginia Diodes Inc.: Multiplier chains to 1 THz
-\item WR-3 waveguide (220--325 GHz) standard
-\end{itemize}
+The relevant technology base is mature: ALMA-class instrumentation operates routinely at $300$~GHz, Virginia Diodes Inc.\ provides multiplier chains up to $1$~THz, and WR-3 ($220$--$325$~GHz) is a standard waveguide format.
 
 \textbf{2. Frequency Conversion}
-\begin{itemize}
-\item Generate control pulses at $\sim 10$ GHz
-\item On-chip frequency multiplication ($\times 30$)
-\item Josephson parametric amplifiers
-\end{itemize}
+An alternative is to generate control pulses at $\sim 10$~GHz and use on-chip frequency multiplication ($\times 30$), combined with Josephson parametric amplifiers.
 
 \textbf{3. Cost Estimate}
-\begin{itemize}
-\item 300 GHz synthesizer: \euro 200k
-\item Amplifiers and multipliers: \euro 150k
-\item Cryogenic components: \euro 150k
-\item \textbf{Total control stack:} $\sim$\euro 500k
-\end{itemize}
+Indicative costs are $\sim$\euro$200$k for the $300$~GHz synthesizer, $\sim$\euro$150$k for amplifiers and multipliers, and another $\sim$\euro$150$k for the cryogenic components, for a \textbf{total control stack of $\sim$\euro$500$k}.
 
 \textbf{Success Probability:} 80--90\%
 
@@ -2725,12 +2725,8 @@ Limited commercial availability of:
 
 \subsubsection{Problem Statement}
 
-Temperature stability and noise requirements:
-\begin{itemize}
-\item Stability: $< 1$ mK fluctuations
-\item Thermal isolation of qubit chip
-\item Low-noise environment
-\end{itemize}
+Temperature stability and noise requirements are stringent:
+The thermal requirements are stability $< 1$~mK, careful thermal isolation of the qubit chip, and a low-noise environment.
 
 \subsubsection{Impact Assessment}
 
@@ -2741,18 +2737,10 @@ Temperature stability and noise requirements:
 \subsubsection{Mitigation Strategies}
 
 \textbf{1. Modern Pulse-Tube Coolers}
-\begin{itemize}
-\item Cryomech PT420: 1 W @ 4 K
-\item Temperature stability: $< 0.5$ mK
-\item Vibration isolation: passive damping
-\end{itemize}
+A Cryomech PT420 (1~W cooling power at $4$~K) provides temperature stability $< 0.5$~mK and supports passive vibration isolation.
 
 \textbf{2. Thermal Filtering}
-\begin{itemize}
-\item Multi-stage: 40 K, 10 K, 4 K
-\item Copper braid thermalization
-\item Eccosorb microwave filters
-\end{itemize}
+Thermalization is multi-stage ($40$~K, $10$~K, $4$~K) with copper-braid links and Eccosorb microwave filters.
 
 \textbf{Success Probability:} 90\%+
 
@@ -2765,7 +2753,6 @@ Temperature stability and noise requirements:
 \textbf{(c)} Improvement pathways to reach 98\% CNOT threshold. Current system (orange, 97.9\%) falls 0.1\% short. Individual improvements (green shades): better substrates (+0.3\%), lower temperature to 3.5 K (+0.3\%), and optimized control pulses (+0.05\%). Combined approach (dark green) achieves 99.1\%, comfortably exceeding threshold (red dashed line). The green shaded region indicates above-threshold performance. Each bar represents the fidelity value and its improvement over the baseline.}
 \label{fig:challenges}
 \end{figure}
-
 
 \subsection{Comparison Summary}
 
@@ -2895,7 +2882,6 @@ Modern pulse-tube coolers, such as the Cryomech PT420, provide 1~W of cooling po
 \label{fig:challenges}
 \end{figure}
 
-
 \subsection{Comparison Summary}
 
 Table~\ref{tab:baseline_comparison} compares baseline and innovation systems.
@@ -2928,9 +2914,7 @@ Cooldown time & 5 days & 4 hours & $0.033\times$ \\
 
 The innovation accepts modest ($< 1\%$) fidelity degradation in exchange for transformative improvements in cost, cooldown time, power, and scalability.
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 \part{Conclusions and Recommendations}
 \label{sec:conclusions}
@@ -2942,45 +2926,70 @@ We have performed a comprehensive analysis of asymmetric SQUID qubits operating 
 
 \subsubsection{Technical Feasibility: VIABLE}
 
-\begin{enumerate}
-\item \textbf{Quantum regime maintained} at 4 K with $\hbar\omega/\kB T = 3.6$
-\item \textbf{Manageable thermal population} of 2.81\% at 4 K
-\item \textbf{Adequate coherence times} projected: $T_1 = 20$ $\mu$s, $T_2 = 14.7$ $\mu$s
-\item \textbf{High single-qubit fidelity}: 99.85\%
-\item \textbf{Near-threshold two-qubit fidelity}: 97.9\% (0.1\% from 98\% target)
-\end{enumerate}
+\begin{table}[h]
+\centering
+\begin{tabular}{@{}lc@{}}
+\toprule
+\textbf{Indicator} & \textbf{Value at $4$~K} \\
+\midrule
+Quantum regime ($\hbar\omega/k_B T$)   & $3.6$ \\
+Thermal population                     & $2.81\%$ \\
+Coherence times $T_1, T_2$             & $20~\mu$s, $14.7~\mu$s (projected) \\
+Single-qubit fidelity                  & $99.85\%$ \\
+Two-qubit fidelity                     & $97.9\%$ ($0.1\%$ below the $98\%$ target) \\
+\bottomrule
+\end{tabular}
+\caption{Technical-feasibility indicators at the innovation operating point.
+All quantities meet or are within striking distance of the relevant threshold.}
+\label{tab:tech_feasibility_4K}
+\end{table}
 
 \subsubsection{Baseline Validation: CONFIRMED}
 
-\begin{itemize}
-\item 5.8 GHz / 20 mK system achieves 98.7\% CNOT fidelity
-\item Validates asymmetric SQUID architecture and design methodology
-\item Provides confidence in theoretical models
-\item De-risks innovation phase
-\end{itemize}
+The $5.8$~GHz, $20$~mK system achieves a $98.7\%$ CNOT fidelity, validating the asymmetric SQUID architecture and design methodology, providing confidence in the theoretical models, and de-risking the innovation phase.
 
 \subsubsection{Technical Challenges: ADDRESSABLE}
 
 Four major challenges identified, all with credible mitigation strategies:
-\begin{enumerate}
-\item \textbf{Material losses} (dielectric, radiative): Ultra-low-loss substrates + 3D cavity
-\item \textbf{Junction fabrication}: Advanced lithography + high current density
-\item \textbf{300 GHz control}: Leverage mm-wave astronomy technology
-\item \textbf{Thermal management}: Modern pulse-tube coolers
-\end{enumerate}
+\begin{table}[h]
+\centering
+\begin{tabular}{@{}lp{0.55\textwidth}@{}}
+\toprule
+\textbf{Challenge} & \textbf{Mitigation strategy} \\
+\midrule
+Material losses (dielectric, radiative) & ultra-low-loss substrates combined with 3D cavity design \\
+Junction fabrication                    & advanced lithography at high current density \\
+$300$~GHz control electronics           & leverage existing mm-wave astronomy technology \\
+Thermal management                      & modern pulse-tube coolers \\
+\bottomrule
+\end{tabular}
+\caption{Technical challenges at the innovation operating point and proposed
+mitigation strategies. All four are addressable with existing or near-existing
+technology.}
+\label{tab:tech_challenges_addressable}
+\end{table}
 
 Overall technical success probability: 10--15\%
 
 \subsubsection{Economic Impact: TRANSFORMATIVE}
 
-\begin{itemize}
-\item \textbf{10× cost reduction}: \euro 75k vs \euro 750k--\euro 1.5M
-\item \textbf{24--100× faster development}: Hours vs days cooldown
-\item \textbf{10× lower power}: 0.5 kW vs 5 kW
-\item \textbf{True scalability}: 10,000+ qubits per cooler vs 1000
-\item \textbf{Market expansion}: \euro 300M--\euro 5B value creation potential
-\end{itemize}
-
+\begin{table}[h]
+\centering
+\begin{tabular}{@{}lc@{}}
+\toprule
+\textbf{Metric} & \textbf{Improvement over dilution-refrigerator baseline} \\
+\midrule
+Cost                & $10\times$ reduction (\euro $75$\,k vs \euro $750$\,k--\euro $1.5$\,M) \\
+Development time    & $24$--$100\times$ faster (hours vs days cool-down) \\
+Power consumption   & $10\times$ lower ($0.5$~kW vs $5$~kW) \\
+Scalability         & $10\,000+$ qubits per cooler (vs $\sim 1000$) \\
+Market potential    & \euro $300$\,M--\euro $5$\,B in addressable value creation \\
+\bottomrule
+\end{tabular}
+\caption{Economic and operational impact of the HEATS-Q architecture relative to
+the conventional dilution-refrigerator baseline.}
+\label{tab:economic_impact}
+\end{table}
 
 The proposed 300 GHz / 4 K asymmetric SQUID qubit represents a \textbf{high-risk, high-reward} innovation at the frontier of quantum engineering. While technical challenges are significant, they are addressable with existing technology and clear mitigation strategies.
 
@@ -2991,7 +3000,6 @@ The economic and scalability benefits are transformative: 10× cost reduction, 1
 The incremental four-phase approach, with go/no-go decision points, manages risk appropriately. Even partial success (e.g., single qubits at 4 K) would represent a significant scientific breakthrough.
 
 We therefore recommend \textbf{proceeding with Phase 1}, targeting demonstration of 300 GHz qubits at baseline conditions within 12--18 months.
-
 
 \begin{comment}
 \section{Fabrication Considerations}
@@ -3004,22 +3012,27 @@ J_c \propto \exp(-d_{\text{ox}}/\lambda)
 \end{equation}
 where $d_{\text{ox}}$ is the oxide thickness and $\lambda \approx 0.1$ nm is the characteristic decay length.
 
-Achieving $J_c = 1000-1500$ A/cm$^2$ requires:
-\begin{itemize}
-\item Oxide thickness: $d_{\text{ox}} \approx 1.0-1.2$ nm
-\item Oxidation time: 60--90 seconds (pressure dependent)
-\item Uniformity: $< 5\%$ variation across chip
-\end{itemize}
+Achieving $J_c = 1000$--$1500$~A/cm$^2$ requires careful process control.
+The fabrication targets are an oxide thickness $d_{\text{ox}} \approx 1.0$--$1.2$~nm, an oxidation time of $60$--$90$~s (pressure-dependent), and uniformity $< 5\%$ across the chip.
 
 \subsubsection{Lithographic Requirements}
 
 The junction definition requires:
-\begin{enumerate}
-\item \textbf{E-beam lithography} with 10 nm resolution
-\item \textbf{Dolan bridge technique} (shadow evaporation) for small junctions
-\item \textbf{Alignment accuracy} $\pm 5$ nm
-\item \textbf{Critical dimension control} to $\pm 20$ nm
-\end{enumerate}
+\begin{table}[h]
+\centering
+\begin{tabular}{@{}lc@{}}
+\toprule
+\textbf{Requirement} & \textbf{Specification} \\
+\midrule
+E-beam lithography resolution & $10$~nm \\
+Junction-formation technique  & Dolan-bridge (shadow evaporation) \\
+Alignment accuracy            & $\pm 5$~nm \\
+Critical-dimension control    & $\pm 20$~nm \\
+\bottomrule
+\end{tabular}
+\caption{Lithographic requirements for the innovation transmon fabrication.}
+\label{tab:litho_requirements}
+\end{table}
 
 These specifications are met by facilities such as MIT Lincoln Laboratory, IBM Quantum, and NIST Boulder.
 \end{comment}
@@ -3049,81 +3062,44 @@ These specifications are met by facilities such as MIT Lincoln Laboratory, IBM Q
 
 \subsubsection{Fabrication}
 
-\textbf{Challenge:} 300~GHz requires Josephson junctions with:
-\begin{itemize}
-    \item Area $\sim 50$~nm diameter (0.002~$\mu$m$^2$)
-    \item Precise barrier thickness control ($< 1$~nm)
-    \item High uniformity across chip
-\end{itemize}
+\textbf{Challenge:} $300$~GHz operation requires demanding junction specifications.
+The main fabrication challenges are the small junction area ($\sim 50$~nm diameter, $0.002~\mu$m$^2$), precise barrier thickness control ($< 1$~nm), and high uniformity across the chip.
 
 \textbf{Status:} At the edge of current e-beam lithography capabilities
 
 \textbf{Mitigation:}
-\begin{itemize}
-    \item Advanced fabrication techniques (EUV lithography)
-    \item Atomic layer deposition for barriers
-    \item In-situ tuning mechanisms
-\end{itemize}
+Mitigation strategies include advanced fabrication techniques (e.g.\ EUV lithography), atomic layer deposition for barriers, and in-situ tuning mechanisms.
 
 \subsubsection{Control and Readout}
 
 \textbf{Challenge:} 300~GHz microwave engineering
-\begin{itemize}
-    \item Limited commercial components
-    \item Waveguide design critical
-    \item Impedance matching difficult
-\end{itemize}
+The control and readout challenges are the limited choice of commercial components, the criticality of the waveguide design, and the difficulty of impedance matching.
 
 \textbf{Status:} Established in millimeter-wave astronomy/radar
 
 \textbf{Mitigation:}
-\begin{itemize}
-    \item Leverage existing 300~GHz technology
-    \item On-chip frequency mixing
-    \item Hybrid approaches (control at lower freq)
-\end{itemize}
+Mitigation relies on leveraging existing $300$~GHz technology, on-chip frequency mixing, and hybrid approaches with control electronics at lower frequencies.
 
 \subsubsection{Decoherence at 300~GHz}
 
 \textbf{Challenge:} Higher frequency may increase certain loss mechanisms
 
 \textbf{Analysis:}
-\begin{itemize}
-    \item Dielectric loss: $\propto \omega$ (worse)
-    \item Radiative loss: $\propto \omega^2$ (worse)
-    \item Quasiparticle loss: Independent of $\omega$ (same)
-\end{itemize}
+The decoherence channels scale differently with frequency: dielectric loss is $\propto \omega$ (worse), radiative loss is $\propto \omega^2$ (worse), and quasiparticle loss is $\omega$-independent.
 
 \textbf{Mitigation:}
-\begin{itemize}
-    \item Ultra-low-loss materials (sapphire, silicon)
-    \item 3D cavity designs (reduced radiation)
-    \item Improved shielding
-    \item Higher operating T may help $T_1$ (fewer quasiparticles)
-\end{itemize}
+Mitigation strategies include ultra-low-loss materials (sapphire, silicon), 3D cavity designs to suppress radiative losses, improved shielding, and the side benefit that a higher operating temperature may even help $T_1$ by reducing quasiparticle generation.
 \end{comment}
-
 
 \section{Wrap-up and Final Considerations}
 
 \subsubsection*{Part A: Baseline (Proven)}
 
-\begin{itemize}
-    \item Asymmetric SQUID qubits at 5--6~GHz achieve 98.7\% CNOT fidelity at 20~mK
-    \item Thermal effects negligible ($< 10^{-5}\%$)
-    \item Competitive with state-of-the-art
-    \item \textbf{Demonstrates the concept works}
-\end{itemize}
+Asymmetric SQUID qubits at $5$--$6$~GHz achieve a $98.7\%$ CNOT fidelity at $20$~mK, with negligible thermal effects ($< 10^{-5}\%$). This is competitive with the state of the art and \textbf{demonstrates that the concept works}.
 
 \subsubsection*{Part B: Innovation (Novel)}
 
-\begin{itemize}
-    \item 300~GHz operation enables 4--10~K temperatures
-    \item Thermal populations manageable (3--10\%)
-    \item Projected fidelities above error correction thresholds
-    \item \textbf{Pathway to transformative breakthrough}
-\end{itemize}
-
+Operation at $300$~GHz enables temperatures of $4$--$10$~K, with thermal populations remaining manageable ($3$--$10\%$) and projected fidelities above the error-correction thresholds, opening a \textbf{pathway to a transformative breakthrough}.
 
 %\subsubsection{Final Considerations}
 
@@ -3138,15 +3114,23 @@ Operation at $\sim$10~K maintains transmon anharmonicity ($|\alpha|/2\pi\sim 0.1
 Advances in high-$T_c$ nitride epitaxy, robust microwave control hardware, and commercial cryocoolers enable practical operation above 4~K. The possibility of seamless cryo-CMOS integration motivates a transition beyond dilution refrigerators.
 
 \textbf{Competitive advantage.}  
-\begin{enumerate}[noitemsep]
-\item \emph{Cost/infrastructure:} removal of dilution refrigerators cuts capex/opex by $70$–$80\%$.  
-\item \emph{Integration:} short control chains reduce attenuation, latency, and wiring complexity.  
-\item \emph{Throughput:} cooldown in hours (vs.\ days) accelerates fab–test iterations.  
-\item \emph{Scalability:} 2D layouts remain compatible with surface-code error correction~\cite{Barends2014,arute2019quantum}.  
-\end{enumerate}
+\begin{table}[h]
+\centering
+\begin{tabular}{@{}lp{0.6\textwidth}@{}}
+\toprule
+\textbf{Dimension} & \textbf{Competitive advantage of HEATS-Q} \\
+\midrule
+Cost / infrastructure & removal of dilution refrigerators cuts capex/opex by $70$--$80\%$ \\
+Integration           & short control chains reduce attenuation, latency, and wiring complexity \\
+Throughput            & cool-down in hours (vs.\ days) accelerates fab–test iterations \\
+Scalability           & 2D layouts remain compatible with surface-code error correction~\cite{Barends2014,arute2019quantum} \\
+\bottomrule
+\end{tabular}
+\caption{Competitive-advantage dimensions of the HEATS-Q architecture.}
+\label{tab:competitive_advantage}
+\end{table}
 
 All-nitride epitaxial junctions and tantalum-based films~\cite{place2021,kim2021} extend coherence to the millisecond range. NbN technology enables operation above liquid-helium temperature, easing cryogenic integration while preserving strong nonlinearity. Coupling with Rydberg-based receivers may enable hybrid quantum sensing–computing architectures. We presented a design framework for a 4-K asymmetric SQUID transmon using NbN/AlN/NbN junctions, discussed losses and decoherence, and outlined EM and readout strategies. The approach bridges superconducting hardware and quantum sensing, supporting the integration of these technologies within scalable hybrid quantum systems.
-
 
 % =============================================================================
 % [G7 PATCH P5] — Section appended for revision G7 (May 2026)
