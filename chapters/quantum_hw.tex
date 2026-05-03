@@ -548,6 +548,7 @@ The Hamiltonian consists of three parts:
 \end{enumerate}
 
 \subsection{System Parameters for HEATS-Q}
+\label{sec:system_params}
 
 We consider the following representative parameters:
 \begin{itemize}
@@ -1536,7 +1537,10 @@ Figure~\ref{fig:two_qubit}(c) illustrates the dispersive frequency shifts for di
 % Section \ref{sec:cavity_mediated_couplings}). The free-evolution CZ
 % protocol that followed is therefore not applicable. The corrected gate
 % protocol (cross-resonance with echo correction, Sheldon 2016) is
-% presented in the following input file:
+% presented in the following input files (Section 3.7 introduces the
+% cavity-mediated couplings; Section 3.8 builds the gate protocol on top):
+
+\input{chapters/sections/section_3p7_cavity_mediated}
 
 \input{chapters/sections/section_3p8_gate_strategy}
 
@@ -2809,11 +2813,10 @@ All-nitride epitaxial junctions and tantalum-based films~\cite{place2021,kim2021
 
 
 % =============================================================================
-% [G7 PATCH P5] — Sections appended for revision G7 (May 2026)
-% Cavity-mediated couplings (J vs zeta_zz) + Technological prerequisites for 4 K
+% [G7 PATCH P5] — Section appended for revision G7 (May 2026)
+% Technological prerequisites for 4 K operation (placed at end of chapter
+% since it serves as a discussion/outlook block)
 % =============================================================================
-
-\input{chapters/sections/section_3p7_cavity_mediated}
 
 \input{chapters/sections/section_3p10_tech_prereq}
 
