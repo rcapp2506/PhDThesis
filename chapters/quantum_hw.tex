@@ -667,12 +667,17 @@ fast, high-fidelity cross-resonance gate.
 
 
 
-The frequency differences are:
+The frequency differences (relevant for dispersive readout) are:
 \begin{align}
-\omega_r(\ket{00}) - \omega_r(\ket{01}) &= 2\chi_2 = \SI{9.84}{MHz} \\
-\omega_r(\ket{00}) - \omega_r(\ket{10}) &= 2\chi_1 = \SI{18.28}{MHz} \\
-\omega_r(\ket{00}) - \omega_r(\ket{11}) &= 2(\chi_1 + \chi_2) = \SI{28.12}{MHz}
+\omega_r(\ket{00}) - \omega_r(\ket{01}) &= 2\chi_2 = \SI{+48.6}{MHz} \\
+\omega_r(\ket{00}) - \omega_r(\ket{10}) &= 2\chi_1 = \SI{-25.8}{MHz} \\
+\omega_r(\ket{00}) - \omega_r(\ket{11}) &= 2(\chi_1 + \chi_2) = \SI{+22.8}{MHz}
 \end{align}
+The opposite signs of $\chi_1$ and $\chi_2$ at the redesigned operating point
+($\Delta_1 + \alpha < 0$, $\Delta_2 + \alpha > 0$) are a consequence of the
+straddling of the two qubit detunings around the resonance condition
+$\Delta = -\alpha$. This actually \emph{enlarges} the four-state separation
+in IQ space and is favourable for high-fidelity readout.
 
 \subsubsection{Readout Protocol}
 
@@ -692,11 +697,11 @@ For good state discrimination, the dispersive shift must exceed the cavity linew
 
 Assuming $\kappa/2\pi = \SI{2}{MHz}$:
 \begin{align}
-\frac{2|\chi_1|}{\kappa} &= \frac{18.28}{2} = 9.14 \quad (\text{excellent}) \\
-\frac{2|\chi_2|}{\kappa} &= \frac{9.84}{2} = 4.92 \quad (\text{good})
+\frac{2|\chi_1|}{\kappa} &= \frac{25.8}{2} = 12.9 \quad (\text{excellent}) \\
+\frac{2|\chi_2|}{\kappa} &= \frac{48.6}{2} = 24.3 \quad (\text{excellent})
 \end{align}
 
-Both conditions are satisfied, ensuring high-fidelity readout.
+Both conditions are amply satisfied, ensuring high-fidelity readout.
 
 \subsection{Single-Qubit Gates}
 
