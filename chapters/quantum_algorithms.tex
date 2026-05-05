@@ -407,206 +407,152 @@ where circuit duration (\texttt{circuit.duration} in Qiskit) and estimated batch
 In all experiments, device timing (e.g., \texttt{dt}) and instruction properties are queried through Qiskit’s \emph{BackendV2}/\emph{Target} interface (SDK~2.x), which supersedes the legacy BackendV1 $\xrightarrow{}$ Qobj $\xrightarrow{}$ OpenPulse specification; timing semantics follow OpenQASM~3~\cite{QiskitBackendV2Docs,QiskitTargetDocs,OpenQASM3TQC2022}.
 
 
-\subsubsection*{Latency and capacity metrics}
-Let $\mathcal{C}$ be a transpiled and scheduled circuit with layers $\mathcal{L}=\{L_1,\dots,L_D\}$ (gates in $L_\ell$ run in parallel). Each gate $g$ has calibrated duration $\tau(g)$ (seconds) and start time $s(g)$.
+\subsubsection*{Batch-time and credit-cost model used in practice}
+\label{sec:batch-time-model}
 
-\paragraph{Duration-weighted depth (DWD).}
+The runtime metrics of the previous section are circuit-level: they describe a
+\emph{single} scheduled circuit. In practice, training a hybrid quantum--classical
+model on a credit-bounded provider requires forecasting the cost of an entire
+optimization \emph{epoch}, which involves thousands of bound circuits dispatched
+in jobs of bounded size. We adopt the same notation used in the production
+notebook (Sec.~\ref{subsec:cost_model}, Phase D and Phase E):
+
+\begin{description}
+\setlength\itemsep{0.15em}
+\item[$K$] — number of parallel quanvolutional blocks instantiated inside one
+  bound circuit (\texttt{num\_parallel\_blocks}; in our deployment $K=11$, capped
+  by the toolchain rather than by the device's 54 qubits, see
+  Sec.~\ref{subsec:transpilation}).
+\item[$n_w$] — number of trainable quantum weights per block ($n_w=4$ in the
+  ansatz of Sec.~\ref{subsec:minibatch_sgd}).
+\item[$m$] — mini-batch size (\texttt{MINIBATCH\_SIZE}; $m=2$ in production).
+\item[$p_{\rm img}$] — number of patches extracted per image, with
+  $p_{\rm img}=C_{\rm conv}\cdot Q^2$ where $C_{\rm conv}=6$ is the number of
+  convolutional channels and $Q=5$ is the quanvolutional output side
+  (Sec.~\ref{subsec:minibatch_sgd}); thus $p_{\rm img}=150$.
+\item[$S$] — shots per circuit (\texttt{SHOTS}; $S=500$).
+\item[$\tau_{\rm circ}^{\rm wall}$] — empirical wall-clock time per bound circuit
+  observed at the Python client; calibrated in Phase D
+  (Sec.~\ref{subsec:hw_results}).
+\item[$r_{\rm wc}$] — wall-time-to-credit conversion rate (\texttt{CRED\_PER\_SEC\_EMERALD}),
+  calibrated against the dashboard billing.
+\end{description}
+
+\paragraph{Number of bound circuits per training step.}
+With frozen backbone (Sec.~\ref{subsec:minibatch_sgd}), every optimizer step
+requires $1+2n_w$ forward passes through the quantum filter (one for the
+objective, $2n_w$ for the parameter-shift gradients of the quantum weights).
+Each pass must process $m\cdot p_{\rm img}$ patches; with $K$ blocks
+instantiated in parallel inside a single bound circuit, those patches are
+packed into $\lceil m\,p_{\rm img}/K\rceil$ bound circuits. Hence
 \begin{equation}
-\mathrm{DWD}(\mathcal{C}) \;=\; \sum_{\ell=1}^{D}\max_{g\in L_\ell}\tau(g)
-\;=\; \max_{g\in\mathcal{C}}\big(s(g)+\tau(g)\big)-\min_{g\in\mathcal{C}} s(g)
-\;\equiv\; T_{\text{sched}}(\mathcal{C}),
-\label{eq:dwd}
+N_{\rm c}^{\rm step}
+\;=\; \bigl(1+2 n_w\bigr)\,\Bigl\lceil \tfrac{m\,p_{\rm img}}{K} \Bigr\rceil .
+\label{eq:N_step}
 \end{equation}
-i.e., the scheduled \emph{makespan} (per-shot wall time of the circuit proper, exclusive of external queue/dispatch overheads).
+For our production values ($n_w=4$, $m=2$, $p_{\rm img}=150$, $K=11$),
+Eq.~\eqref{eq:N_step} gives $N_{\rm c}^{\rm step}=9\cdot\lceil 300/11\rceil = 9\cdot 28 = 252$
+bound circuits per step.
 
-\paragraph{Qubit-time (resource area).}
+\paragraph{Number of bound circuits per epoch.}
+Let $n_{\rm steps}=\lfloor N_{\rm train}/m\rfloor$ be the number of optimizer
+steps per epoch ($n_{\rm steps}=10$ for $N_{\rm train}=20$, $m=2$), and
+$N_{\rm val}$ the size of the held-out validation set ($N_{\rm val}=20$). The
+end-of-epoch validation pass is a single forward call and packs into
+$N_{\rm c}^{\rm val}=\lceil N_{\rm val}\, p_{\rm img}/K\rceil$ bound circuits.
+Therefore:
 \begin{equation}
-\mathrm{QT}(\mathcal{C}) \;=\; \sum_{q\in Q}\ \sum_{g\ \mathrm{acting\ on}\ q}\ \tau(g),
-\label{eq:qt}
+N_{\rm c}^{\rm ep}
+\;=\; n_{\rm steps}\cdot N_{\rm c}^{\rm step} \;+\; N_{\rm c}^{\rm val}
+\;=\; n_{\rm steps}\,(1+2 n_w)\,\Bigl\lceil \tfrac{m\,p_{\rm img}}{K} \Bigr\rceil
+       \;+\; \Bigl\lceil \tfrac{N_{\rm val}\,p_{\rm img}}{K} \Bigr\rceil .
+\label{eq:N_epoch}
 \end{equation}
-a qubit-seconds proxy of total QPU occupancy, useful for throughput/cost accounting under provider quotas.
+For the Phase~E configuration, Eq.~\eqref{eq:N_epoch} gives
+$10\cdot 252 + \lceil 20\cdot 150/11\rceil = 2520 + 273 = 2793$ bound circuits
+per epoch.
 
-\paragraph{Per-qubit sequence view.}
-For each qubit $q$ with scheduled gate list $\mathcal{S}_q$, define
+\paragraph{Wall-time and credit cost per epoch.}
+The wall-clock time of one epoch and its credit cost are obtained by
+multiplying the bound-circuit count by the per-circuit wall time and the
+wall-to-credit rate, respectively:
 \begin{equation}
-L_q \;=\; \sum_{g\in \mathcal{S}_q}\tau(g),\qquad
-L_{\max}\!=\!\max_{q}L_q.
-\label{eq:seqlen}
+T_{\rm ep}^{\rm wall} \;=\; N_{\rm c}^{\rm ep}\,\tau_{\rm circ}^{\rm wall},
+\qquad
+\boxed{\;
+\widehat{\mathrm{cred}}_{\rm ep}
+\;=\; N_{\rm c}^{\rm ep}\,\tau_{\rm circ}^{\rm wall}\,r_{\rm wc} \;}
+\label{eq:cred_epoch}
 \end{equation}
-Then $L_{\max}\le T_{\text{sched}}\le \sum_{\ell}\max_{g\in L_\ell}\tau(g)$, while in practice $T_{\text{sched}}$ from the scheduler (Eq.~\ref{eq:dwd}) is the tight runtime surrogate we read from the backend.
+Eq.~\eqref{eq:cred_epoch} is the \emph{in-flight} cost estimate computed by the
+production notebook before each epoch is launched; it intentionally over-counts
+with respect to the IQM dashboard billing because $\tau_{\rm circ}^{\rm wall}$
+includes non-billed phases (validation, compile, queue, post-processing,
+network return). The relationship between the in-flight estimate and the
+\emph{a posteriori} billed cost is calibrated in Sec.~\ref{subsec:cost_model}.
 
-\paragraph{Scheduled duration ($T_\mathrm{sched}$) and its relation to DWD.}
-Once a circuit has been scheduled---either under an \emph{as soon as possible} (ASAP) or 
-\emph{as late as possible} (ALAP) policy---each gate $g$ acquires a concrete start time $s_g$ 
-and physical duration $\tau_g$.  
-The total scheduled execution time, or \emph{scheduled duration}, is then defined as
-\begin{equation}
-T_\mathrm{sched} = \max_{g}(s_g + \tau_g) - \min_{g}(s_g),
-\end{equation}
-which represents the interval between the earliest start and the latest completion among 
-all gates.  
-In Qiskit, this quantity is directly available as 
-\texttt{circuit.duration * backend.dt}, expressed in seconds.
+\paragraph{Calibration of $\tau_{\rm circ}^{\rm wall}$.}
+The per-circuit wall time depends weakly on the bound-circuit count $N$ within
+a job (because of the per-job initialization overhead) and on the system load
+at submission time. We calibrate $\tau_{\rm circ}^{\rm wall}$ in Phase~D
+(Sec.~\ref{subsec:hw_results}) by submitting two diagnostic batches at
+$N=20$ and $N=50$ and reading back the Python wall-clock time. The realized
+in-production value over the 183 Phase~E jobs is
+$\tau_{\rm circ}^{\rm wall}\approx 0.56$~s/circuit (median of the per-job
+amortization), bracketed by the two diagnostic measurements.
 
-From a theoretical standpoint, the scheduled duration coincides with the 
-\emph{duration-weighted depth} ($D_\mathrm{w}$) when the scheduling is ideal and 
-no alignment or hardware constraints are applied:
-\begin{equation}
-T_\mathrm{sched} \approx D_\mathrm{w}.
-\end{equation}
-In practice, however, real devices impose pulse alignment, routing, readout delays, and
-additional padding (e.g., for dynamical decoupling), leading to
-\begin{equation}
-T_\mathrm{sched} \gtrsim D_\mathrm{w} + \Delta_\mathrm{overhead},
-\end{equation}
-where $\Delta_\mathrm{overhead}$ accounts for hardware- and compiler-induced latency.
-
-Hence, $D_\mathrm{w}$ can be regarded as a lower bound and convenient proxy for the 
-runtime of a circuit prior to full scheduling.  
-Once $T_\mathrm{sched}$ is known, it provides the core term for estimating the 
-per-shot wall time of the circuit proper:
-\begin{equation}
-T_\mathrm{shot}^{(\mathrm{proper})} \approx 
-T_\mathrm{sched} + T_\mathrm{init} + T_\mathrm{readout},
-\end{equation}
-and, consequently, the batch execution time for $N_\mathrm{shots}$ given 
-$P_\mathrm{parallel}$ concurrent runs:
-\begin{equation}
-T_\mathrm{batch} \approx 
-\frac{N_\mathrm{shots} \, T_\mathrm{shot}^{(\mathrm{proper})}}
-{P_\mathrm{parallel}}.
-\end{equation}
-
-In summary, the duration-weighted depth captures the logical, hardware-independent 
-runtime lower bound, while $T_\mathrm{sched}$ measures the actual time-to-execute 
-on the target backend.  
-Together, these metrics provide a consistent bridge between abstract circuit design 
-and realistic, runtime-aware performance estimation.
-
-\paragraph{From single-shot timing to batch-level training cost.}
-The runtime-aware metrics introduced above quantify the temporal footprint of a single
-circuit execution.  
-In practical quantum--classical training workflows, however, 
-each optimization step requires the evaluation of multiple circuits 
-(e.g., for parameter-shift gradient estimation) over many shots per circuit.  
-Consequently, the relevant figure of merit becomes the \emph{batch execution time},
-which aggregates per-shot runtimes across all circuits in a training iteration.
-
-Let $N_\mathrm{circ}$ denote the number of distinct circuits generated by the 
-variational ansatz and differentiation scheme, and $N_\mathrm{shots}$ the number of
-repetitions (shots) per circuit.  
-Assuming an effective parallelism factor $P_\mathrm{parallel}$, the expected wall time for one training batch can be expressed as
-\begin{equation}
-T_\mathrm{batch} \simeq 
-\frac{N_\mathrm{circ}\, N_\mathrm{shots}}{P_\mathrm{parallel}} 
-\bigl(T_\mathrm{sched} + T_\mathrm{init} + T_\mathrm{readout}\bigr).
-\end{equation}
-This expression directly links the hardware-level duration metrics 
-(\(T_\mathrm{sched}\) and \(D_\mathrm{w}\)) to the 
-\emph{gradient-based optimization cost}, thereby bridging circuit-level 
-timing analysis with end-to-end training performance.
-It highlights that, beyond logical depth or gate count, 
-runtime-aware quantities determine the achievable iteration rate 
-and thus the practical convergence time of hybrid quantum--classical learning loops.
-
-
-\subsubsection*{Batch-time model for gradient-based training}
-
-We now formalize how circuit-level execution time propagates into the total
-training latency of hybrid quantum--classical optimization.
-Each training iteration of a variational algorithm involves multiple circuit evaluations: one or more for the forward pass (objective evaluation) and 
-additional ones for gradient estimation via finite-difference or parameter-shift
-techniques.
-Hence, the end-to-end iteration time is determined not only by logical depth or 
-gate count, but by the \emph{aggregate batch time} arising from repeated circuit executions.
-
-Let $N_\mathrm{circ}$ denote the number of distinct circuits generated by the
-variational ansatz and differentiation scheme, $N_\mathrm{shots}$ the number of
-repetitions (shots) per circuit, and $N_\mathrm{exec}=N_\mathrm{circ}N_\mathrm{shots}$ 
-the total number of circuit executions on hardware.  
-Assuming an effective device-level parallelism $P_\mathrm{parallel}$, the expected batch execution time is
-\begin{equation}
-T_\mathrm{batch} \simeq 
-\frac{N_\mathrm{exec}}{P_\mathrm{parallel}}
-\bigl(T_\mathrm{sched} + T_\mathrm{init} + T_\mathrm{readout}\bigr)
-=
-\frac{N_\mathrm{circ}N_\mathrm{shots}}{P_\mathrm{parallel}}
-\bigl(T_\mathrm{sched} + T_\mathrm{init} + T_\mathrm{readout}\bigr),
-\label{eq:Tbatch_basic}
-\end{equation}
-where $T_\mathrm{sched}$ and $D_\mathrm{w}$ are the runtime-aware circuit durations
-defined in the previous section.
-
-\paragraph{Total number of circuit executions.}
-In convolutional or patch-based quantum neural networks (e.g., QCNNs for remote-sensing imagery),  the total number of circuit executions per training iteration depends on the number of patches per image,
-the batch size, and the circuits required for both the forward and gradient phases.
-Let
-\begin{itemize}
-    \item $N_\mathrm{patch}$ be the number of patches processed per image,
-    \item $S$ the number of images per training batch,
-\item $M$ (\emph{forward circuits}): the number of distinct circuits required to evaluate the loss (or objective) per input patch. It is driven by measurement requirements and can be reduced by grouping commuting observables.
-    \item $K$ (\emph{trainable parameters}): the number of independent, trainable parameters in the quantum model (e.g., rotation angles). For Qiskit circuits, this is simply: \\ $K=\lvert\texttt{circuit.parameters}\rvert$.
-    \item $M_{\!\nabla}$ (\emph{gradient circuits per parameter}): the number of additional circuits needed to estimate the gradient of one parameter. Typical values are: $M_{\!\nabla}=1$ for the parameter-shift rule (two evaluations per parameter are accounted for by the $2K$ factor), $M_{\!\nabla}=1$ for two-point finite differences, $M_{\!\nabla}=2$ for four-point finite differences, and $M_{\!\nabla}=0$ for adjoint differentiation on statevector simulators.
-\end{itemize}
-
-Let $\{O_j\}$ be the set of observables entering the objective. If $O_j$ are Pauli sums, commuting-group measurement yields one forward circuit per commuting group, which defines $M$.
-Formally, if $\mathcal{G}=\{G_1,\ldots,G_M\}$ is a partition of $\{O_j\}$ into commuting groups, then $M=\lvert\mathcal{G}\rvert$.
-
-Given these definitions, the total number of circuit executions in one training iteration for patch-based models is
-\begin{equation}
-N_\mathrm{exec} \;\approx\;
-N_\mathrm{patch}\, S \,\bigl(M + 2K M_{\!\nabla} \bigr),
-\label{eq:Nexec_expanded_final}
-\end{equation}
-where $N_\mathrm{patch}$ is the number of patches per image and $S$ the image batch size. The corresponding batch time follows by plugging Eq.~\eqref{eq:Nexec_expanded_final} into the batch-time expression:
-\begin{equation}
-T_\mathrm{batch} \simeq 
-\frac{N_\mathrm{exec}}{P_\mathrm{parallel}}
-\bigl(T_\mathrm{sched} + T_\mathrm{init} + T_\mathrm{readout}\bigr),
-\end{equation}
-with $T_\mathrm{sched}$ derived from scheduling (ASAP/ALAP) via $\texttt{duration}\times\texttt{backend.dt}$, and $P_\mathrm{parallel}$ the effective parallelism factor of the device.
-
-
-This formulation explicitly connects runtime-aware metrics 
-(\(T_\mathrm{sched}\), \(D_\mathrm{w}\)) with gradient-based training cost,
-revealing how architectural choices \_ such as the number of patches, parameters,
-and differentiation strategy \_ directly impacts the achievable iteration rate
-and total wall-time to convergence of hybrid quantum--classical learning loops.
-
-
-
-\subsubsection*{Implementation on Qiskit (Qiskit-on-IQM)}
-\textbf{Step 1:} transpile to the target backend (hardware or device-aware simulator) to honor the actual gate set and coupling map. \\ 
-\textbf{Step 2:} schedule with ASAP/ALAP passes; the circuit exposes \texttt{duration} (cycles). Convert to seconds via $T_{\text{sched}}=\texttt{duration}\times\texttt{backend.dt}$~\cite{ASAPScheduleAnalysis,InstructionDurations,McKay2018BackendSpec,QiskitBackendV2Docs,QiskitTargetDocs,OpenQASM3TQC2022}. \\ 
-\textbf{Step 3:} group commuting observables; count $M$ (forward) and $M_{\!\nabla}$ (gradient).  \\
-\textbf{Step 4:} plug into Eqs.~\eqref{eq:Nexec_expanded_final}–\eqref{eq:Tbatch_basic}.  \\
-\textbf{Step 5:} evaluate expectations via the \emph{Estimator} Primitive for consistent behavior across simulators and hardware, including IQM via the Qiskit adapter~\cite{QiskitEstimatorDocs,QiskitOnIQMGuide}.
-
-\subsubsection*{Practical guidelines}
-\begin{itemize}
-\item Report both $\mathrm{DWD}$ (seconds/shot) and $\mathrm{QT}$ (qubit-seconds/shot); the former predicts wall time, the latter budgets capacity.
-\item Prefer late fusion when wall-time is the bottleneck (fewer patches $\Rightarrow$ smaller $N_{\text{patch}}$); use early fusion when a stronger quantum signal is needed upstream.
-\item Cap depth $D$; grow expressivity via re-uploading in the encoder rather than deep entanglers—this reduces $T_{\text{sched}}$ sensitivity while preserving accuracy.
-\item Reduce $M$ and $M_{\!\nabla}$ by commuting-group measurement; this directly lowers Eq.~\eqref{eq:Nexec_expanded_final}.
-\item Use a two-phase shot schedule $S_t$ (small early, larger late); since $\mathrm{SE}=\mathcal{O}(S^{-1/2})$, this balances speed and convergence.
-\item Calibrate $T_{\text{overheads}}$ with a short probe run per provider; cache scheduled circuits and parameter binds to avoid unnecessary recompilation.
-\end{itemize}
-
-See Alg.:\ref{alg:estimate-batch-time} for pseudocode.
-% Requires \usepackage{algorithm,algpseudocode}
+% --- Algorithm ---
 \begin{algorithm}[t]
-\caption{EstimateBatchTime$(\mathcal{C},\ \text{backend},\ N_{\text{patch}},\ S,\ M,\ K,\ M_{\!\nabla},\ T_{\text{overheads}})$}
-\label{alg:estimate-batch-time}
+\caption{\texttt{estimate\_cost\_per\_epoch}$(\,$config$,\;\tau_{\rm circ}^{\rm wall},\;r_{\rm wc}\,)$ —
+matches Phase~D code in \texttt{hybrid\_qcnn\_v4\_3\_0\_emerald.ipynb}.}
+\label{alg:estimate-cost-per-epoch}
 \begin{algorithmic}[1]
-\Require Transpiled circuit $\mathcal{C}$; backend with timing info (\texttt{dt}, instruction durations); counts $N_{\text{patch}},S,M,K,M_{\!\nabla}$; overhead estimate $T_{\text{overheads}}$.
-\State $\mathcal{C} \gets \text{Schedule}(\mathcal{C}, \text{backend})$ \Comment{ASAP/ALAP pass \cite{ASAPScheduleAnalysis}}
-\State $T_{\text{sched}} \gets \mathcal{C}.\texttt{duration} \times \text{backend.dt}$ \Comment{seconds; includes readout/reset \cite{InstructionDurations,QiskitBackendV2Docs,QiskitTargetDocs,OpenQASM3TQC2022}}
-
-\State $N_{\text{exec}} \gets N_{\text{patch}} \times S \times \big(M + 2 \times K \times M_{\!\nabla}\big)$ \Comment{Eq.~\eqref{eq:Nexec_expanded_final}}
-\State $T_{\text{batch}} \gets N_{\text{exec}} \times T_{\text{sched}} \;+\; T_{\text{overheads}}$ \Comment{Eq.~\eqref{eq:Tbatch_basic}}
-\State \Return $T_{\text{batch}}$, $T_{\text{sched}}$, $N_{\text{exec}}$
+\Require Configuration with $K$, $n_w$, $m$, $p_{\rm img}$, $N_{\rm train}$,
+         $N_{\rm val}$; calibrated wall-time-per-circuit
+         $\tau_{\rm circ}^{\rm wall}$ (s); wall-to-credit rate $r_{\rm wc}$
+         (cred/s).
+\State $N_{\rm c}^{\rm pass} \gets \lceil m\, p_{\rm img}\,/\, K\rceil$
+         \Comment{circuits per single forward / shift pass}
+\State $N_{\rm c}^{\rm step} \gets (1+2 n_w)\,N_{\rm c}^{\rm pass}$
+         \Comment{Eq.~\eqref{eq:N_step}, frozen backbone}
+\State $n_{\rm steps} \gets \lfloor N_{\rm train}/m\rfloor$
+\State $N_{\rm c}^{\rm val} \gets \lceil N_{\rm val}\, p_{\rm img}\,/\,K\rceil$
+\State $N_{\rm c}^{\rm ep} \gets n_{\rm steps}\, N_{\rm c}^{\rm step} + N_{\rm c}^{\rm val}$
+         \Comment{Eq.~\eqref{eq:N_epoch}}
+\State $T_{\rm ep}^{\rm wall} \gets N_{\rm c}^{\rm ep}\,\tau_{\rm circ}^{\rm wall}$
+\State $\widehat{\mathrm{cred}}_{\rm ep} \gets T_{\rm ep}^{\rm wall}\,r_{\rm wc}$
+         \Comment{Eq.~\eqref{eq:cred_epoch}}
+\State \Return $\widehat{\mathrm{cred}}_{\rm ep},\; T_{\rm ep}^{\rm wall},\; N_{\rm c}^{\rm ep}$
 \end{algorithmic}
 \end{algorithm}
+
+\paragraph{Why we do not propagate per-shot times explicitly.}
+The shot count $S$ does not appear explicitly in
+Eqs.~\eqref{eq:N_step}--\eqref{eq:cred_epoch}. The reason is operational: on
+the IQM Resonance API the shot loop is amortized inside the per-circuit pulse
+schedule and is not user-controllable on a finer granularity than the bound
+circuit. The dependence of $\tau_{\rm circ}^{\rm wall}$ on $S$ is therefore
+absorbed into the calibration constant of Phase~D, and any change in $S$
+requires a re-calibration. For the campaign reported in Sec.~\ref{sec:hw_validation}
+we kept $S=500$ throughout, so this distinction is immaterial in our setting.
+
+\paragraph{Practical guidelines.}
+\begin{itemize}
+\setlength\itemsep{0.15em}
+\item Calibrate $\tau_{\rm circ}^{\rm wall}$ on the actual submission pattern
+  (same $N$ per job, same connectivity) immediately before launching a
+  cost-bounded campaign; cached schedules and cold-start effects can shift
+  $\tau_{\rm circ}^{\rm wall}$ by up to $\pm 30\%$.
+\item Maximize $K$ within the toolchain limit $K_{\max}$ to amortize
+  $\tau_{\rm circ}^{\rm wall}$ across more patches per circuit; the linear
+  speedup is bounded above by the depth/SWAP overhead introduced by the
+  layout of Sec.~\ref{subsec:transpilation}.
+\item Treat $\widehat{\mathrm{cred}}_{\rm ep}$ from Eq.~\eqref{eq:cred_epoch}
+  as a conservative upper bound: in our campaign it overestimated the actual
+  billed cost by $\sim 24\%$ (Sec.~\ref{subsec:cost_model}). If credit
+  headroom matters, plan against this estimate but reconcile against the
+  dashboard after the first epoch.
+\end{itemize}
 
 
 
@@ -656,25 +602,13 @@ All model selection is performed on device-aware simulators. To validate portabi
 
 \subsection{Training dynamics and learning curves}
 \label{sec:results-curves}
-Fig.~\ref {fig:training-dynamics-seb}, shows the learning curve for a Sebastianelli-like architecture~\cite{Sebastianelli2021}.
-In Fig.~\ref{fig:training-dynamics} the learning curves (loss and accuracy versus epoch) for the key hybrids and the classical baseline, as summarized from Filippi’s MSc thesis \citep[Ch.~6]{Filippi2025Thesis} are summarized. Hybrids typically show a rapid first-epoch accuracy increase and then stabilize within a few epochs, while the late-fusion, wider quantum channel variant converges to the best validation metrics among the QCNNs.
+Figure~\ref{fig:training-dynamics} compares the learning curves (cross-entropy loss and binary accuracy versus epoch) of our hybrid Q-CNN backbone against the classical-only ablation, both trained on the simulator under identical preprocessing, optimizer settings and binary subset of EuroSAT (Forest vs.\ AnnualCrop, $10$ images/class for both train and val splits). The two models share the convolutional feature extractor; the only difference is whether the quanvolutional layer is replaced by a classical pointwise convolution (the classical ablation, Sec.~\ref{sec:variants}) or by the parameterized quantum filter (the hybrid Q-CNN). Both models reach $\geq 90\%$ validation accuracy within a handful of epochs and saturate at $\approx 95\%$ at the end of pre-training; the validation curves are essentially indistinguishable beyond epoch~6, while the training-loss trajectory of the hybrid model exhibits the moderately larger step-to-step variance expected from the parameter-shift gradient estimator on $S=500$ shots.
 
 \begin{figure}[H]
     \centering
-    % stessi nomi di main.tex; il wrapper sostituisce 'chapters/qa_figures/' con 'figures/'
-    \includegraphics[width=1\linewidth]{chapters/qa_figures/qadv_1.png}
-%    \includegraphics[width=0.5\linewidth]{chapters/qa_figures/qadv_2.png}
-    \caption{Accuracy vs.~Epoch for the hybrid quantum vs pure classical convolutional networks. The black circle highlights the accuracy after the first epoch.}
+    \includegraphics[width=\linewidth]{chapters/qa_figures/plot1_pretrain_vs_ablation.png}
+    \caption{Pre-training learning curves on the simulator: hybrid Q-CNN (blue) vs.\ classical ablation (orange), both trained for 10 epochs on the binary EuroSAT subset with mini-batch size $m=2$, learning rate $10^{-3}$, weight decay $10^{-4}$, and seed $42$. \textbf{Left:} cross-entropy loss; \textbf{Right:} accuracy. Solid lines are training-set metrics (averaged over the $10$ optimizer steps of each epoch), dashed lines are end-of-epoch validation metrics on the $20$ held-out images. The hybrid Q-CNN inherits the learning trajectory of the classical baseline within run-to-run variability; this checkpoint is the one loaded onto Emerald in Sec.~\ref{sec:hw_validation} for the hardware fine-tuning campaign.}
     \label{fig:training-dynamics}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    % stessi nomi di main.tex; il wrapper sostituisce 'chapters/qa_figures/' con 'figures/'
-%    \includegraphics[width=1\linewidth]{chapters/qa_figures/qadv_1.png}
-    \includegraphics[width=0.5\linewidth]{chapters/qa_figures/qadv_2_fxd.png}
-    \caption{Accuracy vs.~Epoch for Sebastianelli-like network architecture. The black circle highlights the accuracy after the first epoch.}
-    \label{fig:training-dynamics-seb}
 \end{figure}
 
 \subsection{Architectural variants and ablations}
@@ -845,7 +779,7 @@ representing the standard deviation across ten runs.
 Figure~\ref{fig:QCNN-with-std} reveals the primary quantum advantage of our hybrid architecture: \textbf{training efficiency rather than final accuracy}. We observe:
 
 \begin{itemize}
-    \item \textbf{Rapid convergence}: The Q-CNN achieves $90\%$ validation accuracy after only $\sim 5$ epochs, whereas the classical CNN requires $\sim 15$ epochs to reach the same threshold (black circles in Figs.~\ref{fig:training-dynamics}).
+    \item \textbf{Rapid convergence}: Both the Q-CNN and the classical ablation reach $\geq 90\%$ validation accuracy within $\sim 5$ epochs of pre-training (Fig.~\ref{fig:training-dynamics}); the quantum filter does not slow down the convergence appreciably with respect to the classical baseline.
     
     \item \textbf{Early-epoch performance}: At epoch 1, the Q-CNN reaches $\approx 85\%$ accuracy (from $\sim 60\%$ initialization), while the classical CNN remains at $\approx 75\%$. This $10\%$ gap demonstrates the quantum circuit's ability to extract discriminative features more rapidly.
     
@@ -890,7 +824,7 @@ To isolate architectural effects, we ablated max-pooling near the quantum layer 
 \subsection{Runtime on simulator vs hardware (IQM)}
 \label{sec:runtime-iqm}
 
-Model selection was conducted on Qiskit simulators, while functional correctness and on-device latency were independently verified on IQM hardware (54-qubit Emerald, accessed via the Qiskit-IQM adapter). For each circuit, the scheduled per-shot duration $T_{\text{sched}}$ -- obtained after transpilation and ASAP/ALAP scheduling against backend-calibrated instruction durations -- feeds the batch-time estimate of Eq.~(\ref{eq:Tbatch_basic}) together with the execution count from Eq.~(\ref{eq:Nexec_expanded_final}); see Section~\ref{sec:runtime-metric} for details on the model and overhead calibration. The full hardware-validation campaign on Emerald, including the on-device fine-tuning that closes the loop between simulator-based model selection and physical execution, is reported in the next subsection (Sec.~\ref{sec:hw_validation}).
+Model selection was conducted on Qiskit simulators, while functional correctness and on-device latency were independently verified on IQM hardware (54-qubit Emerald, accessed via the Qiskit-IQM adapter). The runtime-aware cost model of Sec.~\ref{sec:batch-time-model} -- bound-circuit count $N_{\rm c}^{\rm ep}$ from Eq.~\eqref{eq:N_epoch} and credit estimate $\widehat{\mathrm{cred}}_{\rm ep}$ from Eq.~\eqref{eq:cred_epoch} -- is calibrated against the dashboard data of the Phase~E campaign in Sec.~\ref{subsec:cost_model}. The full hardware-validation campaign on Emerald, including the on-device fine-tuning that closes the loop between simulator-based model selection and physical execution, is reported in the next subsection (Sec.~\ref{sec:hw_validation}).
 
 \subsection{Hardware validation on real quantum backends}
 \label{sec:hw_validation}
@@ -1085,6 +1019,69 @@ r_{\mathrm{wall}\to\mathrm{cred}}
 \label{eq:wall_rate}
 \end{equation}
 which is what an in-flight cost model based on Python-side wall measurements would observe. We adopted this value as the predictive coefficient during Phase~E to gate the per-epoch credit consumption \emph{a priori}; \emph{a posteriori} comparison with the dashboard data (Sec.~\ref{subsec:finetune_results}) shows that this estimate is conservative by $\sim 24\%$ with respect to the actual billing.
+
+
+\paragraph{Validation against the in-flight model.}
+\label{par:cost_model_validation}
+Figure~\ref{fig:cost_model_validation} summarizes the validation of the
+cost-model of Sec.~\ref{sec:batch-time-model} against the 183 production jobs
+of the Phase~E campaign (180 forward / weight-shift jobs at $N=28$ plus 3
+end-of-epoch validation jobs at $N=273$). A linear least-squares fit of the
+QPU runtime against the bound-circuit count $N$ yields, on the
+\emph{full} set of 195 jobs (183 production + 12 Phase~D minicheck jobs at
+$N\in\{1,5,20,28,50\}$),
+\begin{equation}
+\texttt{runtime\_seconds}(N) = (1.49\pm 0.04)\,\text{s} +
+                                (0.225\pm 0.001)\,\text{s/circ}\cdot N,
+\qquad R^2 = 0.992,
+\label{eq:job_time_model_full_fit}
+\end{equation}
+in agreement with the $N$-binned aggregates of Tab.~\ref{tab:billing_rule_check}
+(Eq.~\ref{eq:job_time_model}, $A=1.44$~s, $B=0.226$~s/circ, fit on the
+$N$-aggregated medians of the same dataset). The intercept $A\!\sim\!1.5$~s
+is the per-job QPU initialization+teardown overhead that the in-flight estimator
+of Eq.~\eqref{eq:cred_epoch} does \emph{not} model explicitly: it is small
+relative to $B\cdot N$ in the production regime ($A/(A+BN_{28})\approx 19\%$
+for $N=28$, $A/(A+BN_{273})\approx 2.4\%$ for $N=273$) and gets absorbed into
+the empirical $\tau_{\rm circ}^{\rm wall}$ calibration, but it is the ultimate
+cause of the residual $\sim$5\% premium of the per-circuit effective rate at
+small $N$ (Tab.~\ref{tab:billing_rule_check}).
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\linewidth]{chapters/qa_figures/cost_model_validation.png}
+\caption{Cost-model validation on the IQM Emerald Phase~E campaign.
+\textbf{(a)} Per-job QPU runtime versus bound-circuit count $N$ for the 195
+recorded jobs; the red line is the linear fit of
+Eq.~\eqref{eq:job_time_model_full_fit}, the band is $\pm 2\sigma$ of the
+residual.
+\textbf{(b)} Server-side phase decomposition (median across jobs) for the two
+production regimes $N=28$ (180 jobs) and $N=273$ (3 jobs): only the orange
+\emph{execute} segment is billed; \emph{validate}, \emph{compile},
+\emph{queue} and \emph{post-processing} contribute to the wall time observed
+by the Python client but are not charged.
+The billing rule of Eq.~\ref{eq:billing_rule} is verified to 6 significant digits on every job of the campaign (Tab.~\ref{tab:billing_rule_check}).}
+\label{fig:cost_model_validation}
+\end{figure}
+
+\paragraph{End-to-end consistency.}
+Aggregating over the two fine-tuning epochs of Phase~E, the in-flight
+estimator of Eq.~\eqref{eq:cred_epoch} predicted
+$\widehat{\mathrm{cred}}^{\rm ep1}=796$ and $\widehat{\mathrm{cred}}^{\rm ep2}=802$
+(total $\widehat{\mathrm{cred}}=1598$ credits), while the IQM dashboard charged
+$\mathrm{cred}^{\rm ep1}=642$ and $\mathrm{cred}^{\rm ep2}=642$ (total
+$\mathrm{cred}=1284$ credits, see Tab.~\ref{tab:emerald_convergence}). The
+realized total runtime on QPU was $1581$~s, which against the nominal rate of
+$0.75$~credits/s gives $1186$ continuous-rate credits and, after the
+ceiling-per-job rounding of Eq.~\eqref{eq:billing_rule}, the actually billed
+$1282$~credits ($\delta=2$~credits, $0.2\%$, attributable to per-job rounding
+fluctuations between the dashboard tally and our reconstruction from the
+timestamps). The conservative $\sim\!24\%$ headroom of the in-flight estimator
+relative to the billed cost is a direct consequence of the wall-vs-billed gap
+of Fig.~\ref{fig:cost_model_validation}\,(b): only the \emph{execute} phase
+($\sim\!56\%$ of the total wall time on average) is billable, and the rate
+$r_{\rm wc}=0.510$~credits/s used in the in-flight estimator absorbs that
+gap empirically.
 
 \subsubsection{Mini-batch SGD adaptation for credit-bounded fine-tuning}
 \label{subsec:minibatch_sgd}
