@@ -778,180 +778,32 @@ Its main advantages are a fast gate time ($\sim 80$~ns), a high coupling strengt
 
 \textbf{Disadvantages.} The $\sqrt{i\text{SWAP}}$ gate requires flux-control lines for frequency tuning, uses more complex pulse sequences, exposes the system to potential leakage to $\ket{2}$ when near resonance, is sensitive to frequency fluctuations, and is therefore less robust at elevated temperatures.
 
-\subsection{Method 2: ZZ-Coupling Gate (Dispersive Interaction)}
+\subsection{Gate-strategy redirection after the G7 review}
+\label{sec:gate_redirection}
 
-\subsubsection*{Physical Mechanism}
+The pre-G7 version of this chapter compared two alternative two-qubit gate
+implementations on cavity-QED transmons -- a resonant $\sqrt{i\text{SWAP}}$
+through dynamic flux tuning, and a free-evolution CZ driven by the residual
+$\sigma_z\!\otimes\!\sigma_z$ dispersive interaction -- and recommended the
+latter on the grounds of its flux-bias-free hardware footprint. The G7 audit
+of Section~\ref{subsec:erratum_eq239} showed that the inter-qubit term
+returned by the second-order Schrieffer-Wolff formula
+$J = (g_1g_2/2)(\Delta_1^{-1}+\Delta_2^{-1})$ is in fact the
+\emph{transverse exchange}, not the longitudinal cross-Kerr; the actual
+$\zeta_{zz}$ obtained from the four-level Magesan-Krantz expression
+(Eq.~\ref{eq:zeta_zz_correct}) is roughly an order of magnitude smaller and
+makes the free-evolution CZ unfeasible within the available coherence
+budget (Fig.~\ref{fig:CZ_unfeasible}).
 
-The ZZ-coupling approach uses the \textit{always-on} dispersive interaction between qubits mediated by the cavity. No frequency tuning is required.
-
-The effective Hamiltonian in the dispersive limit is:
-\begin{equation}
-H_{\text{eff}} = \sum_i \tilde{\omega}_i \frac{\sigma_z^{(i)}}{2} + J_{zz} \, \sigma_z^{(1)} \otimes \sigma_z^{(2)}
-\end{equation}
-
-where the cavity-mediated ZZ coupling is calculated using the dispersive Hamiltonian approach~\cite{Gambetta2011,Paik2016}:
-\begin{equation}
-    J_{zz} = \frac{g_1 g_2}{2} \left( \frac{1}{\Delta_1} + \frac{1}{\Delta_2} \right)
-\end{equation}.
-%and $\Delta_{\text{avg}} = (|\Delta_1| + |\Delta_2|)/2$ is the average qubit-cavity detuning. 
-
-With our parameters:
-\begin{align}
-    J_{zz} &= \frac{80 \times 80}{2} \times \left( \frac{1}{-700} + \frac{1}{-1300} \right)~\text{MHz} \\
-    &= 6.4~ \times (-2.198 \times 10^{-3})~\text{MHz} \\
-    &= -7.03~\text{MHz}
-\end{align}
-
-A controlled-phase (CZ) gate requires a conditional phase of $\pi/2$:
-\begin{equation}
-t_{\text{CZ}} = \frac{\pi}{2|J_{zz}|} = \frac{\pi}{2 \times 7.03 \text{ MHz}} \approx \textcolor{methodtwo}{\mathbf{224 \text{ ns}}}
-\end{equation}
-
-The CZ gate is equivalent to CNOT up to single-qubit rotations.
-
-\subsection{Physical Origin of Slower Gate}
-
-The key difference is the coupling strength. The ZZ coupling arises from second-order perturbation theory:
-\begin{equation}
-J_{zz} \sim \frac{g^2}{\Delta}
-\end{equation}
-
-Since $g/\Delta \ll 1$ (dispersive regime), we have:
-\begin{equation}
-\frac{J_{zz}}{g} \sim \frac{g}{\Delta} \approx \frac{80}{700} \approx 0.11
-\end{equation}
-
-The effective coupling is weaker by approximately one order of magnitude, leading to proportionally longer gate times:
-\begin{equation}
-\frac{t_{\text{ZZ}}}{t_{\sqrt{i\text{SWAP}}}} \approx \frac{g}{J_{zz}} \approx \frac{80}{14} \approx 5.7
-\end{equation}
-
-Numerically: $224/80 \approx 2.8$ (including overhead from different protocols).
-
-\subsubsection*{Advantages and Disadvantages}
-
-The two protocols offer complementary trade-offs, summarised in
-Table~\ref{tab:gate_methods_comparison}. The ZZ-coupling gate is slower but
-substantially simpler at the hardware level, while $\sqrt{i\text{SWAP}}$ is
-faster but more demanding in control infrastructure.
-
-\begin{table}[h]
-\centering
-\small
-\begin{tabularx}{\linewidth}{@{}l L L@{}}
-\toprule
-\textbf{Property} & \textbf{$\sqrt{i\text{SWAP}}$ (resonant)} & \textbf{ZZ-coupling (dispersive)} \\
-\midrule
-Gate time           & $\sim 80$~ns              & $\sim 224$~ns (Sec.~\ref{sec:gate_strategy} echo CR: $\sim 250$~ns) \\
-Coupling strength   & strong, $g \sim 80$~MHz    & weaker, $J_{zz}/g \sim 0.1$ \\
-Flux control lines  & required                  & not required (fixed-frequency qubits) \\
-Hardware complexity & higher, more pulse stages & lower, fewer control lines \\
-Leakage to $\ket{2}$ & possible near resonance    & negligible (always far-detuned) \\
-Frequency-noise sensitivity & high               & low \\
-Suitability above $1$~K     & poor                & good (no flux electronics required) \\
-Scalability         & moderate                  & good \\
-\bottomrule
-\end{tabularx}
-\caption{Comparison of the two two-qubit gate strategies considered for HEATS-Q.
-The ZZ-coupling protocol is preferred for elevated-temperature operation;
-$\sqrt{i\text{SWAP}}$ remains a faster alternative when flux-control infrastructure
-is available.}
-\label{tab:gate_methods_comparison}
-\end{table}
-
-\subsubsection*{Performance Comparison}
-
-\subsubsection*{Fidelity Estimates}
-
-Assuming decoherence-limited fidelity with $T_2 = 50~\mu$s (achievable with echo sequences at 4--6~K):
-
-\begin{align}
-F_{\text{CNOT}}^{\sqrt{i\text{SWAP}}} &\approx 1 - \frac{t_{\text{gate}}}{T_2} = 1 - \frac{80}{50000} = \textcolor{methodone}{\mathbf{99.84\%}} \\
-F_{\text{CNOT}}^{\text{ZZ}} &\approx 1 - \frac{t_{\text{gate}}}{T_2} = 1 - \frac{224}{50000} = \textcolor{methodtwo}{\mathbf{99.55\%}}
-\end{align}
-
-The difference is only $\Delta F = 0.06\%$ -- both well above the fault-tolerance threshold of 99\%.
-
-%\subsubsection*{Comparison Table}
-
-\begin{table}[h!]
-\centering
-\caption{Comparison of Two-Qubit Gate Implementations}
-\begin{tabular}{lcc}
-\toprule
-\textbf{Property} & \textcolor{methodone}{\textbf{$\sqrt{i\text{SWAP}}$}} & \textcolor{methodtwo}{\textbf{ZZ Coupling}} \\
-\midrule
-Coupling strength & $g \sim 80$ MHz & $J_{zz} \sim 14$ MHz \\
-Gate time & 80 ns & 224 ns \\
-Estimated fidelity & 99.84\% & 99.55\% \\
-Flux control & Required & Not required \\
-Frequency tuning & Yes (dynamic) & No (fixed) \\
-Hardware complexity & High & Low \\
-Leakage risk & Higher & Lower \\
-Calibration & Complex & Simple \\
-Noise sensitivity & Higher & Lower \\
-Best for & Maximum speed & Robustness \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\subsection{Recommendation for HEATS-Q}
-
-For the HEATS-Q project operating at standard mk temperatures, we recommend the \textcolor{methodtwo}{\textbf{ZZ-coupling approach (224~ns)}} for the following reasons:
-
-\subsubsection*{Performance}
-
-Despite the 144~ns longer gate time:
-although the gate time of $\sim 224$~ns is slightly above the conventional $200$~ns ``fast gate'' threshold, the predicted fidelity ($99.55\%$) clears the $99\%$ surface-code threshold by a comfortable margin, so the $0.29\%$ fidelity difference relative to $\sqrt{i\text{SWAP}}$ is negligible in practice.
-
-\subsubsection*{Scalability}
-
-For multi-qubit processors:
-for multi-qubit processors the $\sqrt{i\text{SWAP}}$ approach requires fewer control lines ($N$ microwave lines instead of $N$ microwave plus $N$ flux lines), which reduces inter-qubit crosstalk and simplifies the cryogenic wiring at elevated temperatures.
-
-\subsubsection*{Final considerations}
-
-Both reported gate times are potentially valid choices:
-the two reported gate times are both valid: $80$~ns corresponds to a $\sqrt{i\text{SWAP}}$ implementation using resonant coupling, while $224$~ns corresponds to a ZZ-coupling implementation using the dispersive interaction.
-
-The final choice between methods represents a trade-off between speed and simplicity. For HEATS-Q, the ZZ-coupling approach could be preferred because:
-
-\begin{table}[h]
-\centering
-\begin{tabular}{@{}lp{0.65\textwidth}@{}}
-\toprule
-\textbf{Property} & \textbf{Rationale} \\
-\midrule
-Flux-bias-free design  & compatible with the asymmetric SQUID architecture \\
-Robustness at $4$--$6$~K & no flux-control electronics required at the cold stage \\
-Hardware simplicity      & fewer control lines, simpler calibration \\
-Performance              & achieves a CNOT fidelity around the target $99.5\%$ \\
-Scalability              & better suited to large-scale architectures \\
-\bottomrule
-\end{tabular}
-\caption{Reasons for adopting the cross-resonance strategy for HEATS-Q.}
-\label{tab:heatsq_gate_rationale}
-\end{table}
-
-The 30~ns increase in gate time is a small price to pay for significantly reduced system complexity and improved robustness -- essential considerations for practical quantum computing at elevated temperatures.
-
-This analysis demonstrates that both gate implementations are valid and have been successfully demonstrated in state-of-the-art superconducting quantum processors. The $\sqrt{i\text{SWAP}}$ approach is used by Google~\cite{Barends2014} and Rigetti, while the ZZ-coupling approach has been extensively studied by IBM~\cite{Gambetta2011,Paik2016} and others. The choice between them depends on system priorities: speed vs. simplicity and robustness.
-
-\begin{table}[h]
-\centering
-\begin{tabular}{lccl}
-\hline
-Operation & Time & Fidelity & Method \\
-\hline
-Initialization & $5T_1$ & $>99.9\%$ & Thermal + active reset \\
-Single-qubit gates & \SI{20}{ns} & $>99.9\%$ & Resonant MW drive \\
-Readout & \SI{200}{ns} & $>99\%$ & Dispersive (homodyne) \\
-CNOT (ZZ coupling) & \SI{225}{\nano s} & $>99\%$ &  practical \\
-CNOT (resonant swap) & \SI{80}{ns} & $>99\%$ & Flux-tunable coupling \\
-\hline
-\end{tabular}
-\caption{Summary of quantum operation metrics for two-qubit cavity QED system.}
-\end{table}
+The HEATS-Q two-qubit gate has therefore been redirected to an
+\emph{echo cross-resonance} protocol at the redesigned operating point
+$\Delta_q = 280$~MHz between qubits, with
+$t_{\mathrm{CNOT}} \sim 250$~ns and $F_{\mathrm{avg}} \gtrsim 99\%$
+limited by the coherence-times of Sec.~\ref{sec:decoherence}; the full
+gate-strategy derivation is given in Section~\ref{sec:gate_strategy}.
+The resonant $\sqrt{i\text{SWAP}}$ alternative remains incompatible with
+elevated-temperature operation because it requires flux-control electronics
+on the cold stage.
 
 \section{Two-Qubit System Numerical Analysis}
 
@@ -965,7 +817,7 @@ Figure~\ref{fig:system_schematic} shows the physical architecture of the two-qub
     \centering
     \includegraphics[width=0.95\textwidth]{chapters/qh_figures/fig1_system_schematic_corrected.png}
     \caption{\textbf{Two-qubit cavity QED system architecture.} 
-    Two transmon qubits (Q1 at 5.8~GHz, Q2 at 5.2~GHz) couple to a shared cavity resonator at 6.5~GHz with coupling strengths $g_1 = g_2 = 80$~MHz. The qubits are red-detuned from the cavity ($\Delta_1 = -0.7$~GHz, $\Delta_2 = -1.3$~GHz), enabling dispersive operation. Virtual photon exchange through the cavity mediates a transverse exchange coupling $J/2\pi \simeq 6.5$~MHz between the qubits (Sec.~\ref{sec:cavity_mediated_couplings}); the residual longitudinal cross-Kerr is $|\zeta_{zz}|/2\pi \simeq 1.7$~MHz, too small to drive a free-evolution CZ at high fidelity (Fig.~\ref{fig:CZ_unfeasible}), and the two-qubit gate is implemented as an echo cross-resonance instead.}
+    Two transmon qubits (Q1 at 5.8~GHz, Q2 at 5.2~GHz) couple to a shared cavity resonator at 6.5~GHz with coupling strengths $g_1 = g_2 = 80$~MHz. The qubits are red-detuned from the cavity ($\Delta_1 = -0.7$~GHz, $\Delta_2 = -1.3$~GHz), enabling dispersive operation. Virtual photon exchange through the cavity mediates a transverse exchange coupling $J/2\pi \simeq 6.5$~MHz between the qubits (Sec.~\ref{sec:cavity_mediated_couplings}); the residual longitudinal cross-Kerr is $|\zeta_{zz}|/2\pi \simeq 1.7$~MHz, too small to drive a free-evolution CZ at high fidelity (Fig.~\ref{fig:CZ_unfeasible}), and the two-qubit gate is implemented as an echo cross-resonance instead. Figure regenerated post-G7 by \texttt{ok\_two\_qubit\_final\_corrected.py} in the companion \texttt{qh\_hardware} repository.}
     \label{fig:system_schematic}
 \end{figure}
 
@@ -993,17 +845,17 @@ $F_{\mathrm{avg}} \gtrsim 99\%$.
     $\Delta_1 = -0.7$ GHz and $\Delta_2 = -1.3$ GHz place the system in 
     the dispersive regime ($|\Delta_i|/g_i > 5$). Virtual photon exchange 
     mediates a transverse exchange coupling $J/2\pi \simeq 6.5$~MHz 
-    (purple dashed line; Sec.~\ref{sec:cavity_mediated_couplings}). 
+    (purple dashed line; Sec.~\ref{sec:cavity_mediated_couplings}) and a 
+    longitudinal cross-Kerr $|\zeta_{zz}|/2\pi \simeq 1.7$~MHz 
+    (Eq.~\ref{eq:zeta_zz_correct}). 
     \textbf{Right panel:} Complete system parameters including 
-    cavity quality factor $Q = 6500$, anharmonicities $\alpha_1/2\pi = -0.70$ GHz 
-    and $\alpha_2/2\pi = -1.30$ GHz, and dispersive shifts 
+    cavity quality factor $Q = 6500$, anharmonicities $\alpha_1/2\pi = -0.20$ GHz 
+    and $\alpha_2/2\pi = -0.20$ GHz, and dispersive shifts 
     \textbf{$\chi_1/2\pi = -2.03$ MHz} and \textbf{$\chi_2/2\pi = -0.66$ MHz}, 
     enabling high-fidelity quantum non-demolition readout with 
-    $\chi_i/\kappa \gg 1$. \emph{Note}: the parameter box embedded in the figure
-    PNG still labels the inter-qubit interaction as $\zeta_{12}/2\pi \simeq -7.0$~MHz, 
-    a relic of the pre-G7 derivation; the value coincides numerically with the
-    transverse exchange $J$ of Eq.~\ref{eq:J_dispersive} but the symbol/interpretation
-    is updated here in the caption.}
+    $\chi_i/\kappa \gg 1$. Figure regenerated post-G7 by 
+    \texttt{ok\_two\_qubit\_cavity\_qed\_viz.py} in the companion 
+    \texttt{qh\_hardware} repository.}
     \label{fig:system_diagram}
 \end{figure}
 
@@ -1267,33 +1119,20 @@ This six-panel analysis of Fig.\ref{fig:thermal_comprehensive_300ghz} provides a
 \textbf{Panel (f)}: Minimum required qubit frequency versus temperature to maintain specified thermal population thresholds (1\%, 2\%, 5\%, 10\%). The 300~GHz-Q design points (blue circles) lie well above the 2\% curve and comfortably above the 5\% threshold, providing margin for parameter drift and environmental fluctuations. The traditional 20~mK transmon at 5~GHz (green square at left edge) achieves $<1\%$ thermal population despite low frequency due to extreme temperature suppression. To extend 300~GHz-Q operation to 15~K while maintaining $<2\%$ thermal population would require increasing frequency to $\sim$450~GHz (red dashed line extrapolation).
 Overall, this comprehensive analysis establishes that 300~GHz operation at 4--6~K represents an optimal design point, balancing quantum regime requirements ($\hbar\omega \gg k_B T$) against experimental feasibility, enabling a transformative reduction in cryogenic complexity while maintaining performance compatible with fault-tolerant quantum error correction.
 
-\subsubsection{CNOT Gate Time Analysis}
+\subsubsection{Coupling and gate-time targets}
 
-For a CNOT gate implemented via ZZ coupling, the gate time is:
-\begin{equation}
-t_{\text{CNOT}} = \frac{\pi}{2|J_{zz}|}
-\label{eq:cnot_time}
-\end{equation}
-
-where the ZZ coupling strength is approximately:
-\begin{equation}
-J_{zz} \approx \frac{g^2}{2}\left(\frac{1}{\Delta_1} + \frac{1}{\Delta_2}\right)
-\label{eq:zz_coupling}
-\end{equation}
-
-For a target gate time of $t_{\text{CNOT}} = 150$ ns, we require:
-\begin{equation}
-J_{zz} = \frac{\pi}{2 \times 150 \text{ ns}} = 10.5 \text{ MHz}
-\end{equation}
-
-\subsubsection{Optimal Coupling Value}
-
-With detunings $\Delta_1 = -20$ GHz and $\Delta_2 = -40$ GHz, we estimate:
-\begin{equation}
-g \approx \sqrt{2 \Delta_{\text{avg}} \cdot J_{zz}} = \sqrt{2 \times 30 \text{ GHz} \times 10.5 \text{ MHz}} = 793 \text{ MHz}
-\end{equation}
-
-However, we adopt a more conservative value of $g = 500$ MHz to ensure robust operation in the dispersive regime, yielding $J_{zz} = 9.4$ MHz and $t_{\text{CNOT}} = 168$ ns.
+For the 300~GHz / 4~K design point we adopt a conservative coupling
+$g = 500$~MHz with detunings $\Delta_1 = -20$~GHz and $\Delta_2 = -40$~GHz,
+which keeps the dispersive ratio $|\Delta_i|/g \in \{40, 80\}$ comfortably
+above the $|\Delta|/g > 5$ threshold while still allowing a fast two-qubit
+gate. Inserting these values in Eq.~\ref{eq:J_dispersive} gives a transverse
+exchange $J/2\pi \simeq 9.4$~MHz, which through the echo cross-resonance
+protocol of Sec.~\ref{sec:gate_strategy} yields a CNOT time
+$t_{\mathrm{CNOT}} \sim 250$~ns. The pre-G7 version of this section quoted
+$t_{\mathrm{CNOT}} \approx 168$~ns from a free-evolution
+$\pi/(2|J_{zz}|)$ formula that was based on a misidentification of $J$ as
+a longitudinal cross-Kerr; the corrected scheme is summarised in
+Sec.~\ref{sec:gate_redirection} and Fig.~\ref{fig:CZ_unfeasible}.
 
 \subsubsection{Detuning Selection}
 
@@ -1318,7 +1157,7 @@ Both ratios greatly exceed the requirement $|\Delta|/g > 5$, confirming valid di
 \textbf{(a)} Quantum ratio $\hbar\omega/\kB T$ versus temperature for various frequencies. The 300 GHz operating point at 4 K (orange star) achieves $R_Q = 3.6$, placing it in the good quantum regime (green region). For comparison, the baseline 5.8 GHz system (green circle) operates at 20 mK with $R_Q = 13.9$. Reference lines show excellent ($R_Q > 5$, green), good ($R_Q = 3-5$, yellow), and poor ($R_Q < 3$, red) quantum regimes.
 \textbf{(b)} Thermal population $n_{\text{th}}$ at 300 GHz versus temperature. At the target operating point of 4 K (highlighted), thermal population is 2.81\%, manageable for quantum operations. Green and orange dashed lines indicate 5\% and 10\% thresholds.
 \textbf{(c)} Josephson junction diameter versus current density $J_c$ for required critical current $I_c = 1.51$ $\mu$A (computed in Sec.~\ref{sec:junction_design}). Higher current densities (1000--2000 A/cm$^2$, green region) yield feasible junction sizes near the 200~nm target. Lower densities produce impractically large junctions ($> 1\,\mu$m).
-\textbf{(d)} Dispersive parameters: dispersive shifts $|\chi_i|$ and the cavity-mediated transverse exchange $|J|$ (left axis, blue/cyan bars; the bar labelled \textit{J\_zz} in the figure PNG is the transverse exchange $J$ of Eq.~\ref{eq:J_dispersive}, retained with the legacy symbol from the pre-G7 plotting code), and dispersive ratios $|\Delta_i|/g$ (right axis, green bars). All values support quantum non-demolition readout and the echo-CR two-qubit gate of Sec.~\ref{sec:gate_strategy}.
+\textbf{(d)} Dispersive parameters at the 300~GHz / 4~K design point: dispersive shifts $|\chi_i|$ and the cavity-mediated transverse exchange $|J|$ (left axis, blue/cyan bars; $J/2\pi \simeq 9.4$~MHz from Eq.~\ref{eq:J_dispersive} with $g=500$~MHz, $\Delta_1=-20$~GHz, $\Delta_2=-40$~GHz), and dispersive ratios $|\Delta_i|/g$ (right axis, green bars). All values support quantum non-demolition readout and the echo-CR two-qubit gate of Sec.~\ref{sec:gate_strategy}. Figure regenerated post-G7 by \texttt{ok\_create\_corrected\_figures.py} in the companion \texttt{qh\_hardware} repository.
 \textbf{(e)} Transmon energy level diagram showing anharmonicity $\alpha = -1$ GHz. Energy spacings deviate from harmonic oscillator (dashed), enabling selective addressing of $|0\rangle \leftrightarrow |1\rangle$ transition. Thermal populations at 4 K are indicated (left side).}
 \label{fig:system_parameters}
 \end{figure}
