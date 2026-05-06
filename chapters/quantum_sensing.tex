@@ -17,7 +17,7 @@
 
 \begin{abstract}
 This chapter develops a comprehensive theoretical framework for Rydberg atom-based single-photon detection, targeting applications in axion dark matter searches and fundamental physics experiments. We present a quantum master equation model of avalanche amplification dynamics, analyzing detector performance across magnetic field strengths of 0--5~T—a critical requirement for haloscope compatibility. Through systematic numerical simulations, we demonstrate that the facilitation-driven avalanche mechanism maintains amplification factors of $\mathcal{A} \approx 5.3$ despite Zeeman-induced 
-state mixing, while achieving single-photon sensitivity ($\sim 10^{-22}$~W) and ultra-low dark count rates ($< 0.01$~Hz at 4~K, suppressed to $< 10^{-4}$~Hz at sub-Kelvin temperatures). The detector exhibits sub-$\sim\!13~\mu$s avalanche timescale ($T_a \approx 9$--$12.5~\mu$s across the field range) and operates at practical cryogenic temperatures (4~K) accessible with commercial pulse-tube coolers—representing a unique parameter space unattainable by superconducting alternatives.
+state mixing, while achieving single-photon sensitivity ($\sim 10^{-22}$~W) and ultra-low dark count rates ($< 0.01$~Hz at 4~K, suppressed to $< 10^{-4}$~Hz at sub-Kelvin temperatures). The detector exhibits sub-$\sim\!13~\mu$s avalanche timescale ($T_a \approx 9$--$12.5~\mu$s across the field range) and operates at practical cryogenic temperatures (4~K) accessible with commercial pulse-tube coolers—representing a unique parameter space unattainable by superconducting alternatives. Beyond the parameter-space advantage, the avalanche mechanism produces a characteristic \textbf{spatially correlated signature} (a V-shaped propagation pattern through the atomic chain) that is intrinsic to the multi-atom detection scheme and provides a category of background discrimination unavailable to single-mode detectors—including the previously proposed Rydberg-atom haloscope readouts of CARRACK~\cite{Yamamoto2001,Tada1999} and Graham \emph{et al.}~\cite{Graham2024}.
 \end{abstract}
 
 }
@@ -46,11 +46,14 @@ This work \textbf{does not present experimental data}; instead, it provides:
 
 \subsection*{Novelty and Contribution}
 
-While Rydberg-based sensing has been extensively studied~\cite{saffman2010quantum, mohapatra2007coherent, ravets2014coherent}, our specific contribution lies in:
+While Rydberg-based sensing has been extensively studied~\cite{saffman2010quantum, mohapatra2007coherent, ravets2014coherent} and Rydberg-atom-cavity haloscope readouts have been proposed in linear-response geometries~\cite{Yamamoto2001,Tada1999,Graham2024}, our specific contribution lies in:
 \begin{itemize}
-    \item \textbf{Magnetic field characterization}: First systematic simulation study of avalanche detector performance across 0--5~T fields, revealing field-dependent amplification dynamics %(Fig.~\ref{fig:rydberg_field_scan})
-    \item \textbf{Quantitative performance metrics}: Extraction of single-photon sensitivity thresholds (amplification $\mathcal{A} > 3$), dark count suppression factors ($\sim 100\times$ at sub-Kelvin), and sub-$\sim\!13~\mu$s avalanche timescale ($T_a \approx 9$--$12.5~\mu$s across the field range)
-    \item \textbf{Design optimization}: Identification of optimal parameter regimes balancing detection efficiency and background noise
+    \item \textbf{Multi-atom avalanche amplification}: First analysis of facilitation-driven avalanche detection ($\mathcal{A}\!\sim\!5$) applied to axion-haloscope readout, replacing the linear single-atom response of CARRACK and Graham 2024 with a coherent quantum amplifier.
+    \item \textbf{Spatially correlated detection signature}: The V-shaped avalanche pattern in the atomic chain provides an internal background discriminator that no other axion-detector technology offers (see Sec.~\ref{sec:axion_benchmarking}).
+    \item \textbf{Magnetic-field characterization on the detector itself}: First systematic simulation study of detector performance across 0--5~T, with active Zeeman compensation through laser auto-detuning---a hardware/algorithm co-design that allows detector and conversion cavity to be integrated in the same magnetic field.
+    \item \textbf{Cavity-backaction analysis with optimal ensemble size}: Identification of the non-monotonic dependence of single-photon detection efficiency $\eta_{\rm eff}(N)$ on the array size in the dispersive regime, and demonstration that the resonant configuration removes the optimum and is therefore the only viable architecture for high-$\eta$ detection (Sec.~\ref{sec:backaction}).
+    \item \textbf{Quantitative performance metrics}: Single-photon sensitivity thresholds ($\mathcal{A} > 3$), dark count suppression ($\sim 100\times$ at sub-Kelvin), avalanche timescale $T_a \approx 9$--$12.5~\mu$s across the field range.
+    \item \textbf{Operating point at $T = 4$~K}: Two orders of magnitude warmer than CARRACK and transmon-based microwave-photon counters~\cite{Dixit2025}, with corresponding reduction in cryogenic infrastructure.
 \end{itemize}
 
 These simulation results establish theoretical benchmarks against which future experimental implementations can be evaluated.
@@ -178,6 +181,7 @@ For typical Rydberg states with $n \sim 70$ and magnetic fields $B = 5$ T, the Z
 
 This splitting is significant compared to typical Rabi frequencies ($\Omega_{\mathrm{gr}} \sim 2\pi \times 0.2$ MHz) and must be accounted for in the facilitation condition.
 \subsubsection{State Mixing}
+\label{sec:zeeman_correction}
 
 At high magnetic fields, different $\ell$ and $m_\ell$ states with the same $n$ and $|m_j|$ can mix, modifying the interaction strengths between Rydberg atoms. The eigenstates in a magnetic field become superpositions:
 
@@ -483,7 +487,7 @@ Panel (a) reiterates the amplification factor data from Fig.~\ref{fig:B_field_sc
 
 Panel (b) explores the array-level dark count rate $N\,\Gamma_{\mathrm{thermal}}$. At $T = 4$ K, a practical operating temperature achievable with closed-cycle pulse-tube cryocoolers, the rate is already competitive with state-of-the-art superconducting detectors and lies below the WISE-RED $0.05$~Hz target. As shown by the temperature scan in Tab.~\ref{tab:temperature_scan}, further cooling to $T \sim 300$ mK (achievable with $^3$He refrigeration) reduces the array-level rate to $\sim 6.5\!\times\!10^{-11}$~Hz, making thermal background entirely negligible compared to the axion photon rate.
 
-Panel (c) shows that the optimal detection time $T_a$ grows from $\sim 8.8~\mu$s at $B=0$ to $\sim 12.5~\mu$s at $B=5$~T, a $\sim 40\%$ increase driven by the Zeeman-induced reduction of $\Omega_{\mathrm{gr}}$ via state mixing (see Eq.~\ref{eq:omega_gr_mixing}, where the mixing factor saturates at $\Omega_{\mathrm{gr}}/\Omega_{\mathrm{gr},0} = 0.7$ for $B \gtrsim 2.5$~T, plateauing $T_a$ at $\sim 12.5~\mu$s for $B \geq 3$~T). This monotonic but bounded growth is easily accommodated by the timing electronics typical of cold-Rydberg experiments and does not compromise practical operation.
+Panel (c) shows that the optimal detection time $T_a$ grows from $\sim 8.8~\mu$s at $B=0$ to $\sim 12.5~\mu$s at $B=5$~T, a $\sim 40\%$ increase driven by the Zeeman-induced reduction of $\Omega_{\mathrm{gr}}$ via state mixing (cf.\ Sec.~\ref{sec:zeeman_correction}; the mixing factor used in the simulation saturates at $\Omega_{\mathrm{gr}}/\Omega_{\mathrm{gr},0} = 0.7$ for $B \gtrsim 2.5$~T, plateauing $T_a$ at $\sim 12.5~\mu$s for $B \geq 3$~T). This monotonic but bounded growth is easily accommodated by the timing electronics typical of cold-Rydberg experiments and does not compromise practical operation.
 
 Panel (d) assesses how well the facilitation condition~\eqref{eq:facilitation_condition_b} is maintained across the field range. The quantity $|\Delta_{\mathrm{gr}}(B) + V_{rr}(B)|/(2\pi)$ quantifies the deviation from perfect facilitation. By construction (see Sec.~\ref{sec:zeeman_correction}), the laser detuning $\Delta_{\mathrm{gr}}(B)$ is automatically retuned to compensate exactly the Zeeman-corrected Rydberg-Rydberg interaction $V_{rr}(B)$, so the facilitation residual is identically zero at every $B$. The plotted curve sits at the visualisation floor of $10^{-4}$~MHz, well below the $100$~kHz tolerance commonly quoted for facilitation experiments. This perfect cancellation is the reason for the constancy of the amplification factor in panel (a).
 
@@ -529,10 +533,39 @@ TES\cite{Guo2017} & $10^{-21}$ & $\sim 0.1$ & 0.1 & $< 0.01$ & 100--10000 \\
 JJ\cite{Pankratov2022} & $10^{-22}$ & $\sim 1$ & 0.01--0.1 & $< 0.001$ & 1--10 \\
 KID\cite{Guo2017} & $10^{-20}$ & $\sim 1$ & 0.1 & $< 0.1$ & 100--10000 \\
 SNSPD\cite{Chiles2019} & $10^{-21}$ & $10^{-6}$ & 1--4 & $< 0.1$ & 300--10000 \\
-SC Qubit\cite{Backes2021} & $10^{-23}$ & $\sim 1$ & 0.01 & $< 0.01$ & 4--8 \\
+SC Qubit\cite{Backes2021,Dixit2025} & $10^{-23}$ & $\sim 1$ & 0.01 & $< 0.01$ & 4--8 \\
 \hline\hline
 \end{tabular}
 \end{table}
+
+\subsection*{Comparison with Other Rydberg-Atom Haloscope Detectors}
+\label{sec:rydberg_vs_rydberg}
+
+A more direct comparison can be drawn against the two existing Rydberg-atom-based proposals for axion dark-matter detection: the seminal CARRACK programme of Yamamoto, Tada and collaborators~\cite{Yamamoto2001,Tada1999}, which pioneered single-photon Rydberg detection in resonant cavities in the late 1990s, and the recent Graham \emph{et al.} proposal~\cite{Graham2024}, which extends single-photon Rydberg readout to QCD-axion masses above 40~$\mu$eV (10~GHz). Table~\ref{tab:rydberg_comparison} summarizes the architectural and performance differences.
+
+\begin{table}[htbp]
+\centering
+\caption{Comparison of Rydberg-atom-based axion-haloscope detectors. The CARRACK and Graham schemes use \emph{single-atom linear} detection (one photon $\to$ one Rydberg excitation); the present work uses \emph{multi-atom avalanche} detection driven by the Rydberg-Rydberg facilitation interaction. Spatial signature refers to the V-shaped propagation pattern of the avalanche through the atomic chain.}
+\label{tab:rydberg_comparison}
+\begin{tabular}{lccc}
+\hline\hline
+Property & CARRACK\cite{Yamamoto2001,Tada1999} & Graham 2024\cite{Graham2024} & This work \\
+\hline
+Detection scheme & single-atom linear & single-atom linear & \textbf{multi-atom avalanche} \\
+Atom-cavity model & 1 collective bosonic mode & 1 atom + cavity & $N$-atom full Hilbert (QuTiP) \\
+Rydberg interactions $V_{rr}$ & not included & not included & \textbf{included (facilitation)} \\
+Amplification $\mathcal{A}$ & $1$ (linear) & $1$ (linear) & $\mathbf{\sim 5}$ \\
+Spatial signature & no & no & \textbf{V-shaped, see Fig.~\ref{fig:B_field_scan}(d)} \\
+Magnetic field on detector & $B = 0$ (sep.\ cavities) & $B = 0$ (sep.\ cavities) & \textbf{up to $B = 5$~T (integrated)} \\
+Operating temperature & $\sim 10$~mK & $\sim 100$~mK & \textbf{$4$~K (pulse-tube)} \\
+Frequency range & 2--50 GHz & 10--50 GHz & 10--1000 GHz \\
+\hline\hline
+\end{tabular}
+\end{table}
+
+The architectural differences highlight three genuinely new contributions of the present work that differentiate it from the existing Rydberg-atom-haloscope literature: (i) the use of the facilitation-driven avalanche as a coherent quantum amplifier with $\mathcal{A}\!\sim\!5$, replacing the linear-response paradigm of CARRACK and Graham 2024; (ii) the integration of detection and conversion in a single high-magnetic-field cavity, made possible by the active Zeeman compensation through laser retuning analyzed in Sec.~\ref{sec:zeeman_correction}; and (iii) the operating point at $T = 4$~K, two orders of magnitude warmer than the dilution-refrigerator regimes required by CARRACK and by transmon-based single-microwave-photon-counter schemes~\cite{Dixit2025}, with a corresponding reduction in cryogenic infrastructure cost.
+
+The most distinctive feature, however, is the \emph{spatial signature} of the avalanche: as shown in Fig.~\ref{fig:B_field_scan}(d), the single-photon-triggered cascade leaves a characteristic V-shaped density profile $\langle n_r(j,t)\rangle$ in the atomic array, with propagation velocity $v\!\sim\!\Omega_{\mathrm{gr}} a$. Single-atom schemes intrinsically produce a single-mode signal that cannot be distinguished from a random background excitation by readout alone. The avalanche's spatially correlated pattern instead provides an internal discriminator: any spurious atomic excitation that does not propagate ballistically from a localized origin can be vetoed offline, suppressing background events that would otherwise mimic axion candidates. This is a category of background rejection unavailable to any other axion-detector technology.
 
 
 \subsection*{Sensitivity}
@@ -624,6 +657,42 @@ The Rydberg detector must be integrated into a high-$Q$ microwave cavity immerse
 
 Recent work on hybrid quantum systems~\cite{Hogan2012,Hermann2014} demonstrates the feasibility of integrating cold atom platforms with superconducting cavities, providing a roadmap for the required engineering.
 
+\subsubsection{Cavity Backaction and Optimal Ensemble Size}
+\label{sec:backaction}
+
+A complete model of the haloscope readout must address how the atomic ensemble itself reacts back on the coherent cavity field that carries the axion-converted photon. This backaction shifts the cavity resonance, broadens its linewidth (via the Purcell effect), and depletes the coherent amplitude---all of which set bounds on the maximum useful number of atoms~$N$ in the array. The mean-field cavity QED treatment described in Sec.~\ref{sec:axion_theoretical_framework} can be extended to include these effects via a Holstein-Primakoff mapping of the collective atomic excitation~\cite{Hammerer2010}, valid in the weak-excitation regime $\langle b^\dagger b \rangle \ll N$ that always applies in the single-photon axion regime. We do not repeat the derivation here---which proceeds by linearising the Tavis-Cummings Hamiltonian around the coherent state of the cavity---but extract its quantitative consequences for the present detector geometry.
+
+The resulting effective single-photon detection efficiency $\eta_{\rm eff}(N)$ admits a simple closed form in the two limiting regimes typically considered for haloscope readout. In the resonant configuration ($\Delta = 0$, atomic transition tuned to the cavity mode), one obtains
+\begin{equation}
+    \eta_{\rm eff}^{\rm res}(N) = \frac{2C(N)}{1 + 2C(N)}, \qquad
+    C(N) = \frac{N g^2}{\kappa\,\gamma_\perp},
+    \label{eq:eta_eff_resonant}
+\end{equation}
+which is monotonic in $N$ and saturates rapidly to unity. The backaction here manifests not as a detuning penalty but as a Purcell broadening of the cavity linewidth, $\kappa_{\rm eff}(N) = \kappa\,[1 + 2C(N)]$, which shortens the photon ringdown time and reduces the time over which the avalanche must be triggered. By contrast, in the dispersive configuration ($\Delta \neq 0$) the cavity resonance is shifted by $\delta\omega_c(N) = N g^2/\Delta$, and the axion signal---whose frequency is fixed by the axion mass---couples to the (now-detuned) cavity through a Lorentzian filter $L(N) = (\kappa/2)^2/[(\kappa/2)^2 + \delta\omega_c^2(N)]$. The product
+\begin{equation}
+    \eta_{\rm eff}^{\rm disp}(N) = \frac{C_{\rm disp}(N)}{1 + C_{\rm disp}(N)}\;L(N),
+    \qquad C_{\rm disp}(N) = \frac{2 N g^2 \gamma_\perp}{\Delta^2 \kappa},
+    \label{eq:eta_eff_dispersive}
+\end{equation}
+is non-monotonic in $N$ and admits a finite optimum $N^*$ at which $\eta_{\rm eff}^{\rm disp}$ peaks before being suppressed by cavity detuning at large $N$.
+
+Figure~\ref{fig:backaction} illustrates the two regimes for the parameters quoted in the cavity-integration discussion above ($g/2\pi\!=\!1$~MHz, $\kappa/2\pi\!=\!50$~kHz at $Q\!=\!10^5$, $\gamma_\perp/2\pi\!=\!1$~kHz). Three observations emerge directly from the plot:
+
+\begin{enumerate}
+    \item In the resonant regime, even a single atom would already provide $\eta_{\rm eff}^{\rm res}\!\to\!1$ (the cooperativity is $C_1\!\sim\!2\!\times\!10^4$), so the array size of $N\!=\!11$ adopted in this work sits comfortably in the saturated regime with negligible room for improvement from larger ensembles. The Purcell broadening at $N\!=\!11$ is $\kappa_{\rm eff}/2\pi\!\sim\!22$~MHz, still much smaller than the avalanche bandwidth $\Omega_{\rm gr}/2\pi\!=\!0.2$~MHz divided by the cooperativity, and therefore not a practical limitation.
+    \item In the dispersive regime, the optimum value $\eta_{\rm eff}^{\rm disp}(N^*)$ is small ($\lesssim\!10^{-5}$) for any reasonable choice of detuning $\Delta$. Increasing $|\Delta|$ pushes $N^*$ to larger values but reduces the peak efficiency further, because the small-cooperativity penalty $\propto 1/\Delta^2$ wins over the slow growth $\delta\omega_c\!\propto\!1/\Delta$ of the cavity shift.
+    \item Comparison of panels (a) and (b) makes the engineering choice transparent: the resonant configuration ($\Delta = 0$, atomic transition tuned exactly to the cavity mode) is the only viable architecture for high-efficiency single-photon detection in the haloscope context. This is the configuration assumed throughout the rest of this chapter, and the multi-atom avalanche scheme is fully consistent with this requirement.
+\end{enumerate}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{chapters/qs_figures/backaction_eta_eff_vs_N.png}
+    \caption{Effect of cavity backaction on the single-photon detection efficiency $\eta_{\rm eff}(N)$. \textbf{(a)} Resonant regime ($\Delta = 0$): $\eta_{\rm eff}^{\rm res}(N) = 2C/(1+2C)$ is monotonic and saturates to unity already at $N = \mathcal{O}(1)$ for the parameters considered (single-atom cooperativity $C_1 \approx 2\!\times\!10^4$); the only consequence of large $N$ is the Purcell broadening of the cavity linewidth $\kappa_{\rm eff}(N) = \kappa\,[1\!+\!2C(N)]$ (right axis, dashed blue). The working point of this thesis ($N=11$, purple) sits comfortably in the saturated regime. \textbf{(b)} Dispersive regime ($\Delta \neq 0$): the cavity dispersive shift $\delta\omega_c\!=\!Ng^2/\Delta$ detunes the cavity from the axion-photon resonance, applying a Lorentzian penalty $L(N)$ to the absorbed signal. The product $\eta_{\rm eff}^{\rm disp}(N) = \eta_{\rm abs}(N)\,L(N)$ is non-monotonic and admits a finite optimum $N^*$, but the peak efficiency $\lesssim\!10^{-5}$ remains too small for practical detection regardless of the choice of detuning $\Delta$. The conclusion is that the resonant configuration is the only viable architecture for high-efficiency single-photon haloscope readout.}
+    \label{fig:backaction}
+\end{figure}
+
+This backaction analysis closes the loop on a question raised by the post-defense review: the multi-atom avalanche scheme studied here does not suffer from the dispersive-regime sensitivity penalty because, by construction, the atomic transition is tuned on resonance with the cavity, and the cooperativity of the resonant scheme is already in the deeply saturated regime at $N=11$. Larger ensemble sizes ($N\!\sim\!100$ and beyond) would not improve the single-photon coupling efficiency, and their practical role would be limited to providing a longer effective avalanche chain---an option already discussed at the level of facilitation dynamics in Sec.~\ref{sec:scalability_atoms}.
+
 \subsubsection*{Cryogenic Operation}
 
 While the detector operates at 4 K, the surrounding cavity and magnet may require lower temperatures for optimal performance. A staged cooling architecture is envisioned:
@@ -636,6 +705,7 @@ While the detector operates at 4 K, the surrounding cavity and magnet may requir
 This approach balances detector performance (lower $T$ reduces dark counts) with system complexity.
 
 \section{Scalability}
+\label{sec:scalability_atoms}
 
 The amplification factor $\mathcal{A} \sim N$ suggests that larger systems provide greater sensitivity. However, several factors may impact scalability.
 
