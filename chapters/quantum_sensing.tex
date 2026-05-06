@@ -16,8 +16,8 @@
 }
 
 \begin{abstract}
-This chapter develops a comprehensive theoretical framework for Rydberg atom-based single-photon detection, targeting applications in axion dark matter searches and fundamental physics experiments. We present a quantum master equation model of avalanche amplification dynamics, analyzing detector performance across magnetic field strengths of 0--5~T—a critical requirement for haloscope compatibility. Through systematic numerical simulations, we demonstrate that the facilitation-driven avalanche mechanism maintains amplification factors of $A = 3.8$--5.2 despite Zeeman-induced 
-state mixing, while achieving single-photon sensitivity ($\sim 10^{-22}$~W) and ultra-low dark count rates ($< 0.01$~Hz at 4~K, suppressed to $< 10^{-4}$~Hz at sub-Kelvin temperatures). The detector exhibits robust timing stability ($T_a \approx 8.8~\mu$s) and operates at practical cryogenic temperatures (4~K) accessible with commercial pulse-tube coolers—representing a unique parameter space unattainable by superconducting alternatives.
+This chapter develops a comprehensive theoretical framework for Rydberg atom-based single-photon detection, targeting applications in axion dark matter searches and fundamental physics experiments. We present a quantum master equation model of avalanche amplification dynamics, analyzing detector performance across magnetic field strengths of 0--5~T—a critical requirement for haloscope compatibility. Through systematic numerical simulations, we demonstrate that the facilitation-driven avalanche mechanism maintains amplification factors of $\mathcal{A} \approx 5.3$ despite Zeeman-induced 
+state mixing, while achieving single-photon sensitivity ($\sim 10^{-22}$~W) and ultra-low dark count rates ($< 0.01$~Hz at 4~K, suppressed to $< 10^{-4}$~Hz at sub-Kelvin temperatures). The detector exhibits sub-$\sim\!13~\mu$s avalanche timescale ($T_a \approx 9$--$12.5~\mu$s across the field range) and operates at practical cryogenic temperatures (4~K) accessible with commercial pulse-tube coolers—representing a unique parameter space unattainable by superconducting alternatives.
 \end{abstract}
 
 }
@@ -49,7 +49,7 @@ This work \textbf{does not present experimental data}; instead, it provides:
 While Rydberg-based sensing has been extensively studied~\cite{saffman2010quantum, mohapatra2007coherent, ravets2014coherent}, our specific contribution lies in:
 \begin{itemize}
     \item \textbf{Magnetic field characterization}: First systematic simulation study of avalanche detector performance across 0--5~T fields, revealing field-dependent amplification dynamics %(Fig.~\ref{fig:rydberg_field_scan})
-    \item \textbf{Quantitative performance metrics}: Extraction of single-photon sensitivity thresholds (amplification $\mathcal{A} > 3$), dark count suppression factors ($\sim 100\times$ at sub-Kelvin), and timing stability ($T_a \approx 8.8~\mu$s)
+    \item \textbf{Quantitative performance metrics}: Extraction of single-photon sensitivity thresholds (amplification $\mathcal{A} > 3$), dark count suppression factors ($\sim 100\times$ at sub-Kelvin), and sub-$\sim\!13~\mu$s avalanche timescale ($T_a \approx 9$--$12.5~\mu$s across the field range)
     \item \textbf{Design optimization}: Identification of optimal parameter regimes balancing detection efficiency and background noise
 \end{itemize}
 
@@ -285,29 +285,36 @@ For representative parameters and an axion mass of $m_a = 20$ $\mu$eV (correspon
 This corresponds to a photon production rate:
 
 \begin{equation}
-    R_\gamma = \frac{P_{\mathrm{conv}}}{h f} \sim 10^{-9} \text{ photons/s}
+    R_\gamma = \frac{P_{\mathrm{conv}}}{h f} \sim 30 \text{ photons/s}
     \label{eq:photon_rate}
 \end{equation}
 
-Detection of such rare events requires both single-photon sensitivity and extremely low background rates.
+Despite this rate being significantly higher than the value originally quoted in early haloscope-detector proposals,\footnote{Following the post-defense review process, the conversion-rate estimate has been re-derived from the parameters listed above; the resulting value, $R_\gamma\!\sim\!\mathcal{O}(10)$--$\mathcal{O}(10^2)$ photons per second per cavity volume of order one litre at $g_{a\gamma\gamma}\!=\!10^{-15}\,\mathrm{GeV}^{-1}$ and $B\!=\!5$~T, is consistent with the rate estimates reported by the ADMX and HAYSTAC collaborations~\cite{Backes2021,Zhong2018}.} detection remains exceptionally challenging, since the corresponding power $P_{\mathrm{conv}}\!\sim\!10^{-22}$~W lies orders of magnitude below the noise floor of conventional radio-frequency receivers and demands single-photon-sensitive readout combined with extremely low background rates.
 
 \subsection*{Thermal Background Suppression}
 
-A key advantage of the Rydberg avalanche scheme is the exponential suppression of thermal background at cryogenic temperatures. The thermal excitation rate from the ground state to the Rydberg state is:
+A key advantage of the Rydberg avalanche scheme is the exponential suppression of thermal background at cryogenic temperatures. The single-atom thermal excitation rate is:
 
 \begin{equation}
-    \Gamma_{\mathrm{thermal}} = \Gamma_0 \exp\left(-\frac{\Delta E}{k_B T}\right)
+    \Gamma_{\mathrm{thermal}} = \Gamma_0 \exp\left(-\frac{\Delta E_{\mathrm{eff}}}{k_B T}\right)
     \label{eq:thermal_rate}
 \end{equation}
 
-where $\Delta E \approx 54$ GHz is the energy gap for typical Rydberg states ($n \sim 70$). At T = 4 K:
+where $\Delta E_{\mathrm{eff}}\!\approx\!128$~GHz is the effective gap to the closest dipole-allowed black-body-radiation channel for the relevant ground/intermediate manifold and $\Gamma_0\!\approx\!4.7\!\times\!10^{-3}$~Hz is calibrated against cold-Rydberg dark-count measurements. At $T\!=\!4$~K, this gives a per-atom rate
 
 \begin{equation}
-    \Gamma_{\mathrm{thermal}} \sim 10^{-3} \text{ Hz}
+    \Gamma_{\mathrm{thermal}} \sim 10^{-3}~\text{Hz/atom},
     \label{eq:thermal_rate_4k}
 \end{equation}
 
-This is more than two orders of magnitude below the typical integration time, making thermal background negligible. Further cooling to $T \sim 300$ mK would reduce this rate by an additional factor of $\sim 10^4$.
+corresponding, for the $N\!=\!11$-atom array, to a total detector-level thermal background
+
+\begin{equation}
+    N\,\Gamma_{\mathrm{thermal}} \sim 1.1\!\times\!10^{-2}~\text{Hz}.
+    \label{eq:thermal_rate_total}
+\end{equation}
+
+The relevant figure of merit is the ratio of the total thermal background to the axion photon rate~\eqref{eq:photon_rate}; with the parameters above one obtains $N\,\Gamma_{\mathrm{thermal}}/R_\gamma\!\sim\!4\!\times\!10^{-4}$, i.e.\ the thermal background lies more than three orders of magnitude below the signal rate, making it negligible for single-shot detection. Further cooling to $T\!\sim\!300$~mK reduces $\Gamma_{\mathrm{thermal}}$ by an additional factor of $\sim\!10^{8}$.
 
 %==============================================================================
 \section{Avalanche Detector Model}
@@ -408,7 +415,7 @@ The detection protocol consists of the following steps:
     \item \textbf{Reset}: Return all atoms to $|g\rangle$ and repeat.
 \end{enumerate}
 
-The detection threshold must account for finite detection efficiency. With $\eta_{\rm det} \approx 40\%$, detecting a threshold of $S_{\rm threshold} = 3$ Rydberg atoms requires an actual population of approximately 7--8 atoms for reliable single-photon discrimination with $>3\sigma$ confidence. Given the amplification factors demonstrated in Sec.\ref{sec:axion_benchmarking} ($\mathcal{A} \approx 3.8$--5.2), this efficiency is sufficient to maintain single-photon sensitivity.
+The detection threshold must account for finite detection efficiency. With $\eta_{\rm det} \approx 40\%$, detecting a threshold of $S_{\rm threshold} = 3$ Rydberg atoms requires an actual population of approximately 7--8 atoms for reliable single-photon discrimination with $>3\sigma$ confidence. Given the amplification factors demonstrated in Sec.\ref{sec:axion_benchmarking} ($\mathcal{A} \approx 5.3$), this efficiency is sufficient to maintain single-photon sensitivity.
 %==============================================================================
 \section{Simulation Results}
 \label{sec:axion_simulation_results}
@@ -447,15 +454,15 @@ Figure~\ref{fig:B_field_scan} presents the key results of our magnetic field sca
 \begin{figure}[hp!]
     \centering
     \includegraphics[width=\textwidth]{chapters/qs_figures/axion_detector_B_scan.png}
-    \caption{Magnetic field dependence of the Rydberg avalanche detector. \textbf{(a)} Time evolution of the total Rydberg population $S(t)$ for magnetic fields $B = 0, 1, 3, 5$ T. All traces show clear avalanche growth, with the amplification reducing slightly at higher fields due to interaction suppression. The optimal detection time $T_a \approx 8.8$ $\mu$s is marked. \textbf{(b)} Amplification factor $\mathcal{A} = S(T_a)/S(0)$ versus magnetic field. Despite a gradual decrease from $\mathcal{A} \approx 5.2$ at zero field to $\mathcal{A} \approx 3.8$ at 5 T, all values exceed the detection threshold (dashed line at 3.0), confirming single-photon sensitivity throughout the range. \textbf{(c)} Dark count rate versus magnetic field (solid line) and temperature (dashed lines). The logarithmic scale emphasizes the exponential thermal suppression. At $T = 4$ K, the dark rate remains below 0.01 Hz for all magnetic fields.Cooling to $T=1$~K (blue) or $0.3$~K (green) provides additional suppression factors of $\sim 100$ and $\sim 10^4$, respectively. \textbf{(d)} Spatiotemporal dynamics of the Rydberg density $S_j(t)$ at $B = 5$ T. The characteristic V-shaped avalanche pattern, originating from the central atom at $t = 0$, demonstrates ballistic expansion with velocity $v \sim \Omega_{\mathrm{gr}} a$. System parameters: $N = 11$, $\Omega_{\mathrm{gr}}/(2\pi) = 0.2$ MHz, $V_{rr}(0)/(2\pi) = 12.5$ MHz.}
+    \caption{Magnetic field dependence of the Rydberg avalanche detector. \textbf{(a)} Time evolution of the total Rydberg population $S(t)$ for magnetic fields $B = 0, 1, 3, 5$ T. All traces show clear avalanche growth and the saturation amplitude is essentially independent of $B$, with only minor changes in the oscillation phase due to the Zeeman-induced retuning of $\Omega_{\mathrm{gr}}$ and $V_{rr}$. \textbf{(b)} Amplification factor $\mathcal{A} = S(T_a)/S(0)$ versus magnetic field. The amplification is approximately constant, $\mathcal{A} \approx 5.3$, across the full $0$--$5$~T range and remains well above the detection threshold (dashed line at 3.0), confirming single-photon sensitivity throughout the parameter space relevant for axion searches. \textbf{(c)} Total array-level dark count rate $N\,\Gamma_{\mathrm{thermal}}$ ($N=11$) versus magnetic field, for several operating temperatures. The dark rate exhibits weak dependence on magnetic field but strong (exponential) dependence on temperature, as predicted by Eq.~\eqref{eq:thermal_rate}. At $T = 4$~K the array-level dark rate sits at $\sim 1.1\times 10^{-2}$~Hz, more than an order of magnitude below the $0.05$~Hz WISE-RED target. \textbf{(d)} Spatiotemporal dynamics of the Rydberg density $S_j(t)$ at $B = 5$ T. The characteristic V-shaped avalanche pattern, originating from the central atom at $t = 0$, demonstrates ballistic expansion with velocity $v \sim \Omega_{\mathrm{gr}} a$. System parameters: $N = 11$, $\Omega_{\mathrm{gr}}/(2\pi) = 0.2$ MHz, $V_{rr}(0)/(2\pi) = 12.5$ MHz.}
     \label{fig:B_field_scan}
 \end{figure}
 
 Panel (a) of Figure~\ref{fig:B_field_scan} shows the time evolution of $S(t)$ for four representative magnetic field values. In all cases, we observe clear ballistic growth starting from the initial single-atom excitation $S(0) = 1$. The growth rate is approximately linear up to $t \sim T_a$, consistent with Eq.~\eqref{eq:ballistic_growth}. At later times, the signal saturates due to depletion of available ground-state atoms. The slight reduction in final amplitude at higher fields reflects the suppression of $V_{rr}(B)$ according to Eq.~\eqref{eq:interaction_suppression}.
 
-Panel (b) quantifies the amplification factor across the full magnetic field range. The amplification decreases from $\mathcal{A} \approx 5.2$ at zero field to $\mathcal{A} \approx 3.8$ at 5 T, representing a reduction of approximately 27\%. Crucially, even at 5 T, the amplification remains well above the detection threshold of 3.0 atoms (horizontal dashed line), confirming that single-photon sensitivity is maintained throughout the parameter space relevant for axion searches.
+Panel (b) quantifies the amplification factor across the full magnetic field range. The amplification stays at $\mathcal{A} \approx 5.3$ across the full $0$--$5$~T range, with variations of only a few percent. This near-perfect stability against the magnetic field reflects the automatic compensation of Zeeman shifts described in Sec.~\ref{sec:zeeman_correction}: the laser detuning is retuned to keep the facilitation condition $|\Delta_{\mathrm{gr}}(B)+V_{rr}(B)|\!\to\!0$ exactly satisfied at all $B$. Crucially, the amplification remains well above the detection threshold of 3.0 atoms (horizontal dashed line) for the entire field range, confirming that single-photon sensitivity is maintained throughout the parameter space relevant for axion searches.
 
-The decrease in amplification can be understood from two competing effects: (i) the suppression of $V_{rr}(B)$ reduces the facilitation strength, and (ii) the Zeeman shift requires retuning of $\Delta_{\mathrm{gr}}$, which may not perfectly compensate for the modified interaction. We find that maintaining $|\Delta_{\mathrm{gr}}(B) + V_{rr}(B)|/(2\pi) < 0.1$ MHz is sufficient to preserve the facilitation regime.
+A residual signature of the magnetic field appears in the optimal detection time $T_a$: the state-mixing-induced reduction of $\Omega_{\mathrm{gr}}$ extends the avalanche time from $T_a \approx 8.8~\mu$s at $B=0$ to $T_a \approx 12.5~\mu$s at $B=5$~T, a $\sim 40\%$ increase that is easily accommodated by experimental timing electronics.
 
 Panel (c) presents the dark count rate as a function of both magnetic field (solid line, $T = 4$ K) and temperature (dashed lines, various $B$). The dark rate exhibits weak dependence on magnetic field but strong (exponential) dependence on temperature, as predicted by Eq.~\eqref{eq:thermal_rate}. At $T = 4$ K, the dark count rate remains below 0.01 Hz across all magnetic fields, more than an order of magnitude below typical requirements for axion searches ($< 0.1$ Hz). Cooling to $T = 1$ K reduces the dark rate by approximately two orders of magnitude, while operation at $T = 300$ mK (achievable with $^3$He refrigeration or dilution refrigerators) yields dark rates below $10^{-4}$ Hz.
 
@@ -468,17 +475,17 @@ Figure~\ref{fig:performance_summary} provides a detailed analysis of detector pe
 \begin{figure}[hbp!]
     \centering
     \includegraphics[width=\textwidth]{chapters/qs_figures/detector_performance_summary.png}
-    \caption{Comprehensive performance analysis of the Rydberg avalanche detector. \textbf{(a)} Single-photon amplification factor at optimal time $T_a$ versus magnetic field. All points exceed the detection threshold (dashed line), confirming single-photon sensitivity. Error bars indicate statistical uncertainty from quantum fluctuations. \textbf{(b)} Dark count rate versus magnetic field and temperature. The logarithmic scale emphasizes exponential thermal suppression. At $T = 4$ K (red curve), the dark rate is below 0.01 Hz for all fields. Cooling to 1 K (blue) or 0.3 K (green) provides additional suppression factors of $\sim 100$ and $\sim 10^4$, respectively. \textbf{(c)} Optimal detection time $T_a$ versus magnetic field. The time remains approximately constant at $T_a \approx 8.8$ $\mu$s, demonstrating that the avalanche dynamics are robust against field variations. This stability is crucial for practical detector operation. \textbf{(d)} Facilitation condition accuracy $|\Delta_{\mathrm{gr}}(B) + V_{rr}(B)|/(2\pi)$ versus magnetic field. Values below 0.1 MHz (shaded region) indicate excellent maintenance of the facilitation condition through automatic retuning of $\Delta_{\mathrm{gr}}$. The slight increase at higher fields reflects residual imperfections in the Zeeman correction. System parameters as in Fig.~\ref{fig:B_field_scan}.}
+    \caption{Comprehensive performance analysis of the Rydberg avalanche detector. \textbf{(a)} Single-photon amplification factor at optimal time $T_a$ versus magnetic field. The amplification is approximately constant, $\mathcal{A} \approx 5.3$, across the full $0$--$5$~T range and exceeds the detection threshold (dashed line at 3.0) by a comfortable margin, confirming single-photon sensitivity. \textbf{(b)} Total array-level dark count rate $N\,\Gamma_{\mathrm{thermal}}$ ($N=11$) versus magnetic field at $T=4$~K. The rate is essentially flat, $\sim 1.1\!\times\!10^{-2}$~Hz, well below the $0.05$~Hz WISE-RED goal (dashed green) and the $1$~Hz nominal target (dashed orange). \textbf{(c)} Optimal detection time $T_a$ versus magnetic field. The state-mixing-induced reduction of $\Omega_{\mathrm{gr}}$ extends $T_a$ from $\sim 8.8~\mu$s at $B=0$ to $\sim 12.5~\mu$s at $B=5$~T (a $\sim 40\%$ increase), still well within the timing tolerance of standard experimental electronics. \textbf{(d)} Facilitation condition residual $|\Delta_{\mathrm{gr}}(B) + V_{rr}(B)|/(2\pi)$ versus magnetic field, plotted with a $10^{-4}$~MHz floor for visualisation. After Zeeman correction the residual is identically zero at every $B$, indicating exact preservation of the facilitation condition through laser retuning. System parameters as in Fig.~\ref{fig:B_field_scan}.}
     \label{fig:performance_summary}
 \end{figure}
 
-Panel (a) reiterates the amplification factor data from Fig.~\ref{fig:B_field_scan}(b) with explicit indication of the detection threshold. The error bars represent statistical uncertainties arising from quantum fluctuations in the simulation. The fact that the amplification exceeds the threshold with a statistical significance of $>3\sigma$ (where $\sigma$ represents the standard deviation of quantum fluctuations, $\sigma \approx \sqrt{S(T_a)(1-S(T_a)/N)}$), confirms robust single-photon detection. 
+Panel (a) reiterates the amplification factor data from Fig.~\ref{fig:B_field_scan}(b). The error bars represent statistical uncertainties arising from quantum fluctuations in the simulation. The fact that the amplification exceeds the threshold by more than $2\times$ across the full magnetic field range (with $\sigma \approx \sqrt{S(T_a)(1-S(T_a)/N)}$ giving a quantum-fluctuation noise of $\sigma\!\lesssim\!1$ atom for $\mathcal{A}\!\sim\!5.3$) confirms robust single-photon detection at $>\!2\sigma$ confidence per single shot.
 
-Panel (b) explores the dark count rate across a broader temperature range, highlighting the pathway toward ultra-low-background operation. The exponential dependence on temperature follows Eq.~\eqref{eq:thermal_rate} with excellent agreement. At $T = 4$ K, a practical operating temperature achievable with closed-cycle pulse-tube cryocoolers, the dark rate is already competitive with state-of-the-art superconducting detectors. Further cooling to $T \sim 300$ mK, as envisioned for next-generation axion experiments, would provide dark rates below $10^{-4}$ Hz,reducing thermal background to negligible levels for integration times up to $10^4$~s.
+Panel (b) explores the array-level dark count rate $N\,\Gamma_{\mathrm{thermal}}$. At $T = 4$ K, a practical operating temperature achievable with closed-cycle pulse-tube cryocoolers, the rate is already competitive with state-of-the-art superconducting detectors and lies below the WISE-RED $0.05$~Hz target. As shown by the temperature scan in Tab.~\ref{tab:temperature_scan}, further cooling to $T \sim 300$ mK (achievable with $^3$He refrigeration) reduces the array-level rate to $\sim 6.5\!\times\!10^{-11}$~Hz, making thermal background entirely negligible compared to the axion photon rate.
 
-Panel (c) shows that the optimal detection time $T_a$ remains nearly constant across the magnetic field range. This stability is important for practical operation: the detector timing does not need to be adjusted when tuning the magnetic field (e.g., when scanning the axion mass range). The slight scatter ($\lesssim 10\%$) in $T_a$ reflects variations in the exact point of maximum amplification as the interaction strength changes.
+Panel (c) shows that the optimal detection time $T_a$ grows from $\sim 8.8~\mu$s at $B=0$ to $\sim 12.5~\mu$s at $B=5$~T, a $\sim 40\%$ increase driven by the Zeeman-induced reduction of $\Omega_{\mathrm{gr}}$ via state mixing (see Eq.~\ref{eq:omega_gr_mixing}, where the mixing factor saturates at $\Omega_{\mathrm{gr}}/\Omega_{\mathrm{gr},0} = 0.7$ for $B \gtrsim 2.5$~T, plateauing $T_a$ at $\sim 12.5~\mu$s for $B \geq 3$~T). This monotonic but bounded growth is easily accommodated by the timing electronics typical of cold-Rydberg experiments and does not compromise practical operation.
 
-Panel (d) assesses how well the facilitation condition~\eqref{eq:facilitation_condition_b} is maintained across the field range. The quantity $|\Delta_{\mathrm{gr}}(B) + V_{rr}(B)|/(2\pi)$ quantifies the deviation from perfect facilitation. Values below 0.1 MHz (well within the shaded region) indicate that the automatic retuning algorithm successfully compensates for both Zeeman shifts and interaction suppression. The small increase at higher fields suggests that residual corrections (e.g., from higher-order Zeeman effects or nonlinear mixing) may be beneficial for optimization at $B > 5$ T.
+Panel (d) assesses how well the facilitation condition~\eqref{eq:facilitation_condition_b} is maintained across the field range. The quantity $|\Delta_{\mathrm{gr}}(B) + V_{rr}(B)|/(2\pi)$ quantifies the deviation from perfect facilitation. By construction (see Sec.~\ref{sec:zeeman_correction}), the laser detuning $\Delta_{\mathrm{gr}}(B)$ is automatically retuned to compensate exactly the Zeeman-corrected Rydberg-Rydberg interaction $V_{rr}(B)$, so the facilitation residual is identically zero at every $B$. The plotted curve sits at the visualisation floor of $10^{-4}$~MHz, well below the $100$~kHz tolerance commonly quoted for facilitation experiments. This perfect cancellation is the reason for the constancy of the amplification factor in panel (a).
 
 \subsection*{Temperature Optimization}
 
@@ -486,21 +493,21 @@ While the simulations presented above assume $T = 4$ K, the detector can operate
 
 \begin{table}[htbp]
 \centering
-\caption{Performance metrics versus operating temperature at $B = 5$ T}
+\caption{Performance metrics versus operating temperature at $B = 5$ T, computed with the calibrated thermal-rate model of Eq.~\eqref{eq:thermal_rate} for an array of $N=11$ atoms. The signal-to-background ratio is defined as $\mathrm{SNR}=R_\gamma/(N\,\Gamma_{\mathrm{thermal}})$, with $R_\gamma\!\sim\!30$ photons/s as in Eq.~\eqref{eq:photon_rate}.}
 \label{tab:temperature_scan}
-\begin{tabular}{lccc}
+\begin{tabular}{lcccc}
 \hline\hline
-Temperature (K) & Amplification $\mathcal{A}$ & Dark Rate (Hz) & Signal-to-Noise \\
+$T$ (K) & $\mathcal{A}$ & $\Gamma_{\mathrm{thermal}}$ (Hz/atom) & $N\,\Gamma_{\mathrm{thermal}}$ (Hz) & $R_\gamma/(N\,\Gamma_{\mathrm{thermal}})$ \\
 \hline
-4.0 & 3.8 & $2.4 \times 10^{-3}$ & $1.6 \times 10^{4}$ \\
-1.0 & 3.8 & $4.8 \times 10^{-7}$ & $8.0 \times 10^{6}$ \\
-0.5 & 3.8 & $4.1 \times 10^{-11}$ & $9.3 \times 10^{10}$ \\
-0.3 & 3.8 & $2.8 \times 10^{-16}$ & $1.4 \times 10^{16}$ \\
+4.0 & 5.3 & $1.0\times 10^{-3}$ & $1.1\times 10^{-2}$ & $2.2\times 10^{3}$ \\
+1.0 & 5.3 & $1.0\times 10^{-5}$ & $1.1\times 10^{-4}$ & $2.2\times 10^{5}$ \\
+0.5 & 5.3 & $2.1\times 10^{-8}$ & $2.4\times 10^{-7}$ & $1.0\times 10^{8}$ \\
+0.3 & 5.3 & $5.9\times 10^{-12}$ & $6.5\times 10^{-11}$ & $3.7\times 10^{11}$ \\
 \hline\hline
 \end{tabular}
 \end{table}
 
-The amplification factor is essentially independent of temperature, confirming that the avalanche mechanism is driven by coherent quantum dynamics rather than thermal processes. In contrast, the dark count rate decreases by many orders of magnitude as temperature is lowered, directly translating into improved signal-to-noise ratio. Even at the relatively high temperature of 4 K, the SNR exceeds $10^4$, indicating excellent background suppression.
+The amplification factor is essentially independent of temperature, confirming that the avalanche mechanism is driven by coherent quantum dynamics rather than thermal processes. In contrast, the per-atom thermal rate $\Gamma_{\mathrm{thermal}}$ decreases by many orders of magnitude as temperature is lowered, and the array-level total rate $N\,\Gamma_{\mathrm{thermal}}$ falls from $\sim\!10^{-2}$ Hz at 4 K to $\sim\!10^{-10}$ Hz at sub-Kelvin temperatures. Even at the practically convenient $T=4$ K, the ratio $R_\gamma/(N\,\Gamma_{\mathrm{thermal}})$ exceeds $10^{3}$, indicating that the axion photon rate dominates over thermal background by more than three orders of magnitude already at the highest temperature considered.
 
 %==============================================================================
 \section{Benchmarking Against Existing Technologies}
@@ -601,7 +608,7 @@ The detection system comprises:
     \item \textbf{Alternative approach}: Loss imaging by detecting ground-state atoms after an ionization pulse that removes all Rydberg-excited atoms from the trap \cite{Endres2016, Bluvstein2024}. This achieves $>95\%$ fidelity for atom counting but requires additional experimental complexity for Rydberg-to-ground state transfer or complete removal of Rydberg atoms.
 \end{itemize}
 
-The finite detection efficiency increases the effective threshold: with $\eta_{\rm det} \approx 40\%$, detecting $S_{\rm threshold} = 3$ Rydberg atoms on average requires an actual population of $\langle S \rangle \approx 7$--8 atoms to achieve reliable ($>3\sigma$) single-photon discrimination. This requirement remains well within the capabilities of the avalanche amplification mechanism demonstrated in our simulations, which achieves amplification factors $\mathcal{A} = 3.8$--5.2 across the full magnetic field range (see Fig.~\ref{fig:performance_summary}(a)).
+The finite detection efficiency increases the effective threshold: with $\eta_{\rm det} \approx 40\%$, detecting $S_{\rm threshold} = 3$ Rydberg atoms on average requires an actual population of $\langle S \rangle \approx 7$--8 atoms to achieve reliable ($>3\sigma$) single-photon discrimination. This requirement remains well within the capabilities of the avalanche amplification mechanism demonstrated in our simulations, which achieves amplification factor $\mathcal{A} \approx 5.3$ across the full magnetic field range (see Fig.~\ref{fig:performance_summary}(a)).
 
 Direct fluorescence imaging of Rydberg states is fundamentally limited by their extremely long radiative lifetimes. For the $n \sim 70$ states employed in our protocol, spontaneous emission rates scale as $\Gamma_{\rm sp} \sim 1/n^3 \sim$ microseconds \cite{Gallagher2005}. Scattering the $\sim$100 photons required for reliable imaging would take milliseconds, during which time the atoms would decay, undergo collisions, or be ionized by blackbody radiation \cite{Beterov2009}. This is why all modern cold-atom Rydberg experiments employ either SSFI for direct Rydberg detection or loss imaging for indirect detection \cite{Saffman2016, Zhang2024Review}.
 
@@ -674,7 +681,7 @@ Several limitations of the current approach merit discussion:
 
 \subsubsection{Detection Fidelity}
 
-The simulations presented in this chapter assume ideal detection of the Rydberg population $S(t)$. In practice, state-selective field ionization—the standard technique for cold Rydberg atoms in optical lattices and tweezer arrays \cite{Gallagher2005, Saffman2016}—achieves detection efficiencies of $\eta_{\rm det} \approx 40$--70\% \cite{Balewski2015, Tao2024}. This finite efficiency increases the effective detection threshold from $S_{\rm threshold} = 3$ to approximately 5--8 atoms but does not fundamentally limit single-photon sensitivity given the amplification factors $\mathcal{A} = 3.8$--5.2 demonstrated in Fig.~\ref{fig:performance_summary}(a).
+The simulations presented in this chapter assume ideal detection of the Rydberg population $S(t)$. In practice, state-selective field ionization—the standard technique for cold Rydberg atoms in optical lattices and tweezer arrays \cite{Gallagher2005, Saffman2016}—achieves detection efficiencies of $\eta_{\rm det} \approx 40$--70\% \cite{Balewski2015, Tao2024}. This finite efficiency increases the effective detection threshold from $S_{\rm threshold} = 3$ to approximately 5--8 atoms but does not fundamentally limit single-photon sensitivity given the amplification factor $\mathcal{A} \approx 5.3$ demonstrated in Fig.~\ref{fig:performance_summary}(a).
 
 The impact of finite detection efficiency can be quantified as follows. For a detection threshold $S_{\rm threshold}$ and efficiency $\eta_{\rm det}$, the required true Rydberg population for reliable detection is:
 %
@@ -682,7 +689,7 @@ The impact of finite detection efficiency can be quantified as follows. For a de
     S_{\rm required} \approx \frac{S_{\rm threshold}}{\eta_{\rm det}} \sqrt{\frac{1 + S_{\rm threshold}/\eta_{\rm det}}{S_{\rm threshold}}},
 \end{equation}
 %
-where the square root factor accounts for Poissonian counting statistics. For $S_{\rm threshold} = 3$ and $\eta_{\rm det} = 0.4$, this yields $S_{\rm required} \approx 8.2$ atoms for $3\sigma$ confidence. Since the avalanche produces $\mathcal{A} \approx 4$ atoms on average at $B = 5$ T, this leaves a safety margin of approximately $4/8.2 \approx 0.5$, or 50\% of the required signal. While modest, this margin could be improved by:
+where the square root factor accounts for Poissonian counting statistics. For $S_{\rm threshold} = 3$ and $\eta_{\rm det} = 0.4$, this yields $S_{\rm required} \approx 8.2$ atoms for $3\sigma$ confidence. Since the avalanche produces $\mathcal{A} \approx 5.3$ atoms on average at $B = 5$~T, this leaves a safety margin of approximately $4/8.2 \approx 0.5$, or 50\% of the required signal. While modest, this margin could be improved by:
 
 \begin{itemize}
     \item Optimizing MCP detector geometry and operating voltages to achieve $\eta_{\rm det} \sim 60$--70\% \cite{Andersen2013}
@@ -709,7 +716,7 @@ where $\Gamma_{\mathrm{abs}} = g^2/\Gamma_{\mathrm{sp}}$ is the single-atom abso
 
 \subsubsection{Single-Shot vs. Integrated Detection}
 
-The simulations model the single-shot detection of individual photons. In practice, axion experiments integrate over long times ($\sim 100$ s) to accumulate signal. The avalanche detector must be reset after each detection cycle, limiting the maximum detection rate to $\sim 1/(T_a + T_{\mathrm{reset}}) \sim 10$ kHz. For the extremely low axion photon rates ($\sim 10^{-9}$ s$^{-1}$), this is more than adequate.
+The simulations model the single-shot detection of individual photons. In practice, axion experiments integrate over long times ($\sim 100$ s) to accumulate signal. The avalanche detector must be reset after each detection cycle, limiting the maximum detection rate to $\sim 1/(T_a + T_{\mathrm{reset}}) \sim 10$ kHz. For the axion photon rates relevant here, $R_\gamma\!\sim\!\mathcal{O}(10)$--$\mathcal{O}(10^2)$~s$^{-1}$ (cf.\ Eq.~\ref{eq:photon_rate}), this maximum detection rate is more than adequate.
 
 \section{Alternative Rydberg Detection Schemes}
 
@@ -758,7 +765,7 @@ We have presented a comprehensive theoretical investigation of Rydberg avalanche
 \subsection*{Key Findings}
 
 \begin{enumerate}
-    \item \textbf{Robust amplification in magnetic fields}: The avalanche mechanism maintains amplification factors of 3.8--5.2$\times$ across magnetic fields from 0 to 5 T, despite interaction suppression from state mixing. Automatic compensation of Zeeman shifts through laser detuning adjustment preserves the facilitation condition.
+    \item \textbf{Robust amplification in magnetic fields}: The avalanche mechanism maintains amplification factor of $\mathcal{A} \approx 5.3\times$ across magnetic fields from 0 to 5 T, despite interaction suppression from state mixing. Automatic compensation of Zeeman shifts through laser detuning adjustment preserves the facilitation condition.
     
     \item \textbf{Ultra-low thermal background}: Exponential suppression of thermal excitations yields dark count rates below 0.01 Hz at 4 K, decreasing to $< 10^{-4}$ Hz at 300 mK. This performance rivals or exceeds superconducting technologies while operating at higher temperatures.
     
@@ -768,7 +775,7 @@ We have presented a comprehensive theoretical investigation of Rydberg avalanche
     
     \item \textbf{Spatiotemporal correlations}: The ballistic avalanche expansion creates characteristic V-shaped patterns in the excitation density, providing a signature to distinguish true events from random background and enabling potential further background suppression through machine learning algorithms.
     \item \textbf{Decoherence robustness:} The avalanche mechanism persists for moderate dephasing rates $\gamma_{\phi} < \Omega_{gr}$, as confirmed by Lindblad simulations including pure dephasing $L_{\phi} = \sqrt{\gamma_{\phi}}\sigma_z$. This suggests experimental feasibility with current atom trap lifetimes ($\sim 100$~ms).
-    \item \textbf{Detection compatibility}: State-selective field ionization, the standard detection technique for cold Rydberg atoms \cite{Gallagher2005, Saffman2016}, achieves efficiencies of $\eta_{\rm det} \approx 40$--70\% \cite{Balewski2015, Tao2024}. While lower than ground-state imaging fidelities ($>95\%$), the amplification factors demonstrated here ($\mathcal{A} = 3.8$--5.2) provide sufficient signal enhancement to maintain single-photon sensitivity across the full magnetic field range. The finite detection efficiency affects only the readout stage and does not alter the underlying avalanche physics.
+    \item \textbf{Detection compatibility}: State-selective field ionization, the standard detection technique for cold Rydberg atoms \cite{Gallagher2005, Saffman2016}, achieves efficiencies of $\eta_{\rm det} \approx 40$--70\% \cite{Balewski2015, Tao2024}. While lower than ground-state imaging fidelities ($>95\%$), the amplification factors demonstrated here ($\mathcal{A} \approx 5.3$) provide sufficient signal enhancement to maintain single-photon sensitivity across the full magnetic field range. The finite detection efficiency affects only the readout stage and does not alter the underlying avalanche physics.
 \end{enumerate}
 
 \subsection*{Outlook}
