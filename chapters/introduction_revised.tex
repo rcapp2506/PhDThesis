@@ -1,4 +1,30 @@
 % !TEX root = ../main.tex
+\begin{comment}
+=== Revision log ===
+2026-05-07  R. Cappuccio / Claude  (Wave E -- Signorelli S6/S7 global-style sweep)
+  S6 closure: reactivated and expanded the "Notation and Conventions"
+  block (Sec.~\ref{sec:notation}). The block previously sat inside a
+  \begin{comment}...\end{comment} fence; the fence has been removed
+  and the contents reorganised in three subsections (symbols and
+  conventions, physical constants, abbreviations). Abbreviations are
+  now grouped by domain (broad QT, superconducting hardware, QML,
+  sensing) and include all sigle that recur in more than one chapter.
+  The cQED-vs-CQED distinction is made explicit (Gatti G4) and DRAG
+  is defined inline. Citations introduced: blais2021circuit and
+  Motzoi2009 (both already in full_references_checked.bib).
+
+  S7 minor sweep in this chapter: the sentence "This paradigm shift
+  drives contemporary research across academia, industry, and
+  government laboratories worldwide" has been reformulated as "This
+  shift motivates much of the contemporary research programme across
+  academia, industry, and government laboratories" -- "paradigm
+  shift" replaced and the universal qualifier "worldwide" removed.
+
+  See piano_revisione_tesi.md Sec. 4 (S6) and the corresponding
+  Wave-E entry at the top of chapters/quantum_hw.tex for the
+  full session-level changelog.
+\end{comment}
+
 \chapter{Introduction}
 \label{ch:introduction}
 
@@ -19,7 +45,7 @@ Quantum technologies (QTs) leverage uniquely quantum resources--superposition, e
   \label{fig:revolutions}
 \end{figure}
 
-Figure~\ref{fig:revolutions} illustrates the conceptual shift from passive observation of quantum phenomena (first quantum revolution: transistors, lasers, MRI) to active engineering of quantum coherence and entanglement for computational and sensing advantages (second quantum revolution: quantum computers, quantum sensors, quantum networks). This paradigm shift drives contemporary research across academia, industry, and government laboratories worldwide.
+Figure~\ref{fig:revolutions} illustrates the conceptual shift from passive observation of quantum phenomena (first quantum revolution: transistors, lasers, MRI) to active engineering of quantum coherence and entanglement for computational and sensing advantages (second quantum revolution: quantum computers, quantum sensors, quantum networks). This shift motivates much of the contemporary research programme across academia, industry, and government laboratories.
 
 This thesis explores quantum technologies along two complementary axes: \textbf{quantum computing} for more cost-effective  hardware platforms and enhanced algorithmic performance through quantum-classical hybridization, and \textbf{quantum sensing} for ultra-precise measurements beyond classical limits. While these domains are often studied in isolation, they share common foundational challenges that motivate the integrated approach adopted in this work:
 
@@ -494,36 +520,51 @@ The remainder of this dissertation is structured as follows:
 \end{itemize}
 \end{comment}
 
-\begin{comment}
+% --- Notation and Conventions block: reactivated and expanded in the
+% --- 2026-05-07 global-style sweep (Wave E, S6 closure). The previous
+% --- \begin{comment}...\end{comment} fence has been removed.
 \section{Notation and Conventions}
 \label{sec:notation}
 
-Throughout this thesis, we adopt the following notational conventions:
+To make the chapters that follow self-contained and to avoid scattering definitions across the manuscript, we collect here the notational conventions, the physical constants, and the abbreviations that recur throughout the thesis. The list is not meant to be exhaustive: discipline-specific symbols are introduced where they first appear and the present section gathers only those that are referenced in more than one chapter.
+
+\subsection*{Symbols and conventions}
 
 \begin{itemize}
-    \item Quantum states are denoted using Dirac notation: $\ket{\psi}$ for ket vectors, $\bra{\psi}$ for bra vectors, and $\ket{\psi}\bra{\psi}$ for density operators
-    \item Operators are distinguished by hat notation: $\hat{H}$ for Hamiltonians, $\hat{\rho}$ for density matrices, $\hat{O}$ for generic observables
-    \item Pauli matrices are denoted $\sigma_x$, $\sigma_y$, $\sigma_z$ in the computational basis
-    \item Vectors in Euclidean space are bold: $\mathbf{x}$, $\mathbf{E}$, $\mathbf{B}$
-    \item Natural units with $\hbar = 1$ are used unless explicitly stated otherwise (particularly in numerical results where SI units are restored)
-    \item Logarithms are base-2 in information-theoretic contexts (entropy, mutual information) and natural logarithms elsewhere
-    \item Statistical uncertainties are reported as 95\% confidence intervals unless otherwise specified
-    \item Frequency and angular frequency: $f$ denotes frequency in Hz, $\omega = 2\pi f$ denotes angular frequency in rad/s
+    \item Quantum states are written in Dirac notation: $\ket{\psi}$ for kets, $\bra{\psi}$ for bras, and $\ket{\psi}\!\bra{\psi}$ for the corresponding rank-one density operator.
+    \item Operators carry a hat: $\hat{H}$ for Hamiltonians, $\hat{\rho}$ for density matrices, $\hat{O}$ for a generic observable. Where no ambiguity arises (typically inside long derivations), the hat is dropped.
+    \item Pauli operators in the computational basis are denoted $\sigma_x$, $\sigma_y$, $\sigma_z$; the symbols $X$, $Y$, $Z$ are used interchangeably for the same operators when used as gates.
+    \item Vectors in Euclidean space are typeset in boldface: $\mathbf{x}$, $\mathbf{E}$, $\mathbf{B}$.
+    \item Frequencies and angular frequencies are kept distinct throughout: $f$ denotes a frequency in Hz, while $\omega = 2\pi f$ denotes the corresponding angular frequency in rad/s. Numerical values reported in GHz, MHz, kHz refer to $f$ unless explicitly labelled.
+    \item Natural units with $\hbar = 1$ are adopted in formal derivations; SI units are restored whenever numerical results are reported.
+    \item Logarithms are base-$2$ in information-theoretic contexts (entropy, mutual information, quantum Fisher information) and natural logarithms elsewhere.
+    \item Statistical uncertainties are reported as $95\%$ confidence intervals unless otherwise specified; the analogous interval for fitted parameters is reported at $\pm 1\sigma$.
 \end{itemize}
 
-Physical constants and standard abbreviations:
+\subsection*{Physical constants}
+
 \begin{itemize}
-    \item $k_B$: Boltzmann constant
-    \item $h$: Planck constant
-    \item $\Phi_0 = h/2e$: Magnetic flux quantum
-    \item $e$: Elementary charge
-%    \item QFI: Quantum Fisher Information
-    \item NISQ: Noisy Intermediate-Scale Quantum
-    \item VQC: Variational Quantum Circuit
-    \item EIT: Electromagnetically Induced Transparency
-    \item SQUID: Superconducting Quantum Interference Device
+    \item $k_B$: Boltzmann constant.
+    \item $h$: Planck constant; $\hbar = h/(2\pi)$ the reduced Planck constant.
+    \item $e$: elementary charge.
+    \item $\Phi_0 = h/(2e)$: superconducting magnetic flux quantum.
+    \item $c$: speed of light in vacuum.
+    \item $\epsilon_0$, $\mu_0$: vacuum permittivity and permeability.
 \end{itemize}
-\end{comment}
+
+\subsection*{Abbreviations}
+
+The following abbreviations recur in more than one chapter. The expansion is given here once; later occurrences use the abbreviation directly, with the expansion repeated only where it improves readability.
+
+\begin{itemize}
+    \item \textbf{Quantum technologies, broadly.} QT: quantum technology. NISQ: noisy intermediate-scale quantum (era). SQL: standard quantum limit. QFI: quantum Fisher information.
+
+    \item \textbf{Superconducting hardware.} SQUID: superconducting quantum interference device. JJ: Josephson junction. TLS: two-level system (used as a generic term for spurious low-frequency defects in dielectrics). BCS: Bardeen--Cooper--Schrieffer (theory of superconductivity). cQED: circuit quantum electrodynamics, the framework for the dispersive coupling of a qubit to a microwave resonator. CQED: cavity quantum electrodynamics, the broader atomic-physics framework from which cQED is descended; the two are related but distinct~\cite{blais2021circuit}. CMOS: complementary metal--oxide--semiconductor (used in the cryo-CMOS variant for control electronics co-located at the cryogenic stage). DAC: digital-to-analogue converter. DRAG: derivative removal by adiabatic gate, a pulse-shaping protocol that suppresses leakage to the second excited state of the transmon~\cite{Motzoi2009}. HEATS-Q: high-temperature asymmetric-SQUID transmon qubit, the elevated-temperature design developed in Chapter~\ref{ch:quantum_hardware}.
+
+    \item \textbf{Quantum machine learning.} VQC: variational quantum circuit. PQC: parametrised quantum circuit (used interchangeably with VQC; we follow the convention of using PQC for the architectural object and VQC for its training-time use). QML: quantum machine learning. CNN: classical convolutional neural network. QCNN, Q-CNN: hybrid quantum-classical convolutional neural network, the architecture studied in Chapter~\ref{ch:quantum_algorithms}. SGD: stochastic gradient descent. ASAP, ALAP: as-soon-as-possible and as-late-as-possible scheduling policies in transpilation. SNR: signal-to-noise ratio.
+
+    \item \textbf{Quantum sensing.} EIT: electromagnetically induced transparency. SSFI: state-selective field ionisation, the standard detection technique for cold Rydberg atoms.
+\end{itemize}
 
 \begin{comment}
 \section{Summary}

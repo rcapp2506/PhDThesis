@@ -1,11 +1,32 @@
+\begin{comment}
+=== Revision log ===
+2026-05-07  R. Cappuccio / Claude  (Wave E -- Signorelli S6/S7 global-style sweep)
+  S7 minor hyperbole sweep:
+    * "we stand at the threshold of a transformation where quantum
+      technologies are becoming increasingly practical, accessible,
+      and poised for real-world deployment" -> measured prose
+      "the same technologies are increasingly being developed for
+      use beyond the specialised laboratory environment ... with
+      several lines of research now targeting the conditions
+      required for practical deployment".
+    * "unprecedented sensitivity in single-photon detection" ->
+      "high sensitivity in the single-photon regime".
+    * "embraces the messiness of real-world implementation" ->
+      "works within the constraints of real-world implementation".
+
+  See piano_revisione_tesi.md Sec. 4 (S7) and the Wave-E entry at
+  the top of chapters/quantum_hw.tex for the full session-level
+  changelog.
+\end{comment}
+
 \chapter*{Preface}
 \addcontentsline{toc}{chapter}{Preface}
 
-This thesis represents the culmination of a doctoral journey driven by a fundamental question: how can we harness the counterintuitive properties of quantum mechanics to build technologies that surpass classical limitations? When I began this research, quantum computing and quantum sensing were largely confined to specialized laboratories operating at extreme conditions—millikelvin temperatures, ultra-high vacuum, and exquisite electromagnetic isolation. Today, as this work concludes, we stand at the threshold of a transformation where quantum technologies are becoming increasingly practical, accessible, and poised for real-world deployment.
+This thesis represents the culmination of a doctoral journey driven by a fundamental question: how can we harness the counterintuitive properties of quantum mechanics to build technologies that surpass classical limitations? When I began this research, quantum computing and quantum sensing were largely confined to specialized laboratories operating at extreme conditions—millikelvin temperatures, ultra-high vacuum, and exquisite electromagnetic isolation. Today, as this work concludes, the same technologies are increasingly being developed for use beyond the specialised laboratory environment in which they originated, with several lines of research now targeting the conditions required for practical deployment.
 
-The three research directions explored in this dissertation—superconducting quantum hardware, hybrid quantum-classical machine learning, and atomic quantum sensing—emerged from a desire to address a common challenge: bridging the gap between theoretical quantum advantage and practical implementation. Each contribution tackles a different facet of this challenge. The elevated-temperature transmon qubit project asks whether we can dramatically reduce the infrastructure complexity of quantum computers without sacrificing performance. The hybrid quantum-classical neural network work investigates where quantum processors provide genuine computational benefits in near-term applications with limited qubit resources. The Rydberg avalanche detector explores how collective quantum phenomena can enable unprecedented sensitivity in single-photon detection.
+The three research directions explored in this dissertation—superconducting quantum hardware, hybrid quantum-classical machine learning, and atomic quantum sensing—emerged from a desire to address a common challenge: bridging the gap between theoretical quantum advantage and practical implementation. Each contribution tackles a different facet of this challenge. The elevated-temperature transmon qubit project asks whether we can dramatically reduce the infrastructure complexity of quantum computers without sacrificing performance. The hybrid quantum-classical neural network work investigates where quantum processors provide genuine computational benefits in near-term applications with limited qubit resources. The Rydberg avalanche detector explores how collective quantum phenomena can be exploited to reach high sensitivity in the single-photon regime.
 
-These topics might appear disparate at first glance, yet they share a unifying philosophy: \emph{quantum technologies must be designed with practical constraints in mind}. Rather than pursuing ideal systems that exist only in theoretical frameworks, this thesis embraces the messiness of real-world implementation—thermal noise at elevated temperatures, limited qubit counts in NISQ-era processors, and magnetic field perturbations in atomic systems. The simulation-driven methodology adopted throughout this work allows systematic exploration of these imperfect regimes, identifying where quantum resources provide tangible advantages despite practical limitations.
+These topics might appear disparate at first glance, yet they share a unifying philosophy: \emph{quantum technologies must be designed with practical constraints in mind}. Rather than pursuing ideal systems that exist only in theoretical frameworks, this thesis works within the constraints of real-world implementation---thermal noise at elevated temperatures, limited qubit counts in NISQ-era processors, and magnetic field perturbations in atomic systems. The simulation-driven methodology adopted throughout this work allows systematic exploration of these imperfect regimes, identifying where quantum resources provide tangible advantages despite practical limitations.
 
 The choice to focus on theoretical modeling and numerical simulation, rather than experimental implementation, was deliberate. Simulations offer unique advantages for systematic parameter space exploration, isolation of physical effects from experimental artifacts, and rapid iteration on design hypotheses. For each contribution, I developed comprehensive computational frameworks—electromagnetic solvers for superconducting circuits, quantum circuit simulators for variational algorithms, and master equation solvers for atomic dynamics—that enable predictive insights before committing to costly experimental campaigns. Where hardware validation was pursued (particularly for the quantum machine learning work), it served to confirm simulation predictions rather than constitute the primary contribution.
 

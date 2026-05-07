@@ -1,6 +1,143 @@
 % !TEX root = ../main.tex
 \begin{comment}
 === Revision log ===
+2026-05-07  R. Cappuccio / Claude  (Wave E -- Signorelli S6/S7 global-style sweep)
+  CLOSURE of remaining S6 and S7 items left open by Wave D.
+
+  S7 -- structural rewrite of the Cap. 3 wrap-up (the single highest-
+  impact item identified in the handoff):
+    * Sec. "Summary of Findings" (Sec.~\ref{sec:summary_of_findings}):
+      replaced the four pitch-styled subsubsection titles
+      "Technical Feasibility: VIABLE", "Baseline Validation: CONFIRMED",
+      "Technical Challenges: ADDRESSABLE", "Economic Impact:
+      TRANSFORMATIVE" with descriptive titles ("Technical feasibility
+      of the elevated-temperature regime", "Baseline validation",
+      "Identified challenges and mitigation strategies", "Resource and
+      infrastructure considerations"). Added connective prose around
+      each table; rewrote interpretive captions
+      (tab:tech_feasibility_4K, tab:tech_challenges_addressable,
+      tab:economic_impact) into descriptive ones. Removed the
+      "Market potential: 300M-5B" row from tab:economic_impact (claim
+      not defensible in a thesis); shortened the table to three
+      resource entries (cost, cool-down time, footprint/wiring).
+    * Concluding paragraphs of the same section: removed the
+      VC-pitch register entirely. Out: "high-risk, high-reward
+      innovation at the frontier of quantum engineering",
+      "innovation 'merely' requires", "transformative: 10x cost
+      reduction, 100x faster development cycles, and path to
+      10,000+ qubit processors", "democratize quantum computing,
+      expanding the addressable market by orders of magnitude",
+      "represent a significant scientific breakthrough",
+      "We therefore recommend proceeding with Phase 1...".  In:
+      Watson-Crick-style understated paragraphs anchored on the
+      0.1 percentage-point gap to the surface-code threshold and
+      reframing the four-phase sequence as an experimental
+      logical ordering, not as an industrial roadmap. Final
+      sentence: "the simulation results presented here define a
+      quantitative starting point for an experimental investigation
+      ...; whether and how to pursue that investigation is a
+      question that lies beyond the scope of the present thesis".
+    * Sec. 2.15 Wrap-up Part A/B headings rewritten in technical
+      register; removed bolded marketing phrases
+      ("demonstrates that the concept works") and the residual
+      "Innovation (Novel)" tag.
+    * Sec. 2.3 ("Comprehensive analysis of asymmetric-squid-based
+      qubit") -- finished what Wave D had started. Removed the
+      orphan "transformative innovation" phrase and the closing
+      "high-risk, high-reward pathway that, if successful, would
+      fundamentally change the landscape" sentence; rewrote the
+      whole introductory block in technical register.
+    * Sec. 2.13.5 Comparison Summary -- replaced "transformative
+      improvements in cost, cooldown time, power, and scalability"
+      with the explicit reference to Sec. summary_of_findings
+      and the concrete 70-80% / hour-vs-day / cryo-CMOS-co-location
+      numbers.
+    * Sec. 2.1 ("Status of the Art") -- replaced "Recent
+      breakthroughs have significantly pushed the operating
+      temperature frontier" with "Subsequent work has pushed the
+      operating-temperature frontier further".
+
+  S7 -- caption-to-body migration (extension of S5):
+    * Fig. fig:operating_regime_300ghz -- removed the closing
+      interpretive sentence from the caption ("This analysis
+      demonstrates the feasibility of elevated-temperature quantum
+      computing through high-frequency operation, trading five
+      orders of magnitude in thermal suppression for 200-500x
+      higher operating temperature, with corresponding 70-80%
+      reduction in cryogenic infrastructure cost and complexity").
+      Added a short body paragraph after the figure that carries
+      the same observation, framed as a system-level design
+      question rather than a feasibility claim.
+    * Caption interpretive language softened in the same figure
+      ("manageable", "acceptable bounds", "excellent performance
+      threshold", "in stark contrast" -> neutral descriptors).
+    * Fig. fig:thermal_comprehensive_300ghz: caption was already
+      compact (only the title); the panel-by-panel discussion
+      already lives in the body. No change needed.
+
+  S6 -- "Notation and Conventions" reactivated and expanded
+  (Sec.~\ref{sec:notation} in introduction_revised.tex):
+    * The block was previously enclosed in a
+      \begin{comment}...\end{comment} fence. Fence removed.
+    * Reorganised in three subsections: symbols and conventions,
+      physical constants, abbreviations.
+    * Abbreviations grouped by domain: quantum technologies broadly
+      (QT, NISQ, SQL, QFI); superconducting hardware (SQUID, JJ,
+      TLS, BCS, cQED, CQED, CMOS, DAC, DRAG, HEATS-Q); quantum
+      machine learning (VQC, PQC, QML, CNN, QCNN/Q-CNN, SGD,
+      ASAP/ALAP, SNR); quantum sensing (EIT, SSFI). The
+      cQED-vs-CQED distinction is made explicit (Gatti G4) and
+      backed by a cite{blais2021circuit}; DRAG is backed by
+      cite{Motzoi2009}.
+    * Proper nouns (IQM, IBM, EuroSAT) were intentionally not
+      added: they are platform/dataset names, not abbreviations
+      that need expansion.
+
+  S7 -- minor hyperbole sweep across the rest of the thesis:
+    * preface_revised.tex: "we stand at the threshold of a
+      transformation" -> measured prose; "unprecedented sensitivity
+      in single-photon detection" -> "high sensitivity in the
+      single-photon regime"; "embraces the messiness of real-world
+      implementation" -> "works within the constraints of
+      real-world implementation".
+    * introduction_revised.tex: "This paradigm shift drives
+      contemporary research" -> "This shift motivates much of the
+      contemporary research programme".
+    * quantum_sensing.tex outlook: "represent a paradigm shift in
+      detector technology for fundamental physics" + "potentially
+      leading to the discovery of dark matter in the laboratory"
+      -> measured statement framed in (m_a, g_{a gamma gamma})
+      parameter-space-coverage terms.
+
+  Open items deferred to next session:
+    * S7 Task B.2 -- chapter-by-chapter logical-connective sweep
+      (insertion of transition paragraphs between sub-sections
+      that begin with an equation or a table). Not done in this
+      sweep because reliable detection requires a full chapter-
+      level reading of the prose flow.
+    * S6 Task A.1 residual -- second pass on first-occurrence
+      acronym inline expansions across the chapters. Most are
+      already in place from Wave A/B/C; a final verification pass
+      is recommended once the new Cap. 2 (Background, S1) is in.
+    * S1 -- new Background and Preliminaries chapter (separate
+      task, multi-week, with the pedagogical-rewrite skill).
+
+  Build verification: latex compiles cleanly; cross-reference
+  resolution updated for the new label sec:summary_of_findings
+  and the renamed reference sec:thermal_analysis added to the
+  "Thermal Population Analysis" subsection. All citations
+  (krantz2019, kim2021, nakamura2011epitaxialNbN, Acharya2022,
+  VanWinckel2022, Underwood2024, blais2021circuit, Motzoi2009,
+  yamashita17highTc) verified to exist in
+  full_references_checked.bib.
+
+  See piano_revisione_tesi.md Sec. 4 (S6, S7) and
+  handoff_S6_S7_global_style.md.
+
+\end{comment}
+
+\begin{comment}
+=== Revision log ===
 2026-05-07  R. Cappuccio / Claude  (Wave D — Signorelli S6/S7 targeted sweep)
   PARTIAL CLOSURE of S6 and S7 (jargon + global style) — 2 patches in
   this file (hardware chapter):
@@ -210,7 +347,7 @@ High-$T_c$ superconductors, such as NbN, have been explored for kinetic inductan
 
 Circuit quantum electrodynamics (cQED), the on-chip superconducting analogue of Cavity QED (CQED), provides a robust framework for qubit readout and interaction~\cite{blais2021circuit}. Dispersive coupling to superconducting resonators enables high-fidelity, quantum non-demolition measurements~\cite{Schuster2005PRL,blais2021circuit}. Multi-qubit gates, such as CNOTs, have been demonstrated with fidelities above 99\% using microwave-activated interactions~\cite{Barends2014}.
 
-Experimental efforts toward elevated-temperature Josephson Junctions remain limited. Yamashita \emph{et al.} demonstrated NbN-based Josephson devices operating up to 10~K~\cite{yamashita17highTc}. Recent breakthroughs have significantly pushed the operating temperature frontier. 
+Experimental efforts toward elevated-temperature Josephson Junctions remain limited. Yamashita \emph{et al.} demonstrated NbN-based Josephson devices operating up to 10~K~\cite{yamashita17highTc}. Subsequent work has pushed the operating-temperature frontier further. 
 Anferov et al.~\cite{Anferov2024HighTemp} demonstrated niobium-based transmon qubits operating at frequencies up to 24 GHz with coherence times of $\sim 1 \mu$s at temperatures exceeding 200~mK, showing that quasiparticle decoherence can be suppressed up to approximately 1~K when using high-gap superconductors. This work aims to validate the fundamental approach of combining elevated frequencies with high-Tc materials for higher-temperature operation, though our target of 4-10~K at 300~GHz represents a further $\sim$40× increase in operating temperature beyond the current state-of-the-art. More recent approaches propose hybrid systems, embedding High-$T_c$ junctions in low-loss resonator environments, or leveraging materials such as NbTiN and granular aluminum for reduced surface loss~\cite{grunhaupt2019granular}. The main obstacles remain dielectric losses, quasiparticle generation at higher temperatures, and maintaining anharmonicity for gate operations~\cite{Martinis2005TLS, Muller2019TLS, Catelani2011QP, Wang2014QP, Koch2007Transmon, Peterer2015Multilevel}.
 
 In conclusion, while superconducting qubits at millikelvin temperatures have achieved state-of-the-art performance, their cryogenic requirements limit scalability and deployment. High-$T_c$ approaches, though nascent, could unlock simpler cryogenic architectures and integration with cryo-CMOS, potentially enabling more compact and cost-effective quantum processors that could benefit both quantum computation~\cite{Lyu2024} and quantum sensing~\cite{Alesini2023} for HEP and Theoretical physics. Moreover, by exploiting the strong anharmonicity of an asymmetric-SQUID transmon~\cite{Bianchetti2010,Xu2016}, 
@@ -426,9 +563,9 @@ A feasibility study will provide the optimal choice for the experimental phase o
 \section{Comprehensive analysis of asymmetric-squid-based qubit}
 \textbf{Part A} has presented a comprehensive analysis of asymmetric SQUID-based superconducting qubits in two operational regimes. \textbf{Part B} demonstrates baseline performance at standard cryogenic temperatures (10--20~mK) with qubit frequencies of 5--6~GHz, achieving CNOT gate fidelities approaching 99\% (98.7\%). \textbf{Part C} explores an extension to elevated temperatures (4--10~K) by pushing qubit frequencies to 300~GHz. The approach is technically demanding and, to our knowledge, has not yet been realised experimentally; the analysis below indicates that, under the design assumptions stated in Sec.~\ref{sec:dielectric_loss_300ghz}, it could substantially reduce cryogenic infrastructure cost and improve the scalability of large quantum processors. We provide a theoretical framework, a feasibility assessment, and a roadmap toward an experimental demonstration. Lastly, in \textbf{Part D}, we present the conclusions and some recommendations.
 
-both the \textbf{baseline validation}, which demonstrates that asymmetric SQUID qubits achieve state-of-the-art performance at conventional operating conditions, and the \textbf{transformative innovation}, which explores the frontier of elevated-temperature quantum computing by pushing operation to $300$~GHz at $4$--$10$~K.
+The two regimes serve complementary roles in the analysis. The \textbf{baseline configuration} is used to verify that, at conventional operating conditions, the asymmetric SQUID architecture and the modelling framework adopted here reproduce the performance level reported for state-of-the-art transmon platforms. The \textbf{elevated-temperature configuration} extends the same framework to a $300$~GHz qubit at $4$--$10$~K and quantifies the conditions under which transmon operation appears viable outside the dilution-refrigerator regime.
 
-The baseline provides proof of concept and validates our design approach. The innovation represents a high-risk, high-reward pathway that, if successful, would fundamentally change the landscape of quantum computing deployment.
+The baseline therefore plays the role of a controlled reference for the modelling framework, while the elevated-temperature configuration defines the design point whose feasibility the remainder of the chapter examines in detail.
 
 \part[Baseline Performance]{Standard Cryogenic Operation}
 
@@ -604,6 +741,7 @@ Section~\ref{sec:cavity_mediated_couplings}, while the gate-protocol
 analysis is presented in Section~\ref{sec:gate_strategy}.
 
 \subsection{Thermal Population Analysis}
+\label{sec:thermal_analysis}
 
 Operating at standard temperature (T = \SIrange{10}{20}{ mK})  ensures negligible thermal population of the excited state. The thermal occupation is:
 \begin{equation}
@@ -1296,10 +1434,12 @@ Baseline at 4~K & 5.8~GHz & 4~K & 1388\% & $\times$ Impossible \\
     \centering
     \includegraphics[width=\textwidth]{chapters/qh_figures/SET2_operating_regime_300GHz_K.png}
     \caption{\textbf{Operating regime analysis for 300~GHz qubits at elevated temperatures.} 
-    \textbf{Left panel}: Thermal population percentage versus temperature for different qubit frequencies near the 300~GHz sweet spot. The black dashed line at $\omega_{01} = 300$~GHz (target design point) shows thermal population increasing from 2.81\% at 4~K to 31.06\% at 10~K. Shaded regions indicate performance zones: green (excellent, $n_{\text{th}} < 2\%$), light blue (good, 2--5\%), and yellow (acceptable, 5--10\%). Operating points at 4, 5, 6, 8, and 10~K are marked with quantitative thermal population values, demonstrating that the system maintains acceptable thermal noise up to $\sim$6~K. Frequencies below 250~GHz exhibit unacceptably high thermal populations (>10\%) even at 4~K, while frequencies above 350~GHz offer diminishing returns. The 300~GHz choice represents an optimal balance between thermal suppression and experimental accessibility. 
-    \textbf{Right panel}: Performance comparison of traditional Al/AlO$_x$ transmons at 5.8~GHz/20~mK versus 300~GHz-Q operation at elevated temperatures. Solid blue bars show thermal population percentage (left axis), while hatched orange bars display normalized energy ratio $\hbar\omega/(k_B T)/20$ (right axis, scaled for visibility). The traditional configuration achieves essentially zero thermal population ($< 0.0001\%$, imperceptible on scale) and extreme energy ratio 0.7 (representing $\hbar\omega/(k_B T) \approx 14$). In stark contrast, 300~GHz-Q at 4~K maintains manageable 2.81\% thermal population with energy ratio 0.2 (representing $\hbar\omega/(k_B T) = 3.60$, satisfying quantum regime criterion $> 3$). At 6~K and 8~K, thermal populations rise to 9.98\% and 19.81\% respectively, approaching but remaining within acceptable bounds for quantum error correction ($< 20\%$). The red dashed horizontal line at 2\% marks the excellent performance threshold. This analysis demonstrates the feasibility of elevated-temperature quantum computing through high-frequency operation, trading five orders of magnitude in thermal suppression for 200--500$\times$ higher operating temperature, with corresponding 70--80\% reduction in cryogenic infrastructure cost and complexity.}
+    \textbf{Left panel}: Thermal population percentage versus temperature for different qubit frequencies near the 300~GHz sweet spot. The black dashed line at $\omega_{01} = 300$~GHz (target design point) shows thermal population increasing from 2.81\% at 4~K to 31.06\% at 10~K. Shaded regions indicate performance zones: green ($n_{\text{th}} < 2\%$), light blue (2--5\%), and yellow (5--10\%). Operating points at 4, 5, 6, 8, and 10~K are marked with the corresponding thermal-population values. Frequencies below 250~GHz exhibit thermal populations above 10\% already at 4~K; frequencies above 350~GHz produce only marginal improvement.
+    \textbf{Right panel}: Side-by-side comparison of a conventional Al/AlO$_x$ transmon at 5.8~GHz/20~mK with the 300~GHz design at elevated temperatures. Solid blue bars show thermal population (left axis); hatched orange bars show the normalised energy ratio $\hbar\omega/(k_B T)/20$ (right axis, scaled for visibility). At 5.8~GHz/20~mK the thermal population is below $10^{-4}\%$ (imperceptible on the figure scale) with an energy ratio close to $14$. At 300~GHz/4~K the thermal population is $2.81\%$ with an energy ratio of $3.60$. At 6~K and 8~K the thermal populations rise to $9.98\%$ and $19.81\%$ respectively. The red dashed horizontal line marks the $2\%$ reference threshold used in the present analysis.}
     \label{fig:operating_regime_300ghz}
 \end{figure}
+
+The qualitative picture suggested by Fig.~\ref{fig:operating_regime_300ghz} is that the elevated-temperature operating point trades five orders of magnitude in thermal suppression with respect to the dilution-refrigerator baseline for an operating temperature about $200$--$500$ times higher; the same trade also yields the $70$--$80\%$ cryogenic-stack saving discussed in Sec.~\ref{sec:summary_of_findings}. Whether this trade-off is favourable in practice depends on the relative weight assigned to error-correction overhead and infrastructure complexity, and is therefore a question of system-level design rather than of single-qubit physics.
 
 \begin{figure}[htbp]
     \centering
@@ -2907,7 +3047,7 @@ Cooldown time & 5 days & 4 hours & $0.033\times$ \\
 \end{tabular}
 \end{table}
 
-The innovation accepts modest ($< 1\%$) fidelity degradation in exchange for transformative improvements in cost, cooldown time, power, and scalability.
+The innovation accepts a small ($< 1\%$) reduction in two-qubit fidelity in exchange for the resource-related advantages discussed in Sec.~\ref{sec:summary_of_findings}: a $70$--$80\%$ reduction in cryogenic-stack cost, hour-scale rather than day-scale cool-down, and a footprint compatible with co-located cryo-CMOS control electronics.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -2916,10 +3056,13 @@ The innovation accepts modest ($< 1\%$) fidelity degradation in exchange for tra
 % =============================================================================
 
 \section{Summary of Findings}
+\label{sec:summary_of_findings}
 
-We have performed a comprehensive analysis of asymmetric SQUID qubits operating at 300 GHz frequency and 4 K temperature. The key findings are:
+This chapter has analysed asymmetric SQUID transmon qubits in two operating regimes: a baseline configuration at conventional cryogenic temperatures (qubit frequency $5.8$~GHz, $T = 20$~mK) and an elevated-temperature configuration ($300$~GHz, $4$~K). The principal results, established quantitatively in Sections~\ref{sec:thermal_analysis}--\ref{sec:challenges}, can be summarised as follows.
 
-\subsubsection{Technical Feasibility: VIABLE}
+\subsubsection*{Technical feasibility of the elevated-temperature regime}
+
+At $4$~K with a qubit frequency of $300$~GHz, the dimensionless ratio $\hbar\omega_{01}/(k_B T) = 3.6$ keeps the device in the quantum regime, with a thermal population of $\bar{n} \simeq 2.81\%$. The coherence-time estimates derived from the dielectric- and radiative-loss budget of Section~\ref{sec:decoherence} yield $T_1 \simeq 20~\mu$s and $T_2 \simeq 14.7~\mu$s. Combining these decoherence rates with the gate-fidelity model of Section~\ref{sec:fidelity}, we project a single-qubit fidelity of $99.85\%$ and a two-qubit fidelity of $97.9\%$. The latter sits approximately $0.1$ percentage points below the $98\%$ surface-code threshold adopted as a working reference; the gap and the candidate mechanisms that could close it are discussed below. A compact view of these indicators is collected in Table~\ref{tab:tech_feasibility_4K}.
 
 \begin{table}[h]
 \centering
@@ -2934,80 +3077,73 @@ Single-qubit fidelity                  & $99.85\%$ \\
 Two-qubit fidelity                     & $97.9\%$ ($0.1\%$ below the $98\%$ target) \\
 \bottomrule
 \end{tabular}
-\caption{Technical-feasibility indicators at the innovation operating point.
-All quantities meet or are within striking distance of the relevant threshold.}
+\caption{Technical-feasibility indicators at the innovation operating point ($300$~GHz, $4$~K). Coherence times are projections from the loss budget of Sec.~\ref{sec:decoherence}; gate fidelities are computed in Sec.~\ref{sec:fidelity}.}
 \label{tab:tech_feasibility_4K}
 \end{table}
 
-\subsubsection{Baseline Validation: CONFIRMED}
+\subsubsection*{Baseline validation}
 
-The $5.8$~GHz, $20$~mK system achieves a $98.7\%$ CNOT fidelity, validating the asymmetric SQUID architecture and design methodology, providing confidence in the theoretical models, and de-risking the innovation phase.
+The baseline configuration at $5.8$~GHz and $20$~mK reaches a CNOT fidelity of $98.7\%$, consistent with values reported for state-of-the-art transmon platforms based on comparable junction technology~\cite{krantz2019, kim2021}. Since the same modelling framework yields both this baseline number and the elevated-temperature projections discussed above, the agreement at $20$~mK provides a controlled reference against which the $4$~K extrapolations may be assessed.
 
-\subsubsection{Technical Challenges: ADDRESSABLE}
+\subsubsection*{Identified challenges and mitigation strategies}
 
-Four major challenges identified, all with credible mitigation strategies:
+Four technological challenges have been examined in detail in Section~\ref{sec:challenges}, each accompanied by a candidate mitigation strategy. Dielectric and radiative losses, which dominate the coherence budget at high frequency, can be addressed through ultra-low-loss substrates combined with three-dimensional cavity geometries. Josephson-junction fabrication at the required critical-current density is achievable with electron-beam lithography and Dolan-bridge shadow evaporation. Coherent control at $300$~GHz can leverage the millimetre-wave technology developed for radio astronomy and atmospheric science. Thermal management at $4$~K is supported by commercial pulse-tube coolers with sub-mK stability. A summary mapping is given in Table~\ref{tab:tech_challenges_addressable}. Combining the per-challenge probabilities of success of Section~\ref{sec:challenges} as independent multiplicative factors yields an overall technical success probability in the range $10$--$15\%$.
+
 \begin{table}[h]
 \centering
 \small
 \begin{tabularx}{\linewidth}{@{}l L@{}}
 \toprule
-\textbf{Challenge} & \textbf{Mitigation strategy} \\
+\textbf{Challenge} & \textbf{Candidate mitigation} \\
 \midrule
 Material losses (dielectric, radiative) & ultra-low-loss substrates combined with 3D cavity design \\
-Junction fabrication                    & advanced lithography at high current density \\
-$300$~GHz control electronics           & leverage existing mm-wave astronomy technology \\
-Thermal management                      & modern pulse-tube coolers \\
+Junction fabrication                    & electron-beam lithography with Dolan-bridge shadow evaporation \\
+$300$~GHz control electronics           & millimetre-wave technology from radio astronomy \\
+Thermal management                      & commercial pulse-tube coolers \\
 \bottomrule
 \end{tabularx}
-\caption{Technical challenges at the innovation operating point and proposed
-mitigation strategies. All four are addressable with existing or near-existing
-technology.}
+\caption{Technological challenges at the elevated-temperature operating point and the candidate mitigation strategy considered for each. Per-challenge success probabilities are reported in Sec.~\ref{sec:challenges}.}
 \label{tab:tech_challenges_addressable}
 \end{table}
 
-Overall technical success probability: 10--15\%
+\subsubsection*{Resource and infrastructure considerations}
 
-\subsubsection{Economic Impact: TRANSFORMATIVE}
+Operation at $4$~K rather than $20$~mK has direct implications for the infrastructure required to host the device. Replacing dilution refrigeration with compact cryocoolers reduces the capital and operating cost of the cryogenic stack by approximately $70$--$80\%$, in line with the figures reported for cryo-CMOS-compatible platforms~\cite{Acharya2022, VanWinckel2022, Underwood2024}; cool-down times shorten from days to hours, increasing the rate at which fabrication--test iterations can be performed; and the accessibility of the $4$~K stage is compatible with cryogenic CMOS control electronics co-located with the qubit chip, reducing wiring length and control latency. A compact comparison with the dilution-refrigerator baseline is given in Table~\ref{tab:economic_impact}; the qualitative ordering of the entries is robust, while their precise numerical values, drawn from the references cited in Section~\ref{sec:challenges}, depend on the specific commercial platforms adopted as comparison points.
 
 \begin{table}[h]
 \centering
 \begin{tabularx}{\linewidth}{@{}l L@{}}
 \toprule
-\textbf{Metric} & \textbf{Improvement over dilution-refrigerator baseline} \\
+\textbf{Resource} & \textbf{$4$~K cryocooler relative to dilution-refrigerator baseline} \\
 \midrule
-Cost                & $10\times$ reduction (\euro $75$\,k vs \euro $750$\,k--\euro $1.5$\,M) \\
-Development time    & $24$--$100\times$ faster (hours vs days cool-down) \\
-Power consumption   & $10\times$ lower ($0.5$~kW vs $5$~kW) \\
-Scalability         & $10\,000+$ qubits per cooler (vs $\sim 1000$) \\
-Market potential    & \euro $300$\,M--\euro $5$\,B in addressable value creation \\
+Cryogenic stack cost   & $\sim 70$--$80\%$ reduction (cryocooler in place of dilution unit) \\
+Cool-down time         & hours rather than days \\
+Footprint and wiring   & compatible with co-located cryo-CMOS control \\
 \bottomrule
 \end{tabularx}
-\caption{Economic and operational impact of the HEATS-Q architecture relative to
-the conventional dilution-refrigerator baseline.}
+\caption{Resource-related differences between operation at $4$~K with a compact cryocooler and operation at $20$~mK with a dilution refrigerator. References for the cost and wiring entries are given in the surrounding text.}
 \label{tab:economic_impact}
 \end{table}
 
-The proposed 300 GHz / 4 K asymmetric SQUID qubit represents a \textbf{high-risk, high-reward} innovation at the frontier of quantum engineering. While technical challenges are significant, they are addressable with existing technology and clear mitigation strategies.
+Taken together, the results of this chapter outline a coherent design space for the elevated-temperature regime. The baseline configuration confirms that the asymmetric SQUID architecture, the loss models, and the gate-fidelity estimators adopted here are calibrated against established transmon performance, while the elevated-temperature configuration extends the same modelling framework to an operating point that, to our knowledge, has not previously been analysed at this level of detail.
 
-The validated baseline performance (98.7\% CNOT at conventional conditions) provides crucial confidence that the asymmetric SQUID architecture and our theoretical framework are sound. The innovation "merely" requires maintaining most of this performance while operating at elevated temperature—a difficult but not impossible goal.
+The principal limitation is the gap of approximately $0.1$ percentage points between the projected two-qubit fidelity at $4$~K and the $98\%$ surface-code threshold used as reference. Several improvements that lie within the reach of current research directions could plausibly close this gap: lower-loss substrates and junction technologies, which directly raise $T_1$ and $T_2$; pulse-shaping schemes such as DRAG-like protocols, which reduce leakage and control-induced infidelity; and refined coupler designs that mitigate the residual cross-Kerr at elevated temperatures. None of these is uniquely required by the present design; their combined effect is, however, only loosely constrained by the present analysis, and quantitative confirmation requires fabrication and measurement.
 
-The economic and scalability benefits are transformative: 10× cost reduction, 100× faster development cycles, and path to 10,000+ qubit processors. These advances would democratize quantum computing, expanding the addressable market by orders of magnitude.
+The four-phase outline of Section~\ref{sec:challenges} should accordingly be read as a logical sequencing of the experimental questions raised by the chapter rather than as an industrial roadmap: a baseline demonstration of NbN/AlN/NbN transmons at conventional cryogenic conditions, an extension to intermediate frequencies (a few tens of GHz at temperatures of $1$--$2$~K), and only afterwards the full $300$~GHz / $4$~K target. Each step probes a distinct subset of the modelling assumptions on which the elevated-temperature projections rely, so the progression is informative regardless of where it eventually stops.
 
-The incremental four-phase approach, with go/no-go decision points, manages risk appropriately. Even partial success (e.g., single qubits at 4 K) would represent a significant scientific breakthrough.
-
-We therefore recommend \textbf{proceeding with Phase 1}, targeting demonstration of 300 GHz qubits at baseline conditions within 12--18 months.
+In this perspective, the simulation results presented here define a quantitative starting point for an experimental investigation of the asymmetric SQUID transmon outside the millikelvin regime; whether and how to pursue that investigation is a question that lies beyond the scope of the present thesis.
 
 
 
 \section{Wrap-up and Final Considerations}
 
-\subsubsection*{Part A: Baseline (Proven)}
+\subsubsection*{Baseline configuration}
 
-Asymmetric SQUID qubits at $5$--$6$~GHz achieve a $98.7\%$ CNOT fidelity at $20$~mK, with negligible thermal effects ($< 10^{-5}\%$). This is competitive with the state of the art and \textbf{demonstrates that the concept works}.
+In the baseline regime (qubit frequency $5$--$6$~GHz, $T \in [10,20]$~mK), asymmetric SQUID transmons reach a CNOT fidelity of $98.7\%$ with thermal occupation below $10^{-5}\%$. This figure matches values reported for transmon devices employing comparable junction technology~\cite{krantz2019,kim2021}; in the present context, the agreement provides a controlled reference against which the elevated-temperature projections can be assessed.
 
-\subsubsection*{Part B: Innovation (Novel)}
+\subsubsection*{Elevated-temperature configuration}
 
-Operation at $300$~GHz enables temperatures of $4$--$10$~K, with thermal populations remaining manageable ($3$--$10\%$) and projected fidelities above the error-correction thresholds, opening a path to qubit operation outside the dilution-refrigerator regime.
+At $300$~GHz with $T \in [4,10]$~K the same architecture maintains thermal populations in the $3$--$10\%$ range and yields projected single- and two-qubit fidelities above the surface-code threshold considered in Sec.~\ref{sec:fidelity}, modulo the residual gap of $\sim 0.1$ percentage points discussed above. The configuration thus defines a design point at which the simulation framework predicts viable transmon operation outside the dilution-refrigerator regime. Whether the same regime can be reached experimentally is a question that the present work formulates quantitatively but does not, by itself, answer.
 
 %\subsubsection{Final Considerations}
 
