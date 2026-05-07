@@ -711,7 +711,10 @@ A more direct comparison can be drawn against the two existing Rydberg-atom-base
 \centering
 \caption{Comparison of Rydberg-atom-based axion-haloscope detectors. The CARRACK and Graham schemes use \emph{single-atom linear} detection (one photon $\to$ one Rydberg excitation); the present work uses \emph{multi-atom avalanche} detection driven by the Rydberg-Rydberg facilitation interaction. Spatial signature refers to the V-shaped propagation pattern of the avalanche through the atomic chain.}
 \label{tab:rydberg_comparison}
-\begin{tabular}{lccc}
+\small
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabularx}{\textwidth}{@{}l L L L@{}}
 \hline\hline
 Property & CARRACK\cite{Yamamoto2001,Tada1999} & Graham 2024\cite{Graham2024} & This work \\
 \hline
@@ -724,7 +727,7 @@ Magnetic field on detector & $B = 0$ (sep.\ cavities) & $B = 0$ (sep.\ cavities)
 Operating temperature & $\sim 10$~mK & $\sim 100$~mK & \textbf{$4$~K (pulse-tube)} \\
 Frequency range & 2--50 GHz & 10--50 GHz & 10--1000 GHz \\
 \hline\hline
-\end{tabular}
+\end{tabularx}
 \end{table}
 
 The architectural differences highlight three genuinely new contributions of the present work that differentiate it from the existing Rydberg-atom-haloscope literature: (i) the use of the facilitation-driven avalanche as a coherent quantum amplifier with $\mathcal{A}\!\sim\!5$, replacing the linear-response paradigm of CARRACK and Graham 2024; (ii) the integration of detection and conversion in a single high-magnetic-field cavity, made possible by the active Zeeman compensation through laser retuning analyzed in Sec.~\ref{sec:zeeman_correction}; and (iii) the operating point at $T = 4$~K, two orders of magnitude warmer than the dilution-refrigerator regimes required by CARRACK and by transmon-based single-microwave-photon-counter schemes~\cite{Dixit2025}, with a corresponding reduction in cryogenic infrastructure cost.
