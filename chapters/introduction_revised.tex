@@ -1,6 +1,106 @@
 % !TEX root = ../main.tex
 \begin{comment}
 === Revision log ===
+2026-05-07  R. Cappuccio / Claude  (Wave H -- pre-delivery cosmetic and structural cleanup)
+
+  Wave H is a chirurgical cleanup pass executed on the request of
+  the author after the post-Wave-G concept-map review. Its goal is
+  to deliver a structurally clean manuscript ready for final
+  delivery. No scientific content has been changed; the cleanup is
+  cosmetic, refuso-level, and dead-code removal. One ineffective
+  section ("Methodological Framework") has been re-activated --
+  written content was already present, only the comment fence
+  around it has been removed.
+
+  Patches in this file (introduction_revised.tex):
+
+  * Removed a duplicated, comment-fenced "Background: The Quantum
+    Sensing Landscape" section (~45 lines of dead code carrying
+    a "Taxonomy and Platforms / Sensitivity Noise Bandwidth /
+    Rydberg" structure that overlapped the second, active
+    occurrence of the same section).
+
+  * Removed a duplicated, comment-fenced "Sensitivity Limits and
+    the Quantum Cramer-Rao Bound" subsection. The same QFI
+    discussion was already present (without a heading) at the
+    end of the preceding subsection. The active QFI text now
+    carries its own subsection heading instead of being
+    swallowed into the previous one.
+
+  * Re-activated section "Methodological Framework" (label
+    sec:methodology), previously fenced inside a comment
+    environment. The section was already written in full and only
+    needed unfencing. Three minor refusi in the same block were
+    corrected: a missing space before "calculations" after a
+    closing footnote brace; a doubled space inside the footnote;
+    "e.g.," replaced with "e.g.\ " for consistency. The "Hardware
+    Validation Strategy" subsection had a future-tense sentence
+    ("benchmarks ... will confirm") which was rewritten in the
+    past tense, since the IBM and IQM hardware-validation campaign
+    has been completed and is reported in Chapter 3.
+
+  * Replaced a dead-code "Chapter outline" block (which referenced
+    a non-included file comparative_analysis.tex) with a clean,
+    accurate "Thesis Outline" section that lists the four content
+    chapters as they actually exist in the manuscript (label
+    sec:thesis_outline).
+
+  * Removed an inactive, content-free "Summary" subsection at the
+    end of the chapter (5 lines).
+
+  * Cosmetic fixes: three doubled spaces; one space-before-comma;
+    two "--" used as em-dashes promoted to "---" (DRAG inline
+    expansion; SERF inline expansion); "e.g." standardised to
+    "e.g.\ " in the contributions list.
+
+  Patches in chapters/quantum_algorithms.tex:
+
+  * Removed the hardcoded "4.1" prefix from the subsection title
+    "EuroSAT dataset" (residual from when the chapter was a paper
+    rather than a thesis chapter).
+
+  * Removed three stale TODO/Placeholder author comments that no
+    longer described actual gaps: "% TODO: dopo Phase D" and
+    "% TODO: dopo Phase E" were boilerplate banners marking
+    sections whose body was already complete; "% Placeholder:
+    replace with the actual figure file" was a stale comment
+    above an \includegraphics that had already been populated.
+
+  * One doubled space in the body ("unitary  transformation").
+
+  Patches in chapters/quantum_hw.tex:
+
+  * One doubled space in the body ("transmon-like qubit,
+    implemented").
+
+  Patches in chapters/conclusions.tex:
+
+  * One doubled space in the body ("essential  precursor").
+
+  File-level deletions:
+
+  * chapters/abstract.tex -- this file was not included in the
+    build (main.tex had its \input commented out in favour of
+    abstract_revised.tex). Removed from the repository.
+  * chapters/comparative_analysis.tex -- this file was not included
+    in the build (main.tex had its \include commented out) and
+    described a chapter that does not exist in the actual
+    structure of the thesis. Removed from the repository, and
+    its previously dangling \ref{ch:comparative_analysis} in
+    the introduction was rewritten as part of the new "Thesis
+    Outline" section (see above).
+
+  Build verification: 0 errors, 0 undefined references, 0
+  multiply-defined labels. PDF compiled at 183 pages, 15.0 MB
+  (up from 181: the +2 pages reflect the re-activated
+  Methodological Framework and Thesis Outline sections, plus the
+  promoted "Sensitivity Limits and the Quantum Cramer-Rao Bound"
+  subsection heading).
+
+\end{comment}
+
+\begin{comment}
+=== Revision log ===
 2026-05-07  R. Cappuccio / Claude  (Wave E -- Signorelli S6/S7 global-style sweep)
   S6 closure: reactivated and expanded the "Notation and Conventions"
   block (Sec.~\ref{sec:notation}). The block previously sat inside a
@@ -47,7 +147,7 @@ Quantum technologies (QTs) leverage uniquely quantum resources--superposition, e
 
 Figure~\ref{fig:revolutions} illustrates the conceptual shift from passive observation of quantum phenomena (first quantum revolution: transistors, lasers, MRI) to active engineering of quantum coherence and entanglement for computational and sensing advantages (second quantum revolution: quantum computers, quantum sensors, quantum networks). This shift motivates much of the contemporary research programme across academia, industry, and government laboratories.
 
-This thesis explores quantum technologies along two complementary axes: \textbf{quantum computing} for more cost-effective  hardware platforms and enhanced algorithmic performance through quantum-classical hybridization, and \textbf{quantum sensing} for ultra-precise measurements beyond classical limits. While these domains are often studied in isolation, they share common foundational challenges that motivate the integrated approach adopted in this work:
+This thesis explores quantum technologies along two complementary axes: \textbf{quantum computing} for more cost-effective hardware platforms and enhanced algorithmic performance through quantum-classical hybridization, and \textbf{quantum sensing} for ultra-precise measurements beyond classical limits. While these domains are often studied in isolation, they share common foundational challenges that motivate the integrated approach adopted in this work:
 
 \begin{itemize}
     \item \textbf{System modeling and control}: Understanding and optimizing quantum dynamics in realistic, noisy environments remains a central challenge. Practical quantum systems operate in the presence of decoherence, thermal fluctuations, and control imperfections that must be accurately modeled to predict performance.
@@ -82,7 +182,7 @@ Each platform presents distinct trade-offs in gate speed, coherence time, qubit 
 
 \subsection{Quantum Gates, Circuits, and Algorithms}
 
-Universal quantum computation requires single-qubit rotations and entangling two-qubit gates. For superconducting qubits, single-qubit gates ($R_x$, $R_y$, $R_z$) are implemented via resonant microwave pulses, while two-qubit gates (e.g. CNOT, CZ, iSWAP) exploit dispersive or resonant qubit-qubit coupling through shared cavities or direct capacitive links. Gate compilation optimizes pulse shapes (Derivative Removal by Adiabatic Gate -- DRAG --, optimal control~\cite{Motzoi2009}) to suppress leakage to non-computational states and minimize gate times relative to coherence.
+Universal quantum computation requires single-qubit rotations and entangling two-qubit gates. For superconducting qubits, single-qubit gates ($R_x$, $R_y$, $R_z$) are implemented via resonant microwave pulses, while two-qubit gates (e.g.\ CNOT, CZ, iSWAP) exploit dispersive or resonant qubit-qubit coupling through shared cavities or direct capacitive links. Gate compilation optimizes pulse shapes (Derivative Removal by Adiabatic Gate---DRAG---, optimal control~\cite{Motzoi2009}) to suppress leakage to non-computational states and minimize gate times relative to coherence.
 
 Quantum algorithms span:
 \begin{itemize}
@@ -137,7 +237,7 @@ qubit frequency.
 \noindent\textbf{Operational Implications.} For quantum gates requiring time 
 $t_{\mathrm{gate}}$, high-fidelity operation demands $t_{\mathrm{gate}} \ll 
 T_1, T_2$. Single-qubit gates (typically 10--50~ns) are primarily limited by $T_2$, as phase errors accumulate faster than population errors for most superconducting qubits. Two-qubit gates (100--500~ns) can be limited by either $T_1$ or $T_2$ depending on the implementation. State-of-the-art superconducting qubits achieve $T_1 \sim 100$--300~$\mu$s and $T_2 \sim 
-50$--150~$\mu$s~\cite{kjaergaard2020, place2021new, tuokkola_methods_2025} , enabling gate fidelities exceeding 99.9\% for single-qubit  operations and $>$99\% for two-qubit gates~\cite{Barends2014, kjaergaard2020}.
+50$--150~$\mu$s~\cite{kjaergaard2020, place2021new, tuokkola_methods_2025}, enabling gate fidelities exceeding 99.9\% for single-qubit operations and $>$99\% for two-qubit gates~\cite{Barends2014, kjaergaard2020}.
 
 For superconducting qubits, dominant decoherence mechanisms limiting $T_1$ 
 and $T_2$ include:
@@ -162,52 +262,6 @@ As of 2025, quantum processors have demonstrated quantum advantage for specific 
 \end{itemize}
 
 The asymmetric SQUID transmon analysis in Chapter~\ref{ch:quantum_hardware} addresses the last challenge by investigating operation at 4~K (pulse-tube cooler accessible) rather than 20~mK (dilution refrigerator), potentially reducing system costs by 70--80\%~\cite{martinis2020}.
-\begin{comment}
-\section{Background: The Quantum Sensing Landscape}
-\label{sec:qsensing}
-
-\subsection{Taxonomy and Platforms}
-
-Quantum sensors exploit quantum coherence, entanglement, or measurement back-action to achieve sensitivities beyond classical shot-noise limits. We adopt a pragmatic taxonomy by \emph{sensor type} and by \emph{quantum resource}:
-
-\textbf{By sensor type:} Representative platforms include atomic vapors, cold atoms, Rydberg atoms, trapped ions, nitrogen-vacancy (NV) and silicon-carbide (SiC) color centers, superconducting circuits and SQUIDs, optomechanical systems, and atom interferometers.
-
-\textbf{By quantum resource:} 
-\begin{itemize}
-    \item \textbf{Type I}: Nonclassical probe states (squeezed light, Fock states) without entanglement at detection
-    \item \textbf{Type II}: Quantum-enhanced detection (homodyne, photon counting)
-    \item \textbf{Type III}: Entanglement-enabled precision (GHZ states, spin squeezing)
-\end{itemize}
-
-Representative observables include magnetic and electric fields, frequency and time standards, acceleration and rotation, temperature and pressure, and force and displacement. Table~\ref{tab:qs-platforms} summarizes major platforms and their target observables.
-
-\subsection{Sensitivity, Noise, and Bandwidth}
-
-The figure of merit for a quantum sensor is its sensitivity---the minimum resolvable signal---versus bandwidth, constrained by sensor noise, sampling rate, and quantum decoherence. Sensitivity is quantified through the Quantum Fisher Information (QFI), which provides channel-agnostic limits on parameter estimation precision. The QFI $\mathcal{F}$ relates to the minimum achievable variance via the quantum Cramér-Rao bound:
-\begin{equation}
-\Delta\theta \geq \frac{1}{\sqrt{M \mathcal{F}(\theta)}}
-\end{equation}
-where $M$ is the number of measurements and $\theta$ is the parameter to be estimated.
-
-Practical estimators (maximum likelihood, Bayesian) approach these bounds under regularity conditions. When compatible with the physical platform, squeezed or entangled probes can enhance sensitivity by factors up to $\sqrt{N}$ (Heisenberg limit) versus standard quantum limit (SQL) scaling. However, losses and dephasing quickly revert scaling to SQL, making robust operation in realistic noise environments critical.
-
-Extracting signals often involves spectral lineshapes (e.g., optically detected magnetic resonance in NV centers, electromagnetically induced transparency in Rydberg atoms) and indirect estimators that map quantum observables to classical readout channels.
-
-\subsection{Rydberg-Atom Electromagnetic Sensing}
-
-Rydberg atoms---atoms excited to high principal quantum number $n$---possess giant electric dipole moments scaling as $n^2$ and exhibit electromagnetically induced transparency (EIT) and Autler-Townes splitting that encode radio-to-terahertz electromagnetic fields into optical readout signals~\cite{Saffman2010,Gallagher2005}. Key features include:
-
-\begin{itemize}
-    \item \textbf{Broad spectral reach}: Tunable from kHz to THz by varying $n$ (typically $n = 30$--100)
-    \item \textbf{Room-temperature operation}: Atomic vapors in glass cells enable compact, portable sensors
-    \item \textbf{Self-calibrated SI traceability}: Transition frequencies determined by fundamental constants
-    \item \textbf{Sub-wavelength spatial resolution}: Enables field mapping at microscale
-\end{itemize}
-
-The large dipole moments enable single-photon sensitivity through avalanche amplification: a single Rydberg excitation can trigger a cascade of ionization events via dipole-dipole interactions, producing measurable ion signals. This avalanche mechanism forms the basis for the Rydberg-based single-photon detector analyzed in Chapter~\ref{ch:quantum_sensing}.
-
-The QFI framework provides the theoretical foundation for sensitivity analysis of Rydberg sensors, as their performance is ultimately limited by quantum projection noise in the Rydberg population measurement and decoherence induced by blackbody radiation and collisions.
-\end{comment}
 
 \section{Background: The Quantum Sensing Landscape}
 \label{sec:qsensing}
@@ -250,11 +304,11 @@ Quantum sensors are implemented across diverse physical platforms, each optimize
 
 \begin{itemize}
 
-\item \textbf{Atomic vapor sensors:} Room-temperature alkali vapor cells for magnetometry (Spin-Exchange-Relaxation-Free -- SERF -- magnetometers achieving sub-femtotesla sensitivity~\cite{Shah2007,Kominis2003,Peng2024}) and atomic clocks~\cite{Ludlow2015}.
+\item \textbf{Atomic vapor sensors:} Room-temperature alkali vapor cells for magnetometry (Spin-Exchange-Relaxation-Free---SERF---magnetometers achieving sub-femtotesla sensitivity~\cite{Shah2007,Kominis2003,Peng2024}) and atomic clocks~\cite{Ludlow2015}.
 
 \item \textbf{Cold and ultracold atoms:} Atom interferometers for gravimetry and rotation sensing~\cite{Kasevich1991,Gustavson2000}, lattice clocks for time standards~\cite{Ludlow2015,McGrew2018}.
 
-\item \textbf{Rydberg atoms:} Electromagnetically Induced Transparency (EIT) and Autler-Townes  splitting for RF/microwave field sensing with SI-traceable calibration~\cite{Sedlacek2012, Holloway2014, Anderson2024}.
+\item \textbf{Rydberg atoms:} Electromagnetically Induced Transparency (EIT) and Autler--Townes splitting for RF/microwave field sensing with SI-traceable calibration~\cite{Sedlacek2012, Holloway2014, Anderson2024}.
 
 \item \textbf{Trapped ions:} Hyperfine and optical transitions for electric field sensing~\cite{Gilmore2021}, time/frequency standards~\cite{Brewer2019,Chou2017}, and force detection~\cite{Biercuk2010}.
 
@@ -268,15 +322,8 @@ Quantum sensors are implemented across diverse physical platforms, each optimize
 
 \end{itemize}
 
-Each platform presents distinct trade-offs between sensitivity, bandwidth, spatial resolution, operating temperature, and system complexity. The choice of platform depends on the specific sensing application and operating environment. The fundamental limit on parameter estimation precision is set by the Quantum Fisher Information (QFI), which quantifies how much information about an unknown parameter $\theta$ is encoded in a quantum state $\rho(\theta)$. The QFI $\mathcal{F}$ relates to the minimum achievable variance via the quantum Cramér-Rao bound:
-\begin{equation}
-\Delta\theta \geq \frac{1}{\sqrt{M \mathcal{F}(\theta)}}
-\end{equation}
-where $M$ is the number of independent measurements. This bound is achievable by optimal measurement strategies under regularity conditions.
+Each platform presents distinct trade-offs between sensitivity, bandwidth, spatial resolution, operating temperature, and system complexity. The choice of platform depends on the specific sensing application and operating environment.
 
-For $N$ uncorrelated probes in coherent states, the QFI scales linearly with $N$, yielding SQL scaling $\Delta\theta \propto 1/\sqrt{N}$. Entangled probe states can achieve $\mathcal{F} \propto N^2$, enabling Heisenberg-limited scaling $\Delta\theta \propto 1/N$. However, decoherence and losses typically reduce this advantage. For photon loss probability $\eta$, the achievable precision degrades from Heisenberg scaling to SQL scaling when $\eta N \gtrsim 1$, establishing a practical threshold for entanglement-enhanced sensing~\cite{Giovannetti2011}.
-
-\begin{comment}
 \subsection{Sensitivity Limits and the Quantum Cramér-Rao Bound}
 
 The fundamental limit on parameter estimation precision is set by the Quantum Fisher Information (QFI), which quantifies how much information about an unknown parameter $\theta$ is encoded in a quantum state $\rho(\theta)$. The QFI $\mathcal{F}$ relates to the minimum achievable variance via the quantum Cramér-Rao bound:
@@ -286,14 +333,6 @@ The fundamental limit on parameter estimation precision is set by the Quantum Fi
 where $M$ is the number of independent measurements. This bound is achievable by optimal measurement strategies under regularity conditions.
 
 For $N$ uncorrelated probes in coherent states, the QFI scales linearly with $N$, yielding SQL scaling $\Delta\theta \propto 1/\sqrt{N}$. Entangled probe states can achieve $\mathcal{F} \propto N^2$, enabling Heisenberg-limited scaling $\Delta\theta \propto 1/N$. However, decoherence and losses typically reduce this advantage. For photon loss probability $\eta$, the achievable precision degrades from Heisenberg scaling to SQL scaling when $\eta N \gtrsim 1$, establishing a practical threshold for entanglement-enhanced sensing~\cite{Giovannetti2011}.
-
-Practical sensing protocols employ estimators (maximum likelihood, Bayesian inference) that approach the Cramér-Rao bound under suitable conditions. Signal extraction often involves analyzing spectral lineshapes such as:
-\begin{itemize}
-    \item Optically detected magnetic resonance (ODMR) in NV centers, where magnetic fields shift hyperfine transitions
-    \item Electromagnetically induced transparency (EIT) in Rydberg atoms, encoding RF fields in optical transmission spectra
-    \item Ramsey interferometry in trapped ions and atoms, translating phase shifts to population differences
-\end{itemize}
-\end{comment}
 
 \subsection{Rydberg-Atom Electromagnetic Sensing}
 
@@ -435,7 +474,6 @@ The architecture is evaluated on the EuroSAT benchmark dataset (10-class land-us
 
 \paragraph{Impact.} This work establishes theoretical performance bounds for Rydberg-based single-photon detection in challenging electromagnetic environments, directly informing experimental implementations for quantum-enhanced weak-signal detection in fundamental physics searches (axion detection, rare event searches) and precision metrology applications.
 
-\begin{comment}   
 \section{Methodological Framework}
 \label{sec:methodology}
 
@@ -466,11 +504,11 @@ The research employs specialized computational frameworks tailored to each domai
     \item QuTiP master equation solvers for Rydberg atom dynamics
     \item Magnetic field perturbation theory for Zeeman-shifted energy levels
     \item Density matrix evolution for avalanche propagation dynamics
-    \item Quantum Fisher Information \footnote{The Quantum Fisher Information (QFI), sets the limit  on parameter estimation precision of an unknown parameter $\theta$, encoded in a quantum state $\rho(\theta)$. The QFI $\mathcal{F}$ relates to the minimum achievable variance via the quantum Cramér-Rao bound:
-\begin{equation}
+    \item Quantum Fisher Information\footnote{The Quantum Fisher Information (QFI) sets the limit on parameter estimation precision of an unknown parameter $\theta$, encoded in a quantum state $\rho(\theta)$. The QFI $\mathcal{F}$ relates to the minimum achievable variance via the quantum Cramér-Rao bound:
+\begin{equation*}
 \Delta\theta \geq \frac{1}{\sqrt{M \mathcal{F}(\theta)}}
-\end{equation}
-where $M$ is the number of independent measurements.}calculations for sensitivity bounds
+\end{equation*}
+where $M$ is the number of independent measurements.} calculations for sensitivity bounds
 \end{itemize}
 
 All simulations leverage Python-based scientific computing ecosystems (NumPy, SciPy, Matplotlib) for numerical analysis and visualization.
@@ -480,45 +518,40 @@ All simulations leverage Python-based scientific computing ecosystems (NumPy, Sc
 This methodology enables:
 
 \begin{enumerate}
-    \item \textbf{Comprehensive parameter space exploration}: Systematic variation of design parameters (junction asymmetry, operating frequency, magnetic field strength) beyond experimental feasibility, identifying optimal operating regimes before fabrication
-    
-    \item \textbf{Isolation of physical effects}: Separation of fundamental quantum phenomena from experimental artifacts (e.g., fabrication variations, electromagnetic interference, thermal gradients), enabling unambiguous identification of limiting factors
-    
-    \item \textbf{Rapid iteration on design hypotheses}: Testing architectural modifications (e.g., 3D cavity shielding, junction array configurations, circuit topology changes) in hours rather than months required for experimental fabrication cycles
-    
-    \item \textbf{Predictive guidance for experiments}: Providing quantitative performance projections, design specifications, and failure mode analysis to inform experimental implementations, reducing trial-and-error iteration
+    \item \textbf{Comprehensive parameter space exploration}: Systematic variation of design parameters (junction asymmetry, operating frequency, magnetic field strength) beyond experimental feasibility, identifying optimal operating regimes before fabrication.
+
+    \item \textbf{Isolation of physical effects}: Separation of fundamental quantum phenomena from experimental artifacts (e.g.\ fabrication variations, electromagnetic interference, thermal gradients), enabling unambiguous identification of limiting factors.
+
+    \item \textbf{Rapid iteration on design hypotheses}: Testing architectural modifications (e.g.\ 3D cavity shielding, junction array configurations, circuit topology changes) in hours rather than months required for experimental fabrication cycles.
+
+    \item \textbf{Predictive guidance for experiments}: Providing quantitative performance projections, design specifications, and failure-mode analysis to inform experimental implementations, reducing trial-and-error iteration.
 \end{enumerate}
 
 \subsection{Hardware Validation Strategy}
 
-Where hardware validation is pursued, particularly for the quantum machine learning work (Chapter~\ref{ch:quantum_algorithms}), experiments serve to \textit{validate simulation correctness} rather than constitute primary experimental contributions. Selected benchmarks on IQM's 54-qubit processor will confirm:
+Where hardware validation is pursued, particularly for the quantum machine learning work (Chapter~\ref{ch:quantum_algorithms}), experiments serve to \textit{validate simulation correctness} rather than constitute primary experimental contributions. The benchmarks executed on IBM and on IQM's 54-qubit processor confirm:
 \begin{itemize}
-    \item Functional correctness of quantum circuit implementations
+    \item Functional correctness of the quantum-circuit implementations
     \item Qualitative agreement between simulated and measured training dynamics
     \item Timing and latency characteristics under realistic control hardware
 \end{itemize}
 
 This validation strategy ensures that simulation predictions are experimentally grounded while maintaining the thesis's focus on theoretical and numerical contributions.
-\end{comment}
 
-\begin{comment}
-\section{Result Analysis and Discussion}
-\label{sec:outline}
+\section{Thesis Outline}
+\label{sec:thesis_outline}
 
-The remainder of this dissertation is structured as follows:
+The remainder of this dissertation is structured as follows.
 
 \begin{itemize}
-%    \item \textbf{Chapter~\ref{ch:quantum_hardware}}: Detailed analysis of asymmetric SQUID transmon qubits, deriving flux-dependent Hamiltonians, characterizing sweet spot behavior, modeling decoherence mechanisms at elevated temperatures, and projecting gate fidelities. Includes comprehensive comparison with baseline millikelvin systems and discussion of fabrication considerations.
-    
-%    \item \textbf{Chapter~\ref{ch:quantum_algorithms}}: Design, implementation, and performance analysis of hybrid quantum-classical convolutional neural network architectures for satellite image classification. Covers VQC design, training dynamics, convergence analysis, and comparison with classical baselines. 
-    
-%\item \textbf{Chapter~\ref{ch:quantum_sensing}}: Theoretical modeling of Rydberg atom avalanche detectors with magnetic field-dependent performance characterization. Includes level structure calculations, master equation dynamics, sensitivity analysis via quantum Fisher information, and optimization of operating conditions for single-photon detection.
-    
-    \item \textbf{Chapter~\ref{ch:comparative_analysis}}: Cross-technology comparison examining capability matrices, resource scaling, cost-complexity trade-offs, and application-fit analysis across quantum hardware, algorithms, and sensing platforms.
-    
-    \item \textbf{Chapter~\ref{ch:conclusions}}: Synthesis of contributions, identification of cross-cutting insights (hardware tunability as design principle, resource efficiency as near-term value proposition), discussion of limitations, and outlook for future research directions.
+    \item \textbf{Chapter~\ref{ch:quantum_hardware}} (\emph{Quantum Hardware}) presents a theoretical and numerical analysis of an asymmetric-SQUID transmon design in two operating regimes: a baseline configuration at $5.8$~GHz and $20$~mK, used to validate the modelling pipeline against published transmon performance, and an elevated-temperature configuration at $300$~GHz and $4$~K. The chapter derives flux-dependent Hamiltonians, characterises the two flux-insensitive sweet spots of the asymmetric design, models decoherence mechanisms at elevated temperatures, and projects single- and two-qubit gate fidelities.
+
+    \item \textbf{Chapter~\ref{ch:quantum_algorithms}} (\emph{Quantum Algorithms}) develops a hybrid quantum-classical convolutional neural network for satellite-image classification. The chapter covers the design of the variational quantum convolutional layer, the parameter-shift training pipeline, the dataset and preprocessing for the EuroSAT benchmark, and the hardware validation campaign on the IBM and IQM quantum processors. The empirical comparison with a matched classical CNN baseline focuses on convergence dynamics rather than asymptotic accuracy.
+
+    \item \textbf{Chapter~\ref{ch:quantum_sensing}} (\emph{Quantum Sensing}) develops a master-equation model of a Rydberg-atom avalanche single-photon detector for axion-haloscope readout. The chapter introduces the relevant Rydberg level structure under strong magnetic fields, contrasts the blockade and facilitation regimes of Rydberg-Rydberg interaction, and analyses the magnetic-field robustness of the detector through Zeeman-shift compensation in the laser detuning. A benchmarking section compares the proposed scheme against transition-edge sensors, kinetic-inductance detectors, superconducting nanowire detectors, and Rydberg electrometers.
+
+    \item \textbf{Chapter~\ref{ch:conclusions}} (\emph{Conclusions}) synthesises the three contributions, identifies cross-cutting methodological insights, discusses limitations of each line of work, and outlines short- and long-term research directions.
 \end{itemize}
-\end{comment}
 
 % --- Notation and Conventions block: reactivated and expanded in the
 % --- 2026-05-07 global-style sweep (Wave E, S6 closure). The previous
@@ -565,16 +598,5 @@ The following abbreviations recur in more than one chapter. The expansion is giv
 
     \item \textbf{Quantum sensing.} EIT: electromagnetically induced transparency. SSFI: state-selective field ionisation, the standard detection technique for cold Rydberg atoms.
 \end{itemize}
-
-\begin{comment}
-\section{Summary}
-\label{sec:intro_summary}
-
-This introduction has established the motivation for quantum technologies research, surveyed the contemporary landscapes of quantum computing and quantum sensing, articulated the three original contributions of this thesis, and outlined the simulation-driven methodological framework. The subsequent chapters develop each contribution in depth with quantitative models, numerical simulations, and design guidelines anchored in physical constraints and performance requirements.
-\end{comment}
-
-
-
-
 
 

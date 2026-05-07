@@ -96,7 +96,7 @@ Hybrid quantum--classical learning integrates short-depth quantum computations\ 
 A central design choice is how classical inputs $\mathbf{x}$ are embedded into quantum states. Beyond initialization, \emph{encoding} acts as a feature map $\phi:\mathbf{x}\mapsto \lvert \phi(\mathbf{x})\rangle$ into a high-dimensional Hilbert space, reshaping distances and decision boundaries~\cite{SchuldPetruccione2021,Schuld2019PRA}. Canonical strategies include: (i) \emph{basis encoding}, mapping bits to computational basis states (memory-expensive but simple); (ii) \emph{amplitude encoding}, loading normalized vectors into amplitudes (compact but sensitive to state preparation cost); and (iii) \emph{angle/rotation encoding}, where features modulate rotation angles on single qubits, producing trigonometric feature expansions whose richness grows with depth and entanglement. Interleaving encoders with trainable blocks (\emph{data re-uploading}) probably enhances expressivity by composing nonlinear feature maps with learned unitaries~\cite{PerezSalinas2020,Schuld2020Expressivity}. In many vision-like tasks, locality-aware encodings (e.g., patch-wise rotations) align the quantum hypothesis class with the spatial inductive biases that make classical CNNs effective.
 
 \paragraph{Variational circuits and trainable ans\"atze.}
-A PQC defines a unitary  transformation 
+A PQC defines a unitary transformation 
 \begin{equation*}
 U(\boldsymbol{\theta},\mathbf{x})=U_L(\theta_L)\,E(\mathbf{x})\cdots U_1(\theta_1)\,E(\mathbf{x})
 \end{equation*}
@@ -635,7 +635,7 @@ we kept $S=500$ throughout, so this distinction is immaterial in our setting.
 \section{Results}
 \label{sec:results}
 
-\subsection*{4.1 EuroSAT dataset}
+\subsection*{The EuroSAT dataset}
 
 As described in Sec.~\ref{sec:dataset-and-preprocessing}, we adopt the EuroSAT dataset~\cite{Helber2019}, a publicly available collection of
 RGB and multispectral satellite images derived from Sentinel-2 data.
@@ -1175,9 +1175,6 @@ With $K=11$, $m=2$, frozen backbone, an epoch consists of $10$ optimizer steps a
 \paragraph{Run policy.}
 To insulate against an under-budget mis-estimation, the production notebook adopts a manual ``traffic-light'' workflow: the first epoch executes automatically and reports its actual credit consumption; each subsequent epoch is gated behind a boolean flag (\texttt{RUN\_EPOCH\_N\,=\,True}) that the user toggles only after verifying the dashboard credit balance. We did not implement an automatic budget guard, preferring an explicit human-in-the-loop decision to preserve the option of stopping the campaign mid-way.
 
-% =========================================================================
-% TODO: dopo Phase D
-% =========================================================================
 \subsubsection{Hardware characterization results}
 \label{subsec:hw_results}
 
@@ -1223,9 +1220,6 @@ For the production fine-tuning of Sec.~\ref{subsec:finetune_results} we proceed 
 \paragraph{Per-circuit timing.}
 Two diagnostic batches were submitted in this phase. A 20-circuit calibration batch ran in $14.2$~s ($t_{\mathrm{circ}}=0.711$~s/circuit), and a 50-circuit zero-input batch ran in $21.8$~s ($t_{\mathrm{circ}}=0.436$~s/circuit). The amortization is consistent with Eq.~\ref{eq:job_time_model}; the production-run batch size of $N=28$ circuits per job (Sec.~\ref{subsec:minibatch_sgd}) is intermediate, and the realized per-circuit time during the fine-tuning epochs was $t_{\mathrm{circ}}=0.561$~s, a value bracketed by the two diagnostic measurements.
 
-% =========================================================================
-% TODO: dopo Phase E
-% =========================================================================
 \subsubsection{Fine-tuning results on Emerald}
 \label{subsec:finetune_results}
 
@@ -1236,10 +1230,6 @@ Tab.~\ref{tab:emerald_convergence} reports the per-epoch metrics, and Fig.~\ref{
 
 \begin{figure}[h]
 \centering
-% Placeholder: replace with the actual figure file produced by the run notebook
-% (Phase F plot \texttt{plot2\_finetune\_curves.png} restricted to the Emerald
-% trajectory; the full plot also overlays the Phase~C simulator dry-run as
-% reference.)
 \includegraphics[width=0.75\linewidth]{chapters/qa_figures/plot2_finetune_curves.png}
 \caption{Validation accuracy along the fine-tuning trajectory on Emerald (red diamonds), compared to the simulator dry-run reference of Phase~C (green squares) and to the simulator pre-training plateau (dotted line at $100\%$, label \emph{Pretrain end}). The Emerald run recovers the simulator's $100\%$ classification accuracy in two on-device epochs, despite the per-block readout biases reported in Tab.~\ref{tab:per_block_bias}.}
 \label{fig:emerald_finetune_curves}
