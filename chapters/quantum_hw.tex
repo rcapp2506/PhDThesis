@@ -1,6 +1,51 @@
 % !TEX root = ../main.tex
 \begin{comment}
 === Revision log ===
+2026-05-07  R. Cappuccio / Claude  (Wave A — hardware closeout)
+  CLOSES G6, G8, G9, G15, G16 (Gatti review)
+  Substantive changes:
+    * G6 (Fig. 2.3 mK clarity): added introductory paragraph before
+      Fig. fig:thermal_comprehensive explaining that the mK band is the
+      validation regime, the HEATS-Q operating points at 4--10 K are the
+      target, and the sweet-spot frequency 1.972 GHz is fixed by the
+      asymmetric-SQUID flux-insensitive condition (not by thermal
+      optimisation).
+    * G8 (Eq. 2.57 sign): rewrote CNOT decomposition with corrected
+      sign convention (R_y(+pi/2) on left, R_y(-pi/2) on right);
+      replaced non-standard exp(-i pi/4 ZZ) "CZ" with the standard
+      diagonal CZ = diag(1,1,1,-1); added pedagogical clarification of
+      the H Z H = X identity vs. the bare R_y(pi/2) Z R_y(pi/2) which
+      gives Z, not +/-X. Sympy verification archived at scripts/audit/g8.
+    * G9 (tan delta scaling at 300 GHz): added paragraph "Loss tangent
+      at cryogenic and sub-THz conditions" acknowledging that tan(delta)
+      values quoted in Table substrate_t1_diel are extrapolations from
+      1--30 GHz cryogenic data; introduced a factor-of-three uncertainty
+      band (10^-7 to 3*10^-7 for sapphire at 4 K, 300 GHz) translating
+      to T_1,diel in [18, 53] microseconds with p=0.1; flagged dedicated
+      cryogenic sub-THz substrate characterisation as a hardware
+      prerequisite.
+    * G15 (3D cavity integration): new subsubsection
+      sec:cavity_integration_300ghz with three paragraphs covering:
+      geometrical scaling (lambda/2 ~ 0.5 mm at 300 GHz vs. 5x5 mm
+      standard chip; three architectural directions for restoring
+      compatibility); cavity quality factor at sub-THz (BCS regime,
+      residual surface resistance, Q_0 ~ 10^4 - 10^5 estimate); and
+      qubit-cavity coupling validation through HFSS/COMSOL/CST
+      electromagnetic simulation.
+    * G16 (shunt capacitance constraint): new subsubsection
+      sec:shunt_cap_array making explicit that maintaining E_J/E_C = 50
+      at 300 GHz requires C_Sigma ~ 1.3 fF, which parallel arrays do
+      not relax (in fact aggravate via stray cap); discussed series-
+      array trade-off (C_eff = C/N but E_J/N degrades the ratio); and
+      committed to the combined design strategy (sub-nm AlN_x barriers
+      + small individual junctions + 3D cavity for stray-cap
+      suppression). Added missing label sec:dielectric_loss_300ghz.
+  Bibliographic dependencies (all already in full_references_checked.bib):
+    Martinis2005TLS, Muller2019TLS, Krupka1999Sapphire, Krupka2006Silicon,
+    Janezic2014Silicon, Read2023Sapphire, kim2021, nakamura2011epitaxialNbN,
+    manucharyan2009fluxonium, Romanenko2020, Wang2015, blais2021circuit
+  See piano_revisione_tesi.md Section 5 phase 3 (G6, G8, G9, G15, G16).
+
 2026-05-03  R. Cappuccio / Claude  (audit equation-claim-audit, Phase 1)
   CLOSES G7 (Eq. 2.39 mislabeled as longitudinal coupling)
   + collateral: Eq. 2.28 dimensional fix
@@ -471,7 +516,7 @@ Temperature (mK) & $\bar{n}(T)$ \\
 
  For comparison, state-of-the-art Al-based transmons typically operate at $T \sim \SI{20}{mK}$ where $\bar{n} < 10^{-6}$ for $\omega_{01} \sim \SI{5}{GHz}$.
 
-To fully characterize the elevated-temperature operating regime, we analyze the thermal population landscape across a wide parameter space. Figure~\ref{fig:thermal_comprehensive} presents a comprehensive six-panel analysis exploring the relationships between qubit frequency, temperature, and thermal excitation. The analysis reveals several key insights:
+To fully characterize the elevated-temperature operating regime, we analyze the thermal population landscape across a wide parameter space. Figure~\ref{fig:thermal_comprehensive} presents a comprehensive six-panel analysis. The figure deliberately spans the full temperature range from millikelvin to several kelvin to serve two complementary purposes: (i) it benchmarks the thermal-population model in the standard mK regime, where established transmon experiments provide a stringent reference, and (ii) it identifies the (frequency, temperature) corridor in which the HEATS-Q design retains sub-percent thermal excitation. The mK band shaded in panel (a) and the white dashed box of panel (c) therefore mark the \emph{validation} regime, not the target operating regime; the HEATS-Q design points overlaid at $T\in[4,10]\,\text{K}$ identify the actual operating choice. The qubit frequency $\omega_{01}/2\pi = 1.972\,\text{GHz}$ used throughout the figure is itself fixed by the asymmetric-SQUID flux-insensitive sweet spot of the chosen $E_J/E_C$ and asymmetry $d$ (analysed in the flux-tunability subsection that follows), not by a separate thermal optimisation; the figure therefore quantifies how robustly that sweet spot survives the move from mK to 4--10\,K. The analysis reveals several key insights:
 
 \begin{figure}[htbp]
 \centering
@@ -739,15 +784,30 @@ This implements the logical operation: if control qubit is $\ket{1}$, flip the t
 
 \subsubsection{CNOT Implementation Strategy: CZ Gate + Single-Qubit Rotations}
 
-The CNOT gate can be decomposed as:
+The CNOT gate can be decomposed in terms of a controlled-$Z$ (CZ) entangling gate
+sandwiched between two single-qubit $Y$-rotations on the target qubit:
 \begin{equation}
-\text{CNOT}_{12} = R_y^{(2)}\left(-\frac{\pi}{2}\right) \cdot \text{CZ} \cdot R_y^{(2)}\left(\frac{\pi}{2}\right)
+\text{CNOT}_{12} = R_y^{(2)}\!\left(\tfrac{\pi}{2}\right) \cdot \text{CZ} \cdot R_y^{(2)}\!\left(-\tfrac{\pi}{2}\right),
+\label{eq:cnot_decomp}
 \end{equation}
+where the standard controlled-$Z$ is the diagonal unitary
+$\text{CZ}=\mathrm{diag}(1,1,1,-1)$.
+The decomposition relies on the basis-change identity
+$R_y(\pi/2)\,\hat{\sigma}_z\,R_y(-\pi/2)=\hat{\sigma}_x$,
+equivalent to the textbook conjugation
+$\hat{H}\,\hat{\sigma}_z\,\hat{H} = \hat{\sigma}_x$ with the standard Hadamard
+$\hat{H}=(\hat{\sigma}_x+\hat{\sigma}_z)/\sqrt{2}$.
+We note that the bare identification $\hat{H}\equiv R_y(\pi/2)$
+would yield $-\hat{\sigma}_x$ instead of $+\hat{\sigma}_x$ on conjugation;
+the correct relation is $\hat{H}=R_y(\pi/2)\cdot\hat{\sigma}_z$ (up to a global
+phase), which fixes the sign convention used in Eq.~\eqref{eq:cnot_decomp}.
 
-where the controlled-Z (CZ) gate is:
-\begin{equation}
-\text{CZ} = \exp\left(-i\frac{\pi}{4}\hat{\sigma}_z^{(1)}\hat{\sigma}_z^{(2)}\right)
-\end{equation}
+In a hardware implementation, the standard CZ is generated by a
+$\hat{\sigma}_z^{(1)}\hat{\sigma}_z^{(2)}$ interaction of duration
+$\tau = \pi/(4 J_{\text{ZZ}})$, equivalent to
+$\exp\!\left(-i\,\tfrac{\pi}{4}\,\hat{\sigma}_z^{(1)}\hat{\sigma}_z^{(2)}\right)$
+supplemented by local $\hat{\sigma}_z$ rotations on each qubit that absorb
+the residual single-qubit phases.
 
 \subsection{Method 1: $\sqrt{i\text{SWAP}}$ Gate (Resonant Interaction)}
 
@@ -1285,6 +1345,65 @@ Config & $N_{\text{junc}}$ & $I_{c,\text{single}}$ ($\mu$A) & $d_{\text{single}}
 
 \textbf{Recommendation:} 5$\times$5 or 7$\times$7 array with individual junction diameters of 63--88 nm, well within fabrication capabilities ($>$ 50 nm).
 
+\subsubsection{Shunt Capacitance Constraint and the Limits of Array Solutions}
+\label{sec:shunt_cap_array}
+
+The array discussion above relaxes the requirement on the \emph{individual}
+junction critical current, but does not by itself address an independent and
+equally tight constraint: the \emph{total} shunt capacitance of the qubit.
+Maintaining $E_J/E_C = 50$ at $\omega_{01}/2\pi = 300$~GHz requires
+\begin{equation}
+C_{\Sigma} \;=\; \frac{e^2}{2\,E_C} \;\approx\; 1.3~\text{fF},
+\label{eq:Csigma_target}
+\end{equation}
+which must be partitioned between the intrinsic junction capacitance
+$C_{J,\text{tot}}$, any deliberate shunt capacitor $C_{\text{sh}}$,
+and unavoidable stray capacitance $C_{\text{stray}}$ to substrate and ground.
+Standard mK transmons have $C_{\Sigma}\sim 50$--$100$~fF, almost entirely
+dominated by a deliberately patterned $C_{\text{sh}}$; HEATS-Q at 300~GHz
+inverts this picture and leaves no room for an external shunt.
+
+This has direct consequences for the array geometry.
+For an $N\times N$ \emph{parallel} array of identical junctions of area
+$A_{\text{single}}$ and specific capacitance $c_s$ (with
+$c_s\sim 50$~fF/$\mu$m$^2$ typical of NbN/AlN/NbN
+trilayers~\cite{kim2021,nakamura2011epitaxialNbN}), the junction-array
+contribution alone is
+\begin{equation}
+C_{J,\text{tot}} \;=\; N^{2}\, c_s\, A_{\text{single}} ,
+\label{eq:CJ_parallel}
+\end{equation}
+which scales \emph{linearly} with the total junction area $N^{2}A_{\text{single}}$.
+A 5$\times$5 array with $d_{\text{single}}=88$~nm
+(Tab.~\ref{tab:array_advantages}'s recommended point, $A_{\text{single}}\approx 6\times 10^{-3}\,\mu$m$^2$)
+already gives $C_{J,\text{tot}}\sim 7.5$~fF, an order of magnitude above the
+budget~\eqref{eq:Csigma_target}. Reaching $C_{\Sigma}\le 1.5$~fF therefore
+requires either ultra-thin tunnel barriers
+(reducing $c_s$ by a factor of 5--10, e.g.\ AlN$_x$ barriers
+$d_{\text{ox}} \lesssim 0.8$~nm~\cite{nakamura2011epitaxialNbN}) or
+significantly smaller individual junction areas, or both.
+
+A \emph{series} array of $N$ junctions works in the opposite direction:
+the capacitance becomes $C_{\text{eff}}=C_{\text{single}}/N$, but the
+effective Josephson energy is correspondingly reduced
+($E_{J,\text{eff}}=E_{J,\text{single}}/N$, see e.g.\
+Ref.~\cite{manucharyan2009fluxonium}),
+so the ratio $E_J/E_C$ scales as $1/N^{2}$ and is degraded rather than improved.
+Series geometries thus relax the capacitance constraint only at the cost of
+demanding even larger individual junctions to recover the target $E_J$,
+moving the design back into the regime ruled out by Tab.~\ref{tab:junction_sizes}.
+
+In summary, parallel arrays remain the favoured solution, but the constraint
+$C_{\Sigma}\approx 1$--$1.5$~fF is genuinely tight and is \emph{not} relaxed by
+array multiplicity alone. It pins the design to an aggressive combination of
+sub-nm tunnel barriers, small individual junctions
+($d_{\text{single}}\sim 60$--$90$~nm), and a 3D cavity environment
+(Sec.~\ref{sec:dielectric_loss_300ghz}) in which $C_{\text{stray}}$ to
+the substrate is suppressed by orders of magnitude relative to a planar 2D
+geometry. The hardware programme outlined here adopts all three measures
+simultaneously; absent any one of them, the 300~GHz HEATS-Q operating point
+would not be reachable.
+
 \subsubsection{Array Advantages}
 \begin{table}[h]
 \centering
@@ -1769,6 +1888,7 @@ Multiple physical mechanisms contribute to $T_1$. The total decay rate is:
 We analyze each mechanism individually.
 
 \subsubsection{Dielectric Loss ($\propto \omega$)}
+\label{sec:dielectric_loss_300ghz}
 
 Energy dissipation in substrate and capacitor dielectrics contributes:
 \begin{equation}
@@ -1789,6 +1909,26 @@ Dielectric loss scales \textit{linearly} with frequency. At 300~GHz compared to 
 \end{equation}
 
 This factor-of-52 degradation represents a major challenge, requiring both ultra-low-loss substrates and 3D cavity architecture to maintain adequate coherence times.
+
+\paragraph{Loss tangent at cryogenic and sub-THz conditions: an open assumption.}
+The linear $\omega$-scaling above assumes a frequency-independent $\tan\delta$.
+At room temperature this is already optimistic, as $\tan\delta$ itself
+typically scales at least linearly with frequency~\cite{Martinis2005TLS},
+which would make $\Gamma_{\text{diel}}$ super-linear in $\omega$.
+At cryogenic temperatures the dominant two-level-system (TLS) contribution
+to substrate loss is partially saturated and depends only weakly on frequency
+in the 1--30~GHz band routinely characterised in the literature~\cite{Muller2019TLS},
+but direct measurements of $\tan\delta$ for crystalline sapphire or
+high-resistivity silicon at 4~K and 300~GHz are scarce in the published record.
+The values reported in Table~\ref{tab:substrate_t1_diel} are therefore best
+read as extrapolations from the 1--30~GHz cryogenic data of
+Refs.~\cite{Krupka1999Sapphire,Krupka2006Silicon,Janezic2014Silicon,Read2023Sapphire}.
+We treat the cryogenic loss tangent at 300~GHz as a design parameter with
+at least a factor-of-three uncertainty band: $\tan\delta_{\text{sapphire}}
+\in [10^{-7},\,3\times 10^{-7}]$ at $4\,\text{K}$ and $300\,\text{GHz}$
+would map onto $T_{1,\text{diel}}\in[\,18,\,53\,]\,\mu$s with $p=0.1$.
+A dedicated cryogenic sub-THz characterisation of the candidate substrates
+is therefore an explicit prerequisite to a hardware demonstration of HEATS-Q.
 
 \paragraph{Numerical Calculation.}
 For a sapphire substrate with $\tan\delta = 10^{-7}$ (typical for high-quality crystalline c-axis sapphire at 4~K~\cite{place2021,Romanenko2020}), the dielectric decay rate at 300~GHz is:
@@ -1858,6 +1998,75 @@ Interface quality    & ultra-thin barriers ($d_{\text{AlN}} \sim 1$~nm) and mini
 \end{table}
 
 These requirements are challenging but achievable with current fabrication technology, as demonstrated by recent millikelvin qubits achieving $T_1 > 100~\mu$s on sapphire substrates~\cite{place2021}.
+
+\subsubsection{3D Cavity Integration and Qubit--Cavity Coupling at 300\,GHz}
+\label{sec:cavity_integration_300ghz}
+
+The dielectric-loss analysis above implicitly assumes that the qubit can be
+embedded in a 3D superconducting cavity with $p \sim 0.1$ — a non-trivial
+requirement at 300\,GHz. We address here three related concerns that the
+present analysis is not able to settle definitively, and that constitute open
+questions for an experimental programme.
+
+\paragraph{Geometrical scaling.}
+The free-space wavelength at 300\,GHz is $\lambda = c/\nu \approx 1\,\text{mm}$,
+so a fundamental-mode rectangular cavity (TE$_{101}$) has linear dimensions of
+order $\lambda/2 \sim 0.5\,\text{mm}$ and volume
+$V_{\text{cav}} \sim 0.1\,\text{mm}^{3}$. This is more than two orders of
+magnitude smaller than a standard transmon chip
+($\sim 5\times 5\times 0.3\,\text{mm}^{3} \approx 7.5\,\text{mm}^{3}$),
+so the qubit chip cannot simply be inserted into the cavity in the conventional
+millikelvin geometry. Three architectural directions can in principle restore
+geometric compatibility: (i) fabrication of the qubit and shunt capacitor
+directly on the cavity inner wall in a monolithic ``qubit-as-cavity'' geometry;
+(ii) drastic chip miniaturisation to a $\sim 0.3 \times 0.3\,\text{mm}^{2}$
+footprint, exploiting the small junction sizes already imposed by the
+$C_{\Sigma}\sim 1\,\text{fF}$ budget of Sec.~\ref{sec:shunt_cap_array}; or
+(iii) operation in a higher-order cavity mode TE$_{m0p}$ with $m,p\gg 1$
+to accommodate a larger physical volume at the same nominal frequency, at
+the cost of reduced field uniformity at the qubit location. None of these
+options has been demonstrated experimentally for a transmon qubit at 300\,GHz,
+and the choice is left as part of the next-step hardware-design phase.
+
+\paragraph{Cavity quality factor at sub-THz.}
+The cavity-limited radiative coherence time is
+$T_{1,\text{cav}} = Q_L/\omega$, where $Q_L$ is the loaded quality factor.
+For a 3D superconducting cavity the internal quality factor is
+$Q_0 = G/R_s$, with $G$ a purely geometric form factor
+($\sim 200$--$400\,\Omega$ for half-wave geometries) and $R_s$ the surface
+resistance. In the BCS regime $T \ll T_c/2$, $R_s$ scales as
+$\omega^{2} \exp(-\Delta/k_B T)$, but a frequency-independent residual term
+$R_{s,\text{res}}\sim 10$--$100\,\mu\Omega$ typically dominates at sub-THz for
+high-quality superconducting films~\cite{Romanenko2020}. Combining the two
+contributions yields $Q_0 \sim 10^{4}$--$10^{5}$ for a NbTiN cavity at 300\,GHz
+and 4\,K, two to three orders of magnitude below the $Q\sim 10^{7}$--$10^{8}$
+achievable at 5\,GHz and 20\,mK. The corresponding bare radiative
+$T_1 \sim 50$--$500\,\mu$s (for the optimistic $Q_L=10^{5}$) is comfortable
+for gate operation but leaves little margin once chip-induced loading and
+dielectric participation are also accounted for, reinforcing the conclusion
+of Sec.~\ref{sec:dielectric_loss_300ghz} that all loss channels must be
+suppressed simultaneously.
+
+\paragraph{Qubit--cavity coupling and the need for electromagnetic simulation.}
+The coupling strengths $g_1=g_2=80\,\text{MHz}$ adopted in
+Sec.~\ref{sec:cavity_mediated_couplings} and
+Tab.~\ref{tab:heatsQ_baseline_params} were fixed at the architecture level by
+the dispersive-regime requirement $g/\Delta \sim 0.1$, rather than computed
+from a physical qubit--cavity geometry. At 300\,GHz, the qubit's effective
+dipole moment depends sensitively on the small junction-array geometry of
+Sec.~\ref{sec:shunt_cap_array}, and the local cavity field at the qubit
+location depends on the precise mode pattern of the chosen cavity geometry.
+Both quantities are difficult to estimate analytically with sub-percent accuracy.
+Quantitative validation of $g$ therefore requires finite-element electromagnetic
+simulation (Ansys HFSS, COMSOL or CST Microwave Studio) of the kind routinely
+used for millikelvin 3D transmon design~\cite{Wang2015,blais2021circuit}.
+We treat $g_{1,2}/2\pi=80\,\text{MHz}$ as an architecture-level target that
+must be confirmed (or revised) by such a simulation as part of the next
+hardware-design step. A factor-of-two discrepancy with respect to the simulated
+value would propagate to a factor-of-four shift in the dispersive shifts
+$\chi_i = g_i^{2}/\Delta_i$ and in the cross-resonance gate timing of
+Sec.~\ref{sec:cavity_mediated_couplings}, and would have to be reflected in
+the parameter set of Tab.~\ref{tab:heatsQ_baseline_params}.
 
 \subsubsection{Quasiparticle Tunneling (Independent of $\omega$)}
 
