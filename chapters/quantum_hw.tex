@@ -1,6 +1,103 @@
 % !TEX root = ../main.tex
 \begin{comment}
 === Revision log ===
+2026-05-07  R. Cappuccio / Claude  (Wave G -- Signorelli S1 distributed-pedagogy sweep, Ch. 3)
+
+  Continuation of the S1 task started in Wave F (sensing chapter).
+  Ch. 3 is the chapter Signorelli criticised most heavily for
+  parting "in medias res", and is therefore the heaviest item of
+  the distributed-pedagogy strategy.
+
+  Two additions in this file (Ch. 3):
+
+  H1 -- New subsection "Preliminaries: qubits, Josephson junctions,
+  SQUIDs, and circuit QED" inserted as the first subsection of
+  Sec. "Status of the Art" (label sec:hw_preliminaries). About
+  three pages, organised in three sub-blocks. The first sub-block
+  defines what a qubit is in superconducting circuits, sketches
+  the role of the non-linear element, and locates the transmon
+  among the three archetypal designs (charge / flux-or-phase /
+  transmon, the latter as the E_J/E_C >> 1 limit of the charge
+  qubit, citing Koch2007Transmon, kjaergaard2020, krantz2019).
+  The second sub-block introduces the Josephson junction
+  (current-phase relation, energy E_J = Phi_0 I_c / 2 pi) and
+  the SQUID (effective Josephson energy as a function of the
+  threading flux, Eq. effective_EJ_squid), then contrasts the
+  symmetric variant (sweet spots at Phi=0 frequency-maximum and
+  at Phi=Phi_0/2 frequency-zero) with the asymmetric variant
+  (two operational sweet spots per flux period, both first-order
+  flux-noise-insensitive, with the lower one at finite frequency
+  set by the asymmetry d). This is the design lever that the
+  rest of the chapter relies on. Citations: devoret2013 for the
+  Josephson framework, Hutchings2017 for the asymmetric-SQUID
+  sweet spot. The third sub-block defines circuit QED (cQED) as
+  the on-chip analogue of cavity QED (CQED), uses the case
+  convention adopted in the recent literature to disambiguate
+  the two (Gatti G4), and introduces the dispersive regime as
+  the readout mechanism assumed throughout the chapter.
+  Citations: blais2021circuit, Schuster2005PRL.
+
+  A short two-sentence introductory paragraph was added at the
+  head of Sec. "Status of the Art" to announce the new
+  subsection structure (Preliminaries, then Recent developments
+  and motivations); the existing body text of the section was
+  re-titled "Recent developments and motivations" without any
+  content change. A new label sec:state_of_the_art_survey was
+  added on the second subsection.
+
+  H2 -- Replacement of Sec. "Overview of Decoherence Mechanisms"
+  (the opening subsection of Sec. "Decoherence Analysis", label
+  sec:decoherence). The pre-existing text introduced T_1 and
+  T_2 only, with a one-line definition each and the standard
+  T_2 / T_1 / T_phi relation. The new text expands the same
+  block in Watson-Crick register, distinguishing T_1, T_phi,
+  T_2 and the operationally defined T_2^* (free-induction
+  Ramsey decay vs. Hahn-echo recovery), and introduces the
+  three standard pulse sequences -- Ramsey, Hahn echo, CPMG --
+  that probe each time scale experimentally. The textbook
+  expression Eq. t2_relation is preserved verbatim; only the
+  surrounding prose has changed. Citations: krantz2019,
+  kjaergaard2020, blais2021circuit. A pre-existing typo in the
+  original prose ("the two primary coherence times are: / the
+  two primary coherence times are T_1 ...") was fixed in the
+  same patch.
+
+  Pre-existing label sec:nbn_project_overview was added to
+  Sec. "The NbN-based elevated temperature transmon qubit
+  project" to support the cross-reference inserted from H1.
+
+  Build verification: latex compiles cleanly; all labels
+  referenced from H1 (sec:nbn_project_overview,
+  sec:cavity_mediated_couplings, sec:state_of_the_art_survey)
+  and from H2 (sec:fidelity) resolve to existing labels; all
+  citations introduced (Koch2007Transmon, kjaergaard2020,
+  krantz2019, devoret2013, Hutchings2017, blais2021circuit,
+  Schuster2005PRL) verified to exist in
+  full-references-checked.bib. Vion2002, Wallraff2004,
+  Ithier2005 -- canonical references for sweet spot, cQED
+  origin and decoherence-time taxonomy respectively -- were
+  not used because the bib does not contain them; their
+  content is covered by Hutchings2017, blais2021circuit and
+  krantz2019 already in the bib.
+
+  PDF page count: 181 (up from 177; consistent with the
+  addition of approximately three pages of Preliminaries
+  prose plus one page of decoherence taxonomy). No content
+  was removed; H1 added net new material, H2 expanded an
+  existing subsection from 9 lines to about 30 lines.
+
+  Open items in the S1 task: none for Ch. 3. The remaining
+  Signorelli-driven items in Cap. 3 (S2, S3, S4, S5, S6, S7)
+  were closed in earlier waves (A through E). With this Wave G,
+  S1 is closed for chapters 4, 5 and now 3; the introduction
+  and preface chapters do not require additional S1 material
+  because they are themselves introductory in nature, and the
+  conclusion chapter introduces no new technical concept.
+
+\end{comment}
+
+\begin{comment}
+=== Revision log ===
 2026-05-07  R. Cappuccio / Claude  (Wave E -- Signorelli S6/S7 global-style sweep)
   CLOSURE of remaining S6 and S7 items left open by Wave D.
 
@@ -332,6 +429,42 @@ maintaining 97-99\% gate fidelities.
 \definecolor{errorcolor}{RGB}{255,0,0}
 \definecolor{warningcolor}{RGB}{255,140,0}
 
+This chapter analyses an asymmetric-SQUID transmon design first at conventional cryogenic temperatures and then in an elevated-temperature regime that has, to our knowledge, not yet been realised experimentally. Before turning to the survey of recent developments that motivates the design (Sec.~\ref{sec:state_of_the_art_survey}) and to the elevated-temperature project itself (Sec.~\ref{sec:nbn_project_overview}), this section gathers, in compact form, the four ingredients on which the rest of the chapter relies: the notion of a qubit as realised in a superconducting circuit, the Josephson junction, the SQUID and its asymmetric variant, and the framework of circuit quantum electrodynamics.
+
+\subsection{Preliminaries: qubits, Josephson junctions, SQUIDs, and circuit QED}
+\label{sec:hw_preliminaries}
+
+\subsubsection*{Qubits in superconducting circuits}
+
+A qubit is a quantum two-level system used as the elementary unit of quantum information; formally, it is the smallest non-trivial Hilbert space, $\mathbb{C}^2$, on which the standard quantum-mechanical machinery (states, observables, unitary evolution, measurement) acts. In a superconducting implementation, the physical system that hosts the two relevant levels is a non-linear $LC$ circuit cooled below the superconducting transition of its electrodes. The non-linearity is essential: a harmonic $LC$ oscillator has equally spaced levels and cannot be addressed selectively as a two-level system, whereas a non-linear element separates the $\ket{0}\!\to\!\ket{1}$ transition from the $\ket{1}\!\to\!\ket{2}$ transition, and the resulting frequency difference -- the \emph{anharmonicity} -- can be made large enough that microwave pulses tuned to $\omega_{01}$ leave the higher levels essentially unpopulated.
+
+The non-linear element of choice in superconducting qubits is the Josephson junction, introduced below. The relative weight of two energy scales -- the Josephson energy $E_J$ associated with Cooper-pair tunnelling across the junction and the charging energy $E_C = e^2/(2C)$ associated with the junction capacitance -- defines the operating regime of the device and selects, among three archetypal designs, the one that the device behaves as. In the \emph{charge-qubit} regime ($E_J/E_C \lesssim 1$), the computational basis is closely related to states of definite Cooper-pair number on a small superconducting island; the device is then very sensitive to charge offsets caused by environmental fluctuations. In the \emph{flux- or phase-qubit} regime ($E_J/E_C \gg 1$ with a phase-biased junction in a loop), the basis corresponds instead to states of definite circulation or phase. The \emph{transmon}, introduced by Koch \emph{et al.}~\cite{Koch2007Transmon}, is the variant of the charge qubit obtained by raising $E_J/E_C$ above approximately $50$: in this regime the dependence of the qubit transition frequency on background charge is exponentially suppressed, while a small but non-zero anharmonicity $\alpha \approx -E_C$ is retained, sufficient for coherent gate operation~\cite{kjaergaard2020,krantz2019}. The transmon is the de-facto standard architecture in current large-scale superconducting processors, and is the starting point for the design analysed in this chapter.
+
+\subsubsection*{Josephson junctions and SQUIDs}
+
+A \emph{Josephson junction} is a sandwich of two superconducting electrodes separated by a thin barrier (an oxide layer in the standard Al/AlO$_x$/Al technology, an epitaxial AlN spacer in the NbN/AlN/NbN platform considered in Sec.~\ref{sec:nbn_project_overview}) thin enough to permit the coherent tunnelling of Cooper pairs between the two superconductors. The current-phase relation $I = I_c \sin\varphi$ -- with $\varphi$ the macroscopic phase difference across the barrier and $I_c$ the junction critical current -- and the corresponding energy $E_J = \Phi_0 I_c / (2\pi)$, with $\Phi_0 = h/(2e)$ the superconducting flux quantum, are the two ingredients that turn the junction into a non-linear inductor and that ultimately produce the anharmonicity required by the qubit~\cite{devoret2013}.
+
+A \emph{Superconducting Quantum Interference Device} (SQUID) is a closed superconducting loop interrupted by two Josephson junctions in parallel. Because the macroscopic phase across each junction must be consistent with single-valued superconducting wavefunction around the loop, the two junctions form a Josephson interferometer. The effective Josephson energy of the combined element depends on the magnetic flux $\Phi$ threading the loop:
+\begin{equation}
+    E_J^{\rm eff}(\Phi)
+    \;=\;
+    (E_{J1}+E_{J2})\,\bigl|\cos(\pi\Phi/\Phi_0)\bigr|\,
+    \sqrt{\,1+d^2\tan^2(\pi\Phi/\Phi_0)\,},
+    \label{eq:effective_EJ_squid}
+\end{equation}
+where $d \equiv (E_{J1}-E_{J2})/(E_{J1}+E_{J2})$ is the junction asymmetry. Replacing the single junction of a transmon with a SQUID therefore makes the qubit transition frequency $\omega_{01}(\Phi)$ tunable in situ by means of an external magnetic field threading the loop. Two regimes of this device matter for the present work.
+
+In a \emph{symmetric} SQUID ($d=0$), $E_J^{\rm eff}(\Phi)$ varies between a maximum at $\Phi=0$ and exactly zero at $\Phi=\Phi_0/2$: the qubit has a frequency-maximum sweet spot at zero flux, where the first-order sensitivity to flux noise vanishes ($\partial \omega_{01}/\partial\Phi = 0$), but the second sweet spot, at $\Phi=\Phi_0/2$, lies where the qubit frequency itself collapses to zero and is therefore not operational. In an \emph{asymmetric} SQUID ($d \neq 0$), the cancellation at $\Phi=\Phi_0/2$ is incomplete: $E_J^{\rm eff}(\Phi_0/2) = (E_{J1}+E_{J2}) |d|$ remains finite, and the qubit retains a non-zero frequency at this second flux-insensitive point. The asymmetric design therefore offers \emph{two} operational sweet spots per flux period, both first-order insensitive to flux noise, with the lower one accessible at a frequency that can be chosen by engineering the asymmetry $d$~\cite{Hutchings2017}. This second sweet spot is the design lever that the rest of the chapter relies on, especially in the elevated-temperature regime where pushing the upper sweet spot to several hundred GHz, while retaining a controllable lower sweet spot at flux $\Phi_0/2$, is the central architectural idea.
+
+\subsubsection*{Circuit quantum electrodynamics (cQED)}
+
+\emph{Circuit quantum electrodynamics} (cQED) is the framework in which a superconducting qubit is coupled to a microwave electromagnetic resonator fabricated on the same chip~\cite{blais2021circuit}. The construction is the on-chip analogue of \emph{cavity QED} (CQED), the older atomic-physics framework in which natural atoms are coupled to optical or microwave cavities; following the convention adopted in the recent literature, we use the lower-case `c' (cQED) for the circuit version and reserve the upper-case `C' (CQED) for the cavity version, since the two regimes -- one with engineered, lithographically defined ``atoms'' and a transmission-line resonator, the other with natural atoms and a high-finesse cavity -- share the same Jaynes--Cummings Hamiltonian but differ substantially in coupling strengths and operating frequencies.
+
+The regime relevant to the present work is the \emph{dispersive} regime of cQED, in which the qubit-resonator detuning $\Delta = \omega_q - \omega_r$ is large compared with the bare coupling rate $g$, $|\Delta| \gg g$. In this limit the resonator frequency acquires a state-dependent shift $\pm\chi$ (with $\chi$ the dispersive coupling) according to the qubit being in $\ket{0}$ or $\ket{1}$, and a homodyne measurement of the transmitted (or reflected) microwave amplitude returns a signal that depends on the qubit state without exchanging energy with the qubit itself: a quantum non-demolition (QND) readout~\cite{Schuster2005PRL,blais2021circuit}. The dispersive readout is the readout mechanism assumed throughout the chapter, and the cQED Hamiltonian is the starting point of the two-qubit analysis of Sec.~\ref{sec:cavity_mediated_couplings}.
+
+\subsection{Recent developments and motivations}
+\label{sec:state_of_the_art_survey}
+
 Superconducting qubits have emerged as one of the most promising platforms for scalable quantum computing due to their lithographic compatibility, strong nonlinearity, and relatively high coherence times. The relaxation time $T_{1}$ denotes the characteristic time for a qubit to decay from the excited state $\ket{1}$ to the ground state $\ket{0}$ due to energy loss to its environment. 
 The coherence time $T_{2}$ quantifies how long a qubit can preserve quantum phase 
 information before decohering as a result of environmental fluctuations.
@@ -360,6 +493,7 @@ These constraints motivate exploring alternative operating regimes, provided tha
 
 % ========================= 2. GOALS AND EXPECTED OUTCOME ========
 \section{The NbN-based elevated temperature transmon qubit project}
+\label{sec:nbn_project_overview}
 
 We refer to this project as \textbf{HEATS-Q} (\textbf{H}igh-temperature \textbf{E}levated \textbf{A}symmetric-SQUID \textbf{T}ransmon \textbf{S}uperconducting \textbf{Q}ubit), and we use the acronym throughout the rest of this chapter.
 
@@ -2145,15 +2279,13 @@ Similarly, $T_{1,\text{Purcell},2} = 1280$ $\mu$s. These Purcell-limited $T_1$ t
 
 \subsection{Overview of Decoherence Mechanisms}
 
-Quantum coherence is limited by interactions with the environment. The two primary coherence times are:
-the two primary coherence times are $T_1$ (energy relaxation, the time scale for $\ket{1}\to\ket{0}$ decay) and $T_2$ (dephasing, the time scale for loss of phase coherence).
-
-These are related by:
+Quantum coherence is limited by interactions with the environment. Three time scales are conventionally introduced to characterise it. The \emph{relaxation time} $T_1$ is the characteristic time for the qubit to decay from the excited state $\ket{1}$ to the ground state $\ket{0}$ by emitting an energy quantum $\hbar\omega_q$ to its environment, so that the diagonal density-matrix element $\rho_{11}(t) = \rho_{11}(0)\,e^{-t/T_1}$. The \emph{dephasing time} $T_\phi$ is the time scale on which off-diagonal elements decay because of phase noise that does not exchange energy with the qubit, typically dominated, in transmon architectures, by low-frequency fluctuations of the magnetic flux at non-sweet-spot bias points and by photon-number fluctuations in the readout resonator. The \emph{coherence time} $T_2$ is the time scale on which off-diagonal elements decay overall, with relaxation and dephasing contributing additively to the rate~\cite{krantz2019,blais2021circuit}:
 \begin{equation}
-\frac{1}{T_2} = \frac{1}{2T_1} + \frac{1}{T_\phi}
+\frac{1}{T_2} \;=\; \frac{1}{2T_1} + \frac{1}{T_\phi}.
 \label{eq:t2_relation}
 \end{equation}
-where $T_\phi$ is the pure dephasing time from phase noise without energy exchange.
+
+A fourth time scale, $T_2^*$, is operationally defined and arises whenever the noise that drives dephasing is slow on the time scale of a single experimental run but fluctuates from run to run. The free-induction signal in a Ramsey experiment then decays with a characteristic time $T_2^* < T_2$ because the slow component of the noise produces inhomogeneous broadening across the ensemble of single-shot acquisitions. Three echo-style protocols~\cite{krantz2019,kjaergaard2020} probe these time scales experimentally: a $\pi/2$ pulse followed by free evolution and a final $\pi/2$ pulse (\emph{Ramsey sequence}) returns $T_2^*$; the same sequence with an additional $\pi$ pulse at the midpoint (\emph{Hahn echo}) refocuses the slowly-varying noise component and returns the longer $T_2$; and an $N$-pulse periodic refocusing scheme (\emph{CPMG sequence}) extends the noise filter to higher frequencies and provides spectroscopic access to the dephasing-noise spectrum. Throughout the rest of the chapter, the notation $T_1, T_2$ refers to the time scales defined above; $T_2^*$ is invoked only where the distinction between Ramsey and Hahn-echo measurements matters, in particular in Sec.~\ref{sec:fidelity}.
 
 \subsection{$T_1$ Decoherence Mechanisms}
 
