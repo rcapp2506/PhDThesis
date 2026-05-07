@@ -2,6 +2,77 @@
 % !TEX root = ../main.tex
 \begin{comment}
 === Revision log ===
+2026-05-07  R. Cappuccio / Claude  (Wave F -- Signorelli S1 distributed-pedagogy sweep, Ch. 5)
+
+  Strategic note. The S1 task (insufficient pedagogical framing,
+  per Signorelli's review) was originally planned as a new
+  dedicated Background-and-Preliminaries chapter (Ch. 2 in the
+  revised index of piano_revisione_tesi.md). After internal
+  review it has been redirected to a distributed approach: short
+  pedagogical paragraphs added in situ where each concept is
+  first used, with no new chapter and no renumbering of existing
+  ones. Ch. 5 is the first chapter addressed under the new
+  approach.
+
+  Two additions in this file (Ch. 5):
+
+  P5.1 -- New introductory paragraph "Two regimes of Rydberg-Rydberg
+  interaction: blockade and facilitation", inserted at the head of
+  the "Avalanche Amplification Mechanism" subsection, just before
+  the "Facilitation Condition" sub-subsection. Motivation: the
+  manuscript was using the facilitation regime without ever
+  contrasting it with the more familiar Rydberg blockade regime;
+  a junior reader could not tell, from the existing text, why the
+  laser is detuned by the interaction shift rather than placed on
+  resonance, nor why this counter-intuitive choice produces an
+  amplifying detector. The new paragraph (about 12 lines)
+  introduces the two regimes as the two sides of the
+  blockade/facilitation crossover, anchors them to the canonical
+  references, and frames all subsequent design choices (laser
+  detuning, lattice spacing, B-field correction) as the conditions
+  required to keep the system on the facilitation side.
+
+  Citations introduced (all already in
+  full_references_checked.bib, verified):
+    saffman2010quantum (already used), Urban2009, Gaetan2009 for
+    blockade; Valado2016 and Festa2022 for facilitation (already
+    used in the same paragraph as Nill2024).
+  No new entries added to the bib file.
+
+  P5.2 -- Correction of a misleading sentence in Sec. Introduction
+  (the "we then focus on..." sentence). The original text read:
+    "We then focus on a specific implementation: a single-photon
+     detector based on Rydberg-atom electromagnetically induced
+     transparency (EIT). Numerical simulations demonstrate how an
+     engineered atomic medium can transduce microwave or terahertz
+     signals into optical observables, achieving single-photon
+     sensitivity."
+  This was inaccurate on two counts: (i) the detector studied here
+  is not based on EIT but on facilitation-driven avalanche
+  amplification with state-selective-field-ionisation (SSFI)
+  readout; (ii) the readout produces ionisation signals, not
+  optical observables. The sentence has been rewritten to state
+  the actual mechanism and to clarify that EIT plays only an
+  indirect role in the chapter, namely as the readout principle
+  of the Rydberg electrometer used as benchmark in
+  Sec.~\ref{sec:axion_benchmarking}.
+
+  No content was removed in either patch; the changes are
+  pedagogical/clarificatory additions, not substantive
+  scientific revisions.
+
+  Build verification: latex compiles cleanly; all four
+  cross-references introduced (sec:zeeman_correction,
+  sec:axion_physical_principles, sec:theoretical_framework,
+  sec:axion_benchmarking) resolve to existing labels; all six
+  citations (saffman2010quantum, Urban2009, Gaetan2009,
+  Valado2016, Festa2022, Nill2024) verified to exist in
+  full_references_checked.bib.
+
+\end{comment}
+
+\begin{comment}
+=== Revision log ===
 2026-05-07  R. Cappuccio / Claude  (Wave E -- Signorelli S6/S7 global-style sweep)
   S7 closure of the outlook section: the closing paragraph
     "If successfully implemented, Rydberg avalanche detectors could
@@ -111,7 +182,7 @@ state mixing, while achieving single-photon sensitivity ($\sim 10^{-22}$~W) and 
 \section{Introduction}
 Quantum sensing exploits the non-classical properties of quantum systems---superposition, entanglement, and squeezing---to measure physical quantities with precision beyond the standard quantum limit (SQL). Compared with classical sensors, which rely on deterministic or statistical averaging over large ensembles, quantum sensors operate at or near the level of individual quantum systems, achieving higher sensitivity, bandwidth, and spatial resolution. This field has matured substantially in recent years, spanning solid-state defects, superconducting circuits, trapped ions, and atomic vapors~\cite{Degen2017, Ezratty2024}.
 
-In this chapter, we introduce the theoretical background of quantum sensing, formalize the key limits of precision based on quantum estimation theory, and present a practical classification of sensor platforms. We then focus on a specific implementation: a single-photon detector based on Rydberg-atom electromagnetically induced transparency (EIT). Numerical simulations demonstrate how an engineered atomic medium can transduce microwave or terahertz signals into optical observables, achieving single-photon sensitivity.
+In this chapter, we introduce the theoretical background of quantum sensing, formalise the key limits of precision dictated by quantum estimation theory, and present a practical classification of sensor platforms. We then focus on a specific implementation: a single-photon detector based on facilitation-driven Rydberg-atom avalanche amplification, read out through state-selective field ionisation (SSFI). Numerical simulations demonstrate how a small array of cold Rydberg atoms, prepared in the facilitation regime described in Sec.~\ref{sec:axion_physical_principles}, can amplify a single microwave or terahertz photon absorption event into a macroscopic, spatially correlated excitation pattern that the SSFI stage detects with high efficiency. Electromagnetically induced transparency (EIT), more commonly associated with Rydberg-based field sensing, plays only an indirect role here: it appears in the taxonomy of Sec.~\ref{sec:theoretical_framework} as the canonical readout mechanism of Rydberg \emph{electrometers}, with which we benchmark the present scheme in Sec.~\ref{sec:axion_benchmarking}, but it is not part of the detection chain studied in this chapter.
 
 \subsection*{Scope and Methodology}
 
@@ -287,6 +358,14 @@ where $\alpha \sim 0.1$--0.2 is the suppression coefficient and $B_0 \sim 1$ T i
 \subsection*{Avalanche Amplification Mechanism}
 
 The avalanche amplification mechanism exploits the strong, long-range interactions between Rydberg atoms to convert a single quantum excitation into a macroscopic signal~\cite{Nill2024,Valado2016,Festa2022}.
+
+\subsubsection*{Two regimes of Rydberg--Rydberg interaction: blockade and facilitation}
+
+Before describing the avalanche, it is useful to recall the two qualitatively different regimes that the strong, long-range Rydberg--Rydberg interaction can produce. When two atoms within an interaction radius are both addressed by the same near-resonant laser, the energy of the doubly-excited pair is shifted by an amount $V_{rr}$ that, for the principal quantum numbers of interest in this work, can largely exceed any laser linewidth. Whether the interaction \emph{suppresses} or \emph{promotes} the second excitation depends on the laser detuning $\Delta_{\mathrm{gr}}$.
+
+In the \emph{Rydberg blockade} regime, the laser is tuned to the bare atomic transition ($\Delta_{\mathrm{gr}} = 0$), so the doubly-excited state is shifted out of resonance by $V_{rr}$ and at most one Rydberg excitation can populate the volume defined by the blockade radius~\cite{saffman2010quantum,Urban2009,Gaetan2009}. The blockade is the operating principle of most Rydberg quantum-information protocols, including two-qubit gates and entanglement-generation schemes.
+
+In the \emph{facilitation} (or anti-blockade) regime, the laser is detuned by the interaction shift itself, so that a single existing Rydberg excitation brings its neighbours into resonance with the laser while isolated atoms remain off-resonant~\cite{Valado2016,Festa2022}. The first excitation, far from blocking the others, now \emph{promotes} them. Iterating this process produces an avalanche of correlated excitations whose growth is approximately ballistic in time and whose final size $\mathcal{A}$ is set by the system size and the available coherence time. The detector studied in this chapter operates entirely in this second regime, and the design choices that follow---the laser detuning, the lattice spacing, and the magnetic-field-dependent corrections of Sec.~\ref{sec:zeeman_correction}---should be read as the conditions required to keep the system on the facilitation side of the blockade--facilitation crossover.
 
 \subsubsection*{Facilitation Condition}
 
