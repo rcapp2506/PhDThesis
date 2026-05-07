@@ -1,4 +1,33 @@
 % !TEX root = ../main.tex
+\begin{comment}
+=== Revision log ===
+2026-05-07  R. Cappuccio / Claude  (Wave C — Signorelli pedagogical closeout)
+  CLOSES S5 (Signorelli review) for the algorithms chapter (Fig. 4.1, 4.2)
+  Substantive changes:
+    * S5 fix on Fig. 4.1 (fig:hybrid_overview): the figure caption
+      previously walked through the diagram step-by-step (classical
+      features -> hidden activations -> qubit rotations -> variational
+      circuit -> classical readout) carrying interpretive weight.
+      Caption was simplified to "Schematic of a hybrid quantum-
+      classical neural network. Adapted from [Filippi2025Thesis]";
+      the step-by-step walkthrough was moved into a new body
+      paragraph immediately after the figure, anchoring each diagram
+      element to one of the four design choices (i)-(iv) introduced
+      in the preceding paragraph.
+    * S5 fix on Fig. 4.2 (fig:qconv_schematic): the figure caption
+      previously concluded with "analogous to the proposed quantum
+      convolutional layer" -- a connecting interpretive claim better
+      placed in body. Caption was simplified to "Variational quantum
+      circuit interpreted as a neural network, adapted from Fig. 5.16
+      of [SchuldPetruccione2021]"; a new body paragraph after the
+      figure makes the four functional blocks explicit (input patches,
+      encoder, trainable layers, measurement) and identifies our own
+      patch-wise rotation encoding S(p), hardware-efficient ansatz
+      W(theta), and per-channel expectation values <M_c> with each
+      block.
+  See piano_revisione_tesi.md Section 4 (S5).
+\end{comment}
+
 \chapter{Quantum Algorithms and Hybrid Variational Architectures}
 \label{ch:quantum_algorithms}
 {% GRUPPO LOCALE
@@ -57,18 +86,30 @@ In classical deep learning, backpropagation reuses intermediate activations via 
 Even with analytic gradients, training can fail when variances vanish (so-called \emph{barren plateaus}), which arise under sufficiently expressive or random ans\"atze, global cost functions, and in the presence of noise~\cite{McClean2018}. Practical recipes emphasize shallow, structured circuits, local cost terms, and encoders that restrict the effective hypothesis class to mitigate concentration-of-measure effects~\cite{SchuldPetruccione2021,cerezo2021}.
 
 \paragraph{Implications for hybrid Q-CNNs.}
-These ingredients inform our hybrid quantum convolutional design: (i) patch-wise rotation encoding to respect image locality and to keep state preparation scalable; (ii) shallow entangling blocks arranged in a convolution-like tiling to capture short-range correlations with limited receptive fields; (iii) measurement-defined feature maps serving as quantum ``filters'' whose outputs feed classical layers; and (iv) training via parameter-shift gradients with shot budgeting matched to layer sensitivity. By aligning encoding, ansatz structure, and gradient estimation with the inductive biases of convolutional processing, we obtain architectures that are both hardware-aware and well-posed for the benchmarks presented in the following sections (see Fig.~\ref{fig:hybrid_overview}). 
+These ingredients inform our hybrid quantum convolutional design: (i) patch-wise rotation encoding to respect image locality and to keep state preparation scalable; (ii) shallow entangling blocks arranged in a convolution-like tiling to capture short-range correlations with limited receptive fields; (iii) measurement-defined feature maps serving as quantum ``filters'' whose outputs feed classical layers; and (iv) training via parameter-shift gradients with shot budgeting matched to layer sensitivity. By aligning encoding, ansatz structure, and gradient estimation with the inductive biases of convolutional processing, we obtain architectures that are both hardware-aware and well-posed for the benchmarks presented in the following sections; Fig.~\ref{fig:hybrid_overview} renders this hybrid pipeline schematically. 
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.9\textwidth]{chapters/qa_figures/intro_ql.png}
-    \caption{Schematic representation of a hybrid quantum--classical neural network. 
-    Classical features $x_1,x_2,x_3$ are mapped to hidden activations $h_1,h_2$, 
-    encoded into qubit rotations $R(h_1)$ and $R(h_2)$, and processed by a variational 
-    quantum circuit $U(\boldsymbol{\theta})$. Measured outputs $m_1,m_2$ are passed to a 
-    classical readout layer producing the final output $y$. 
-    Adapted from~\cite{Filippi2025Thesis}.}
+    \caption{Schematic of a hybrid quantum--classical neural network. Adapted from~\cite{Filippi2025Thesis}.}
     \label{fig:hybrid_overview}
 \end{figure}
+
+The schematic in Fig.~\ref{fig:hybrid_overview} traces the four stages of
+the hybrid pipeline introduced above. Classical features
+$x_1,x_2,x_3$ are first compressed by a conventional dense layer into a
+low-dimensional latent representation $h_1,h_2$ that respects the patch
+budget of the available qubits. The latent activations are then encoded
+into single-qubit rotations $R(h_1)$ and $R(h_2)$, realising the
+angle-encoding feature map of point (i) above. The variational unitary
+$U(\boldsymbol{\theta})$ implements the shallow entangling block of
+point (ii) and acts as the quantum counterpart of a convolutional filter:
+its parameters $\boldsymbol{\theta}$ are the learnable weights updated
+by parameter-shift gradients (point iv). The two measured expectation
+values $m_1,m_2$ — the measurement-defined feature maps of point (iii) —
+are finally fed back into a classical readout layer producing the
+network output $y$. The diagram is therefore a literal pictorial
+realisation of the four design choices listed in the previous paragraph,
+and the rest of this chapter quantifies each of them in turn.
 
 
 \subsection{Classical CNNs}\label{sec:classical-cnns}
@@ -181,18 +222,28 @@ with the left arrow indicating that blocks at larger $\ell$ are applied later (i
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.85\linewidth]{chapters/qa_figures/Fig5_16_SchuldPetruccione2021.eps}
-    \caption{Schematic representation of a variational quantum circuit interpreted 
-    as a neural network, adapted from Fig.~5.16 in \cite{SchuldPetruccione2021}. 
-    The diagram highlights the correspondence between classical input patches,
-    quantum feature encoding, trainable unitary layers, and measurement outputs,
-    analogous to the proposed quantum convolutional layer.}
+    \caption{Variational quantum circuit interpreted as a neural network, adapted from Fig.~5.16 of \cite{SchuldPetruccione2021}.}
     \label{fig:qconv_schematic}
 \end{figure}
 
-The general workflow follows the principle outlined in~\cite{SchuldPetruccione2021}, 
-where each parametrized quantum circuit acts as a non-linear feature extractor,
-and its measurement outcomes provide a compact representation for classical
-post-processing.
+Figure~\ref{fig:qconv_schematic} provides the conceptual template that
+underpins our quantum convolutional layer. The diagram identifies four
+functional blocks — classical input patches at the entry, a quantum
+feature encoder, a stack of trainable unitary layers, and an output
+measurement stage — and assigns to each the same role it would play in
+a classical convolutional network: encoding maps raw inputs into a
+representation that exposes the relevant inductive biases, the trainable
+unitaries play the role of learnable filters, and the measurement stage
+produces the channel outputs that feed the next layer. Reading our own
+quantum convolutional layer through this lens, the patch-wise rotation
+encoding $S(\mathbf{p})$ defined below realises the
+\emph{encoder} block, the hardware-efficient ansatz $W(\boldsymbol{\theta})$
+realises the trainable unitary stack, and the per-channel expectation
+values $\langle M_c\rangle$ realise the output stage; the workflow
+follows the principle outlined in~\cite{SchuldPetruccione2021}, in
+which each parametrised quantum circuit acts as a non-linear feature
+extractor whose measurement outcomes provide a compact representation
+for classical post-processing.
 
 
 In the baseline, we adopt rotation (angle) encoding,

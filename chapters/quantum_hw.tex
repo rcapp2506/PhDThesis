@@ -1,6 +1,55 @@
 % !TEX root = ../main.tex
 \begin{comment}
 === Revision log ===
+2026-05-07  R. Cappuccio / Claude  (Wave C — Signorelli pedagogical closeout)
+  CLOSES S2, S4, S5 (Signorelli review) for the hardware chapter
+  Substantive changes:
+    * S2 (numerical-value justification, originally Sec. 2.4):
+      added a 4-paragraph pedagogical preamble before
+      tab:squid_design_params (System Design and Parameters) that
+      explicitly motivates each of the three independent design
+      parameters: (i) E_C = 0.2 GHz placed in the standard
+      0.15-0.30 GHz transmon range with the trade-off between
+      anharmonicity (microwave control) and transmon-regime depth
+      (charge-noise suppression) made explicit; (ii) E_J/E_C = 135
+      explicitly compared with the Koch et al. 2007 conventional
+      threshold E_J/E_C >= 50; (iii) the 11.1% asymmetry justified
+      by the requirement of a finite minimum E_J at the flux sweet
+      spot (E_J(Phi_0/2) = 3 GHz) and by demonstrated fabrication
+      feasibility (cite Hutchings2017, nakamura2011epitaxialNbN).
+      The lone parenthetical "(firmly transmon-regime)" in the table
+      was replaced with the more specific "(>> 50, deep transmon
+      regime)".
+    * S4 (informal exclamatives):
+        - Replaced "We are just 0.1% below threshold -- tantalizingly
+          close!" (Gap to Threshold subsubsection) with a quantitative
+          paragraph identifying the 0.10 percentage-point gap, the
+          three independent recovery channels (dynamical decoupling,
+          DRAG-like pulse shaping, substrate engineering), and their
+          expected per-channel fidelity gain (0.05-0.20 pp).
+        - Removed the "(catastrophic!)" parenthetical from the
+          unshielded radiative-loss boxed equation; the qualitative
+          observation is now in formal body prose, comparing the
+          0.37-microsecond bare radiative T_1 with the 20-ns gate
+          duration and stating that 3D cavity shielding is a
+          structural requirement of the architecture rather than an
+          optional optimisation.
+    * S5 (figure conclusions in caption -> body, Fig. 2.16):
+      Fig. fig:thermal_heatsq previously appeared isolated, with no
+      body discussion at all between the closing paragraph of
+      fig:thermal_comprehensive and the next subsection
+      (Flux-Tunability). Added a new "Operating-regime summary"
+      paragraph that walks through the left and right panels of
+      fig:thermal_heatsq, makes the trade-off (mK validation domain
+      vs. 4-10 K target operating regime) explicit, and grounds the
+      2% threshold criterion in the observed single-qubit gate-error
+      budget (~10^-3). The caption is unchanged but is no longer the
+      sole carrier of the figure's interpretive content.
+  Bibliographic dependencies (verified in bib):
+    Koch2007Transmon, kjaergaard2020, Hutchings2017,
+    nakamura2011epitaxialNbN.
+  See piano_revisione_tesi.md Section 4 (S2, S4, S5).
+
 2026-05-07  R. Cappuccio / Claude  (Wave A — hardware closeout)
   CLOSES G6, G8, G9, G15, G16 (Gatti review)
   Substantive changes:
@@ -361,7 +410,50 @@ The baseline provides proof of concept and validates our design approach. The in
 
 \section{System Design and Parameters}
 
-We analyze a representative high-$T_c$ NbN transmon with:
+The three parameters that fix the device — the charging energy $E_C$, the
+two junction Josephson energies $E_{J1},\,E_{J2}$, and the resulting SQUID
+asymmetry $\eta$ — are not independent design choices but are tied together
+by the physics of the transmon and by the intended high-temperature
+operating point. We therefore briefly motivate each value in
+Tab.~\ref{tab:squid_design_params} before presenting the table itself.
+
+The charging energy $E_C = e^{2}/(2 C_{\Sigma})$ is set by the total qubit
+shunt capacitance and selects the operating regime of the device.
+Established transmon implementations on Al/AlO$_x$/Al junctions adopt
+$E_C/h \in [0.15,\,0.30]\,\text{GHz}$~\cite{Koch2007Transmon,kjaergaard2020};
+this range balances two competing requirements. Larger $E_C$ improves the
+anharmonicity $\alpha \approx -E_C$ and therefore the spectral selectivity
+of microwave control, suppressing leakage to the
+$\lvert 2\rangle$ state during fast pulses; smaller $E_C$ pushes the
+device deeper into the transmon regime ($E_J/E_C \gg 1$) and
+exponentially suppresses charge-noise dephasing. The value $E_C/h =
+\SI{0.2}{GHz}$ adopted here sits in the middle of the standard range and
+is therefore representative rather than extremal — it is the same charging
+energy a state-of-the-art mK transmon would adopt.
+
+The junction Josephson energies $E_{J1} = \SI{15.0}{GHz}$ and
+$E_{J2} = \SI{12.0}{GHz}$ are chosen with two distinct constraints in mind.
+First, their sum $E_{J1}+E_{J2}=\SI{27.0}{GHz}$ at zero flux gives
+$E_J/E_C = 135$, which is deep in the transmon regime as defined by
+Koch~\textit{et~al.}~\cite{Koch2007Transmon} (the condition is conventionally
+quoted as $E_J/E_C \gtrsim 50$, where charge dispersion drops below
+$10^{-4}$ of the qubit frequency); this ratio guarantees that residual
+charge noise is no longer a leading dephasing channel. Second, the
+asymmetry $\eta=(E_{J1}-E_{J2})/(E_{J1}+E_{J2})\approx 11\%$ is chosen to
+preserve a finite minimum Josephson energy
+$E_J(\Phi_0/2) = |E_{J1}-E_{J2}| = \SI{3}{GHz}$ at the
+flux-insensitive sweet spot, so that the qubit retains anharmonic
+structure over the whole flux-tuning range. The 11\,\% asymmetry has been
+demonstrated in standard Al-based asymmetric SQUID transmons and is
+within reach of one-pass shadow-evaporation
+fabrication~\cite{Hutchings2017,nakamura2011epitaxialNbN};
+it is therefore a fabrication target, not a fundamental design freedom.
+
+The resulting parameter set, summarised in Tab.~\ref{tab:squid_design_params},
+is therefore representative of a standard asymmetric SQUID transmon and
+will serve in the rest of this chapter as the baseline against which
+high-temperature variants are compared.
+
 \begin{table}[h]
 \centering
 \begin{tabular}{@{}lc@{}}
@@ -371,7 +463,7 @@ We analyze a representative high-$T_c$ NbN transmon with:
 Charging energy $E_C$                                       & $\SI{0.2}{GHz}$ \\
 Junction energies $E_{J1},\,E_{J2}$                          & $\SI{15.0}{GHz},\,\SI{12.0}{GHz}$ \\
 Asymmetry $\eta=(E_{J1}-E_{J2})/(E_{J1}+E_{J2})$            & $11.1\%$ \\
-Ratio $E_J/E_C$ at $\Phi=0$                                  & $135$ (firmly transmon-regime) \\
+Ratio $E_J/E_C$ at $\Phi=0$                                  & $135$ ($\gg 50$, deep transmon regime) \\
 \bottomrule
 \end{tabular}
 \caption{Reference SQUID parameters used in the system-design analysis.}
@@ -536,6 +628,28 @@ To fully characterize the elevated-temperature operating regime, we analyze the 
 \paragraph{Performance Benchmarking.} The comparison table in panel e) quantitatively demonstrates that HEATS-Q thermal populations remain orders of magnitude below typical gate error rates (0.1--1\%). While traditional Al-based transmons achieve negligible thermal excitation at \SI{20}{mK}, the infrastructural cost of dilution refrigeration makes scaled deployment challenging. According to our estimation, the HEATS-Q approach sacrifices four orders of magnitude in thermal suppression but gains a 70--80\% reduction in cryogenic system cost and complexity.
 
 \paragraph{Design Constraints.} Panel (f) maps the relationship between operating temperature and minimum required qubit frequency for various thermal population thresholds. The HEATS-Q operating points (blue circles) lie well above the 1\% threshold curve, indicating robust operation at standard conditions, with margin for parameter drift and environmental fluctuations. 
+
+\paragraph{Operating-regime summary.}
+Figure~\ref{fig:thermal_heatsq} consolidates the conclusions of the
+six-panel analysis above into a single design-oriented view. The left
+panel shows that, at the HEATS-Q sweet-spot frequency
+$\omega_{01}/2\pi = \SI{1.972}{GHz}$, thermal population stays below the
+2\% ``excellent'' threshold for $T \lesssim \SI{16}{mK}$ — well within
+the standard mK band of state-of-the-art transmon experiments — and
+remains in the $5\text{--}10\,\%$ ``acceptable'' band up to about
+\SI{20}{mK}. This range is the natural validation domain for the model,
+not the target operating regime, and the fact that all five mK
+operating points fall in the green/light-blue zones provides direct
+empirical anchoring for the modelling assumptions used later in the
+chapter at $T \in [4,10]\,\text{K}$. The right panel makes the trade-off
+that defines the HEATS-Q architecture explicit: relative to a traditional
+Al/AlO$_x$ transmon at \SI{20}{mK}, the HEATS-Q design accepts up to
+four orders of magnitude higher thermal population in exchange for an
+operating temperature that is two orders of magnitude warmer. The 2\,\%
+threshold (red dashed line) marks the upper limit at which the
+thermal-error budget remains comparable with present-day single-qubit
+gate-error rates ($\sim 10^{-3}$), so that thermal excitation does not
+become the limiting decoherence channel.
 
 \begin{figure}[htbp]
 \centering
@@ -2110,8 +2224,15 @@ The qubit acts as an antenna, radiating electromagnetic energy. The loss rate sc
 
 Unshielded:
 \begin{equation}
-T_1^{\text{rad}}(300 \text{ GHz}) = T_1^{\text{rad}}(5.8 \text{ GHz}) \times \left(\frac{5.8}{300}\right)^2 = \boxed{0.37 \text{ }\mu\text{s}} \quad \text{(catastrophic!)}
+T_1^{\text{rad}}(300 \text{ GHz}) = T_1^{\text{rad}}(5.8 \text{ GHz}) \times \left(\frac{5.8}{300}\right)^2 = \boxed{0.37 \text{ }\mu\text{s}}
 \end{equation}
+
+This bare radiative lifetime is roughly two orders of magnitude shorter
+than typical single-qubit gate durations
+($\tau_{\text{1Q}} \sim \SI{20}{ns}$) and would by itself preclude any
+coherent operation. Suppression through 3D cavity shielding, discussed
+in the next paragraph, is therefore not an optional optimisation but a
+structural requirement of the architecture.
 
 With 3D cavity (60 dB shielding):
 \begin{equation}
@@ -2374,7 +2495,17 @@ The surface code error correction threshold is typically $F_{\text{threshold}} \
 \Delta F = F_{\text{CNOT}} - F_{\text{threshold}} = 97.90\% - 98.00\% = -0.10\%
 \end{equation}
 
-We are just 0.1\% below threshold—tantalizingly close!
+The resulting CNOT fidelity at \SI{4}{K} therefore falls only $0.10$
+percentage points below the surface-code threshold. This narrow margin is
+within the recovery budget of standard error-mitigation techniques —
+dynamical decoupling of idle qubits during multi-qubit operations,
+DRAG-like pulse shaping to suppress leakage to the
+$\lvert 2 \rangle$ state, and improved substrate engineering to reduce
+dielectric loss are each independently expected to contribute
+fidelity gains in the range $0.05$--$0.20$ percentage points, so that
+combinations of two or more should plausibly close the budget without
+redesigning the device. The next subsection enumerates these strategies
+quantitatively.
 
 \subsubsection{Pathways to Reach Threshold}
 
