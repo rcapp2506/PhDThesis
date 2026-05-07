@@ -1,5 +1,49 @@
 
 % !TEX root = ../main.tex
+\begin{comment}
+=== Revision log ===
+2026-05-07  R. Cappuccio / Claude  (Wave B — sensing closeout)
+  CLOSES G11, G12 (Gatti review)
+  Substantive changes:
+    * G11 (femto-Tesla notation, p. 106): replaced "$f_T/\sqrt{Hz}$"
+      with "fT/$\sqrt{\text{Hz}}$" in the SQUID magnetometer comparison
+      sentence. The other occurrence on p. 817 (table) was already in
+      the correct form.
+    * G12 (Ref. [169] Nill2024 attribution, p. 108): reframed five
+      sentences to make explicit that Nill et al., PRL 133, 073603
+      (2024) is a theoretical proposal, not an experimental
+      demonstration. Specifically:
+        - "Recent experimental work has demonstrated..." -> "A recent
+          theoretical proposal predicts..." (Sec. avalanche intro)
+        - "consistent with experimental observations~[Nill2024]" ->
+          "consistent with the theoretical predictions of
+          Ref.~[Nill2024]" (Sec. avalanche dynamics, N=11 calibration)
+        - "Based on Ref.~[Nill2024], we estimate ... current
+          experimental parameters" -> "Based on the theoretical
+          analysis of Ref.~[Nill2024], we estimate ... typical
+          experimental parameters" (Sec. optimal N* discussion)
+        - "Recent experimental work~[Nill2024] has demonstrated
+          avalanche amplification in 2D" -> "The theoretical
+          proposal of Ref.~[Nill2024] also considers 2D extensions
+          ... still awaiting experimental confirmation"
+          (Sec. limitations / 2D extensions)
+        - "the foundational experimental results of Ref.~[Nill2024],
+          demonstrating terahertz avalanche detection" -> "the
+          foundational theoretical proposal of Ref.~[Nill2024],
+          predicting terahertz avalanche detection"
+          (acknowledgments)
+      The grouped citation in the Sec. avalanche-mechanism paragraph
+      ([Nill2024,Valado2016,Festa2022]) was left unchanged: Valado2016
+      and Festa2022 are experimental and support the underlying
+      Rydberg-interaction physics that grounds the mechanism, even
+      though Nill2024 itself is theoretical.
+  Bibliographic dependencies (no new entries needed; verified in bib):
+    Nill2024 (PRL 133, 073603, 2024 — theoretical proposal),
+    Valado2016 (PRA 93, 040701, 2016 — experimental),
+    Festa2022 (PRA 105, 013109, 2022 — experimental).
+  See piano_revisione_tesi.md Section 5 phase 5 (G11, G12).
+\end{comment}
+
 \chapter{Quantum Sensing}
 \label{ch:quantum_sensing}
 
@@ -105,7 +149,7 @@ Atomic interferometers & Matter-wave phase shift & Gravity, rotation \\
 \end{table}
 
 \subsection*{Quantum Magnetometry and Interferometry}
-Quantum magnetometers such as NV-center sensors detect magnetic fields via Zeeman shifts in spin transitions, read out optically through photoluminescence contrast. SQUIDs exploit flux quantization and Josephson interference, providing $f_T/\sqrt{Hz}$ sensitivity at cryogenic temperatures. Atomic interferometers measure phase shifts induced by acceleration or rotation, achieving sub-ppb precision.
+Quantum magnetometers such as NV-center sensors detect magnetic fields via Zeeman shifts in spin transitions, read out optically through photoluminescence contrast. SQUIDs exploit flux quantization and Josephson interference, providing fT/$\sqrt{\text{Hz}}$ sensitivity at cryogenic temperatures. Atomic interferometers measure phase shifts induced by acceleration or rotation, achieving sub-ppb precision.
 
 \section{Rydberg-Atom Quantum Sensing}
 
@@ -141,7 +185,7 @@ Rydberg atoms---atoms with one or more electrons excited to very high principal 
     \item \textbf{Environmental decoupling}: Low thermal excitation rates even at elevated temperatures
 \end{itemize}
 
-Recent experimental work has demonstrated that Rydberg systems can detect terahertz photons through avalanche amplification~\cite{Nill2024}. In this mechanism, a single Rydberg excitation triggers a cascade of further excitations via dipole-dipole interactions, amplifying the initial signal into a macroscopic number of excited atoms that can be detected through standard readout techniques. Crucially, this amplification occurs in a controllable, deterministic manner when the system is prepared in the \textit{facilitation regime}, where Rydberg interactions shift neighboring atoms into resonance with the driving laser.
+A recent theoretical proposal predicts that Rydberg systems can detect terahertz photons through avalanche amplification~\cite{Nill2024}. In this mechanism, a single Rydberg excitation triggers a cascade of further excitations via dipole-dipole interactions, amplifying the initial signal into a macroscopic number of excited atoms that can be detected through standard readout techniques. Crucially, this amplification occurs in a controllable, deterministic manner when the system is prepared in the \textit{facilitation regime}, where Rydberg interactions shift neighboring atoms into resonance with the driving laser.
 
 \subsection*{Scope and Organization}
 In this chapter, we present a comprehensive theoretical investigation of Rydberg avalanche amplification as a single-photon detection scheme for axion dark matter searches. We extend the avalanche mechanism to the regime of strong magnetic fields and demonstrate that the detector maintains single-photon sensitivity across the parameter space required by haloscope experiments.
@@ -246,7 +290,7 @@ The amplification factor, defined as the ratio of the final to initial excitatio
     \label{eq:amplification_factor}
 \end{equation}
 
-For a system of $N = 11$ atoms with $\Omega_{\mathrm{gr}}/(2\pi) = 0.2$ MHz, we obtain $T_a \sim 8.8$ $\mu$s and $\mathcal{A} \sim 5$--8, consistent with experimental observations~\cite{Nill2024}.
+For a system of $N = 11$ atoms with $\Omega_{\mathrm{gr}}/(2\pi) = 0.2$ MHz, we obtain $T_a \sim 8.8$ $\mu$s and $\mathcal{A} \sim 5$--8, consistent with the theoretical predictions of Ref.~\cite{Nill2024}.
 
 \subsubsection{Spatial Correlations}
 
@@ -726,7 +770,7 @@ Our simulations assume coherent evolution over timescales $T_a \sim 10$ $\mu$s, 
 
 \subsubsection{Optimal System Size}
 
-There exists an optimal system size $N^*$ that maximizes detection efficiency while maintaining coherence. Based on Ref.~\cite{Nill2024}, we estimate $N^* \sim 10$--20 atoms for current experimental parameters. Beyond this, the benefits of increased amplification are offset by larger decoherence and readout complexity.
+There exists an optimal system size $N^*$ that maximizes detection efficiency while maintaining coherence. Based on the theoretical analysis of Ref.~\cite{Nill2024}, we estimate $N^* \sim 10$--20 atoms for typical experimental parameters. Beyond this, the benefits of increased amplification are offset by larger decoherence and readout complexity.
 
 \subsection*{Frequency Range}
 
@@ -772,7 +816,7 @@ Significantly, the finite detection efficiency affects only the \emph{readout} s
 
 \subsubsection{One-Dimensional Geometry}
 
-Our simulations assume a 1D atomic chain. Extension to 2D or 3D geometries would increase the amplification factor ($\mathcal{A} \sim N^{d/2}$ for dimension $d$) but also introduce anisotropic avalanche dynamics and complicate the facilitation condition. Recent experimental work~\cite{Nill2024} has demonstrated avalanche amplification in 2D, suggesting this extension is feasible.
+Our simulations assume a 1D atomic chain. Extension to 2D or 3D geometries would increase the amplification factor ($\mathcal{A} \sim N^{d/2}$ for dimension $d$) but also introduce anisotropic avalanche dynamics and complicate the facilitation condition. The theoretical proposal of Ref.~\cite{Nill2024} also considers 2D extensions of the avalanche scheme, suggesting this generalisation is feasible in principle, although still awaiting experimental confirmation.
 
 \subsubsection{Photon Absorption Efficiency}
 
@@ -872,7 +916,7 @@ If successfully implemented, Rydberg avalanche detectors could enable next-gener
 
 \section*{Acknowledgments}
 
-The author acknowledges the use of the QuTiP library for quantum simulations~\cite{Johansson2013,qutip5}. This work builds on the foundational experimental results of Ref.~\cite{Nill2024}, demonstrating terahertz avalanche detection in Rydberg atoms.
+The author acknowledges the use of the QuTiP library for quantum simulations~\cite{Johansson2013,qutip5}. This work builds on the foundational theoretical proposal of Ref.~\cite{Nill2024}, predicting terahertz avalanche detection in Rydberg atoms.
 
 
 \begin{comment}
