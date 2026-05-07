@@ -1,6 +1,30 @@
 % !TEX root = ../main.tex
 \begin{comment}
 === Revision log ===
+2026-05-07  R. Cappuccio / Claude  (Wave D — Signorelli S6/S7 targeted sweep)
+  PARTIAL CLOSURE of S6 and S7 (jargon + global style) — 2 patches in
+  this file (hardware chapter):
+    * S7 hyperbole removal in Part-D abstract paragraph (Sec. summary
+      block at top of chapter): "novel and ambitious extension... could
+      revolutionize quantum computing by dramatically reducing cooling
+      costs and enabling scalable deployment... roadmap for achieving
+      this breakthrough" -> measured prose "extension to elevated
+      temperatures... approach is technically demanding and, to our
+      knowledge, has not yet been realised experimentally... could
+      substantially reduce cryogenic infrastructure cost... roadmap
+      toward an experimental demonstration".
+    * S7 hyperbole removal in "Part B: Innovation" wrap-up:
+      "opening a \\textbf{pathway to a transformative breakthrough}"
+      -> "opening a path to qubit operation outside the
+      dilution-refrigerator regime". Bolded hyperbole removed.
+  Note: this is a TARGETED sweep, not a complete S6/S7 closure. The
+  remaining items (full acronym audit across all chapters, restructuring
+  of the business-tone "executive summary" subsection at end of
+  chapter, paragraph-level connective and tone polish, reactivation of
+  the Notation and Conventions block in introduction_revised.tex) are
+  flagged for a dedicated global-style review session, see handoff
+  notes "handoff_S6_S7_global_style.md".
+
 2026-05-07  R. Cappuccio / Claude  (Wave C — Signorelli pedagogical closeout)
   CLOSES S2, S4, S5 (Signorelli review) for the hardware chapter
   Substantive changes:
@@ -400,7 +424,7 @@ The choice between flux-dip control, direct sub-THz sources, and frequency mixin
 A feasibility study will provide the optimal choice for the experimental phase of the project.
 
 \section{Comprehensive analysis of asymmetric-squid-based qubit}
-\textbf{Part A} has presented a comprehensive analysis of asymmetric SQUID-based superconducting qubits in two operational regimes. \textbf{Part B} demonstrates baseline performance at standard cryogenic temperatures (10--20~mK) with qubit frequencies of 5--6~GHz, achieving CNOT gate fidelities approaching 99\% (98.7\%). \textbf{Part C} explores a novel and ambitious extension: operating at elevated temperatures (4--10~K) by pushing qubit frequencies to 300~GHz. While technically challenging and unprecedented, this approach could revolutionize quantum computing by dramatically reducing cooling costs and enabling scalable deployment. We provide a theoretical framework, feasibility assessment, and a roadmap for achieving this breakthrough. Lastly, in \textbf{Part D}, we present the conclusions and some recommendations.
+\textbf{Part A} has presented a comprehensive analysis of asymmetric SQUID-based superconducting qubits in two operational regimes. \textbf{Part B} demonstrates baseline performance at standard cryogenic temperatures (10--20~mK) with qubit frequencies of 5--6~GHz, achieving CNOT gate fidelities approaching 99\% (98.7\%). \textbf{Part C} explores an extension to elevated temperatures (4--10~K) by pushing qubit frequencies to 300~GHz. The approach is technically demanding and, to our knowledge, has not yet been realised experimentally; the analysis below indicates that, under the design assumptions stated in Sec.~\ref{sec:dielectric_loss_300ghz}, it could substantially reduce cryogenic infrastructure cost and improve the scalability of large quantum processors. We provide a theoretical framework, a feasibility assessment, and a roadmap toward an experimental demonstration. Lastly, in \textbf{Part D}, we present the conclusions and some recommendations.
 
 both the \textbf{baseline validation}, which demonstrates that asymmetric SQUID qubits achieve state-of-the-art performance at conventional operating conditions, and the \textbf{transformative innovation}, which explores the frontier of elevated-temperature quantum computing by pushing operation to $300$~GHz at $4$--$10$~K.
 
@@ -2983,7 +3007,7 @@ Asymmetric SQUID qubits at $5$--$6$~GHz achieve a $98.7\%$ CNOT fidelity at $20$
 
 \subsubsection*{Part B: Innovation (Novel)}
 
-Operation at $300$~GHz enables temperatures of $4$--$10$~K, with thermal populations remaining manageable ($3$--$10\%$) and projected fidelities above the error-correction thresholds, opening a \textbf{pathway to a transformative breakthrough}.
+Operation at $300$~GHz enables temperatures of $4$--$10$~K, with thermal populations remaining manageable ($3$--$10\%$) and projected fidelities above the error-correction thresholds, opening a path to qubit operation outside the dilution-refrigerator regime.
 
 %\subsubsection{Final Considerations}
 

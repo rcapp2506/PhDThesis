@@ -1,6 +1,30 @@
 % !TEX root = ../main.tex
 \begin{comment}
 === Revision log ===
+2026-05-07  R. Cappuccio / Claude  (Wave D — Signorelli S6/S7 targeted sweep)
+  PARTIAL CLOSURE of S6 and S7 — 4 patches in this file (algorithms
+  chapter):
+    * S6 acronym expansion: "classical CNN baselines" -> "classical
+      convolutional neural network (CNN) baselines" in the chapter
+      abstract (first occurrence of CNN in the chapter).
+    * S6 acronym expansion: "scheduling (ASAP/ALAP)" ->
+      "as-soon-as-possible / as-late-as-possible (ASAP/ALAP)
+      scheduling" at first occurrence in the runtime-aware metrics
+      preliminaries.
+    * S6 acronym expansion: "mini-batch SGD adaptation" ->
+      "mini-batch stochastic-gradient-descent (SGD) adaptation" at
+      first occurrence (the existing subsubsection title at the
+      hardware-validation section is left as is, since SGD is now
+      properly introduced at first use upstream).
+    * S7 informal qualifier removal: "Crucially, the derivative
+      $\\partial \\langle \\hat{O}\\rangle / \\partial \\theta_k$ is not
+      available..." restructured to "The derivative ..., however, is
+      not available...", preserving the contrast without the informal
+      adverb.
+  This file is consistent with the "Wave D" partial-closure note in
+  quantum_hw.tex; full S6/S7 closure deferred to the dedicated
+  global-style review session (handoff_S6_S7_global_style.md).
+
 2026-05-07  R. Cappuccio / Claude  (Wave C — Signorelli pedagogical closeout)
   CLOSES S5 (Signorelli review) for the algorithms chapter (Fig. 4.1, 4.2)
   Substantive changes:
@@ -43,7 +67,7 @@
 }
 
 \begin{abstract}
-This chapter explores hybrid quantum--classical machine learning architectures for remote sensing image classification, bridging the Noisy Intermediate-Scale Quantum (NISQ) era with practical applications. We develop a modular \textbf{Quantum Convolutional Neural Network (QCNN)} layer that integrates parameterized quantum circuits into classical convolutional architectures. The QCNN is benchmarked on the EuroSAT satellite imagery dataset and compared against classical CNN baselines. Through systematic ablation studies, we investigate circuit design choices, analyzing their impact on training dynamics, convergence behavior, and classification performance. Results demonstrate that hybrid architectures achieve competitive accuracy (90--95\%) while exhibiting distinctive early-epoch learning characteristics potentially attributable to quantum feature maps. 
+This chapter explores hybrid quantum--classical machine learning architectures for remote sensing image classification, bridging the Noisy Intermediate-Scale Quantum (NISQ) era with practical applications. We develop a modular \textbf{Quantum Convolutional Neural Network (QCNN)} layer that integrates parameterized quantum circuits into classical convolutional architectures. The QCNN is benchmarked on the EuroSAT satellite imagery dataset and compared against classical convolutional neural network (CNN) baselines. Through systematic ablation studies, we investigate circuit design choices, analyzing their impact on training dynamics, convergence behavior, and classification performance. Results demonstrate that hybrid architectures achieve competitive accuracy (90--95\%) while exhibiting distinctive early-epoch learning characteristics potentially attributable to quantum feature maps. 
 \end{abstract}
 
 }
@@ -80,7 +104,7 @@ U(\boldsymbol{\theta},\mathbf{x})=U_L(\theta_L)\,E(\mathbf{x})\cdots U_1(\theta_
 \noindent that alternates fixed \emph{encoders} $E(\mathbf{x})$ with trainable layers $U_\ell(\theta_\ell)$ (the \emph{ansatz}) and outputs model predictions from expectation values $\langle \hat{O}\rangle$ of suitable observables. Hardware-efficient ans\"atze use native single-qubit rotations and entanglers repeated over shallow depth, while problem-inspired templates inject domain structure via symmetries, locality, or conserved quantities~\cite{Benedetti2019,cerezo2021}. The choice of entangling graph, depth, and encoder placement governs the bias--variance trade-off: too little entanglement limits expressivity; too much depth risks vanishing gradients and noise accumulation.
 
 \paragraph{Forward propagation vs.\ gradient evaluation.}
-In classical deep learning, backpropagation reuses intermediate activations via the chain rule across the entire network. In PQC-based models, \emph{forward propagation} consists of executing the circuit and estimating $\langle \hat{O}\rangle$ from a finite number of measurement shots, introducing statistical noise. Crucially, the derivative $\partial \langle \hat{O}\rangle / \partial \theta_k$ is not available by straightforward reverse-mode differentiation through the unitary on hardware; instead, one leverages \emph{parameter-shift} rules that express exact partial derivatives as linear combinations of forward evaluations at shifted parameters (two evaluations per Pauli-generated rotation)~\cite{Mitarai2018,Schuld2019Grad}. This yields unbiased gradients but increases cost roughly proportional to the number of trainable parameters and required shot precision. Simulator-specific \emph{adjoint} methods can reduce cost in silico, but on actual devices the parameter-shift (or closely related) estimators remain the norm. Compared with classical backprop, this gradient acquisition pipeline changes the computational budget and variance profile, motivating shot-frugal schedules and careful layerwise parameterization.
+In classical deep learning, backpropagation reuses intermediate activations via the chain rule across the entire network. In PQC-based models, \emph{forward propagation} consists of executing the circuit and estimating $\langle \hat{O}\rangle$ from a finite number of measurement shots, introducing statistical noise. The derivative $\partial \langle \hat{O}\rangle / \partial \theta_k$, however, is not available by straightforward reverse-mode differentiation through the unitary on hardware; instead, one leverages \emph{parameter-shift} rules that express exact partial derivatives as linear combinations of forward evaluations at shifted parameters (two evaluations per Pauli-generated rotation)~\cite{Mitarai2018,Schuld2019Grad}. This yields unbiased gradients but increases cost roughly proportional to the number of trainable parameters and required shot precision. Simulator-specific \emph{adjoint} methods can reduce cost in silico, but on actual devices the parameter-shift (or closely related) estimators remain the norm. Compared with classical backprop, this gradient acquisition pipeline changes the computational budget and variance profile, motivating shot-frugal schedules and careful layerwise parameterization.
 
 \paragraph{Trainability, noise, and barren plateaus.}
 Even with analytic gradients, training can fail when variances vanish (so-called \emph{barren plateaus}), which arise under sufficiently expressive or random ans\"atze, global cost functions, and in the presence of noise~\cite{McClean2018}. Practical recipes emphasize shallow, structured circuits, local cost terms, and encoders that restrict the effective hypothesis class to mitigate concentration-of-measure effects~\cite{SchuldPetruccione2021,cerezo2021}.
@@ -441,7 +465,7 @@ We adopt Adam with warmup and cosine decay, gradient-norm clipping, and a two-ph
 \label{sec:runtime-metric}
 
 \subsubsection*{Preliminaries and related work}
-Modern compilers expose a \emph{scheduled} circuit duration (the “makespan”) once gates are assigned start times from calibrated instruction durations. In Qiskit, this follows scheduling (ASAP/ALAP) using backend timing information (Target / \texttt{InstructionDurations}); the circuit then carries a total \texttt{duration} in units of \texttt{dt}~\cite{InstructionDurations,ASAPScheduleAnalysis,McKay2018BackendSpec,QiskitBackendV2Docs,QiskitTargetDocs,OpenQASM3TQC2022}. The same abstraction is available when evaluating via Qiskit Primitives (e.g., the \emph{Estimator}) on simulators and hardware~\cite{QiskitEstimatorDocs,Qiskit2019}. 
+Modern compilers expose a \emph{scheduled} circuit duration (the “makespan”) once gates are assigned start times from calibrated instruction durations. In Qiskit, this follows as-soon-as-possible / as-late-as-possible (ASAP/ALAP) scheduling using backend timing information (Target / \texttt{InstructionDurations}); the circuit then carries a total \texttt{duration} in units of \texttt{dt}~\cite{InstructionDurations,ASAPScheduleAnalysis,McKay2018BackendSpec,QiskitBackendV2Docs,QiskitTargetDocs,OpenQASM3TQC2022}. The same abstraction is available when evaluating via Qiskit Primitives (e.g., the \emph{Estimator}) on simulators and hardware~\cite{QiskitEstimatorDocs,Qiskit2019}. 
 
 
 Closely related notions, such as \emph{critical-path} and \emph{latency estimation}, are standard in CAD (Computer-Aided Design) and EDA (Electronic Design Automation) methodologies, where timing analysis is used to estimate the execution latency of digital circuits.  
@@ -889,7 +913,7 @@ The simulator-based architecture search of Sec.~\ref{sec:baselines} identified t
 Emerald is a 54-qubit Crystal-architecture device with native gate set $\{R(\theta,\phi),\; CZ\}$ supplemented by \texttt{measure}, \texttt{reset}, \texttt{delay}, and \texttt{if\_else} primitives. The device exposes 82 directed CZ couplings; characterization metrics for the 2026-05-01 calibration cycle yield a mean two-qubit gate fidelity of 0.987 (range 0.904--0.999) and a mean readout fidelity of 0.978 (range 0.903--0.994 across the 54 qubits). A 4-qubit transmon block with linear connectivity, which is what our QCNN ansatz requires per quantum filter, fits comfortably within the local connectivity but is non-trivially distributed across the global device.
 
 \paragraph{Software stack.}
-The IQM Resonance platform exposes its devices through the \texttt{iqm-client} Python adapter, whose major version determines the Qiskit version against which the adapter is binary-compatible. The version available at the time of this work, \texttt{iqm-client}~34.0.2 (with the underlying \texttt{iqm-station-control-client}~12.1.2), is paired with Qiskit~1.4.2. This pairing reflects the present synchronization between the IQM stack and the upstream Qiskit release cadence, and an alignment to Qiskit~2.x is expected as the IQM adapter tracks future Qiskit releases. The methodological content of this section -- transpilation strategy, calibration-aware layout selection, cost-model calibration, and mini-batch SGD adaptation -- is independent of the specific Qiskit minor version and applies equally to subsequent versions of the toolchain. All numerical results in this section are reproducible against the explicit version pinning reported in the supporting code repository.\footnote{Repository \texttt{qh\_algorithms} (\url{https://github.com/rcapp2506/qh_algorithms}), notebook \texttt{HQCNN.ipynb} for simulator benchmarks and the \texttt{hybrid\_qcnn\_v4\_2\_*\_emerald.ipynb} family for hardware execution. Calibration data are archived as JSON snapshots downloaded from the IQM Resonance dashboard.}
+The IQM Resonance platform exposes its devices through the \texttt{iqm-client} Python adapter, whose major version determines the Qiskit version against which the adapter is binary-compatible. The version available at the time of this work, \texttt{iqm-client}~34.0.2 (with the underlying \texttt{iqm-station-control-client}~12.1.2), is paired with Qiskit~1.4.2. This pairing reflects the present synchronization between the IQM stack and the upstream Qiskit release cadence, and an alignment to Qiskit~2.x is expected as the IQM adapter tracks future Qiskit releases. The methodological content of this section -- transpilation strategy, calibration-aware layout selection, cost-model calibration, and mini-batch stochastic-gradient-descent (SGD) adaptation -- is independent of the specific Qiskit minor version and applies equally to subsequent versions of the toolchain. All numerical results in this section are reproducible against the explicit version pinning reported in the supporting code repository.\footnote{Repository \texttt{qh\_algorithms} (\url{https://github.com/rcapp2506/qh_algorithms}), notebook \texttt{HQCNN.ipynb} for simulator benchmarks and the \texttt{hybrid\_qcnn\_v4\_2\_*\_emerald.ipynb} family for hardware execution. Calibration data are archived as JSON snapshots downloaded from the IQM Resonance dashboard.}
 
 \paragraph{Authentication and connection.}
 Connection to Emerald is established with the API endpoint convention introduced in \texttt{iqm-client}~$\geq$~33, in which a single root URL is paired with a \texttt{quantum\_computer} keyword that selects the device:

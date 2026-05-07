@@ -2,6 +2,19 @@
 % !TEX root = ../main.tex
 \begin{comment}
 === Revision log ===
+2026-05-07  R. Cappuccio / Claude  (Wave D — Signorelli S6/S7 targeted sweep)
+  PARTIAL CLOSURE of S7 — 2 patches in this file (sensing chapter):
+    * S7 informal qualifier removal: "Crucially, this amplification
+      occurs in a controllable, deterministic manner..." restructured
+      to "The amplification proceeds in a controllable, deterministic
+      manner..." (avalanche-mechanism intro).
+    * S7 informal qualifier removal: "Crucially, the Rydberg dark
+      rate can be further reduced by cooling..." restructured to
+      "The Rydberg dark rate, moreover, can be further reduced by
+      cooling..." (dark-count comparison paragraph).
+  Full S6/S7 closure deferred to the dedicated global-style review
+  session (handoff_S6_S7_global_style.md).
+
 2026-05-07  R. Cappuccio / Claude  (Wave B — sensing closeout)
   CLOSES G11, G12 (Gatti review)
   Substantive changes:
@@ -185,7 +198,7 @@ Rydberg atoms---atoms with one or more electrons excited to very high principal 
     \item \textbf{Environmental decoupling}: Low thermal excitation rates even at elevated temperatures
 \end{itemize}
 
-A recent theoretical proposal predicts that Rydberg systems can detect terahertz photons through avalanche amplification~\cite{Nill2024}. In this mechanism, a single Rydberg excitation triggers a cascade of further excitations via dipole-dipole interactions, amplifying the initial signal into a macroscopic number of excited atoms that can be detected through standard readout techniques. Crucially, this amplification occurs in a controllable, deterministic manner when the system is prepared in the \textit{facilitation regime}, where Rydberg interactions shift neighboring atoms into resonance with the driving laser.
+A recent theoretical proposal predicts that Rydberg systems can detect terahertz photons through avalanche amplification~\cite{Nill2024}. In this mechanism, a single Rydberg excitation triggers a cascade of further excitations via dipole-dipole interactions, amplifying the initial signal into a macroscopic number of excited atoms that can be detected through standard readout techniques. The amplification proceeds in a controllable, deterministic manner when the system is prepared in the \textit{facilitation regime}, where Rydberg interactions shift neighboring atoms into resonance with the driving laser.
 
 \subsection*{Scope and Organization}
 In this chapter, we present a comprehensive theoretical investigation of Rydberg avalanche amplification as a single-photon detection scheme for axion dark matter searches. We extend the avalanche mechanism to the regime of strong magnetic fields and demonstrate that the detector maintains single-photon sensitivity across the parameter space required by haloscope experiments.
@@ -623,7 +636,7 @@ The Rydberg avalanche detector achieves single-photon sensitivity at power level
 
 \subsection*{Dark Count Rate}
 
-At $T = 4$ K, the Rydberg detector exhibits dark counts below 0.01 Hz, competitive with TES and superior to JJ and KID technologies. Only superconducting nanowire single-photon detectors (SNSPD) achieve significantly lower dark rates ($\sim 10^{-6}$ Hz), but SNSPDs do not operate effectively in the microwave regime. Crucially, the Rydberg dark rate can be further reduced by cooling (Table~\ref{tab:temperature_scan}), whereas superconducting detector dark rates are limited by fundamental processes such as quasiparticle generation and critical current fluctuations.
+At $T = 4$ K, the Rydberg detector exhibits dark counts below 0.01 Hz, competitive with TES and superior to JJ and KID technologies. Only superconducting nanowire single-photon detectors (SNSPD) achieve significantly lower dark rates ($\sim 10^{-6}$ Hz), but SNSPDs do not operate effectively in the microwave regime. The Rydberg dark rate, moreover, can be further reduced by cooling (Table~\ref{tab:temperature_scan}), whereas superconducting detector dark rates are limited by fundamental processes such as quasiparticle generation and critical current fluctuations.
 
 \subsection*{Magnetic Field Compatibility}
 
