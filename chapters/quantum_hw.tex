@@ -979,51 +979,6 @@ At the flux sweet spot ($\Phi = \Phi_0/2$), the first-order sensitivity to flux 
 This leads to enhanced pure dephasing time $T_2^*$ due to suppression of low-frequency flux noise. The asymmetry $\eta = 11.1\%$ ensures:
 offering a non-zero $E_J(\Phi_0/2) = |E_\Delta| = \SI{3}{GHz}$ that maintains the anharmonicity, a reduced charge dispersion compared to symmetric SQUIDs, and a stable operating point well suited to high-fidelity gates.
 
-\section{Two-Qubit Cavity QED System Analysis}
-\subsubsection{Physical Interpretation}
-
-The Hamiltonian consists of three parts:
-\begin{table}[h]
-\centering
-\begin{tabular}{@{}lp{0.55\textwidth}@{}}
-\toprule
-\textbf{Term} & \textbf{Physical meaning} \\
-\midrule
-$\hbar\omega_r \hat{a}^\dagger\hat{a}$                                                 & free evolution of the cavity photon field \\
-$\hbar\omega_{q,i}\hat{\sigma}_z^{(i)}/2$                                              & free evolution of the two qubits \\
-$\hbar g_i\bigl(\hat{a}^\dagger\hat{\sigma}_-^{(i)} + \hat{a}\hat{\sigma}_+^{(i)}\bigr)$ & coherent qubit--cavity exchange via single-photon processes \\
-\bottomrule
-\end{tabular}
-\caption{Three contributions to the Jaynes--Cummings Hamiltonian Eq.~\eqref{eq:JC_2qubit}.}
-\label{tab:hamiltonian_terms}
-\end{table}
-
-\subsection{System Parameters for HEATS-Q}
-\label{sec:system_params}
-
-We consider the following representative parameters:
-\begin{table}[h]
-\centering
-\begin{tabular}{@{}lc@{}}
-\toprule
-\textbf{Quantity} & \textbf{Value} \\
-\midrule
-Cavity frequency $\omega_r/2\pi$       & $\SI{6.5}{GHz}$ \\
-Qubit 1 frequency $\omega_{q1}/2\pi$    & $\SI{5.8}{GHz}$ \\
-Qubit 2 frequency $\omega_{q2}/2\pi$    & $\SI{5.2}{GHz}$ \\
-Qubit--cavity couplings $g_1/2\pi=g_2/2\pi$ & $\SI{80}{MHz}$ \\
-\bottomrule
-\end{tabular}
-\caption{Baseline-mK HEATS-Q nominal parameters.}
-\label{tab:heatsQ_baseline_params}
-\end{table}
-
-The detunings are:
-\begin{align}
-\Delta_1 &= \omega_{q1} - \omega_r = \SI{-0.7}{GHz} \\
-\Delta_2 &= \omega_{q2} - \omega_r = \SI{-1.3}{GHz}
-\end{align}
-
 \subsection{Dispersive Regime Transformation}
 
 \subsubsection{Criterion for Dispersive Regime}
@@ -1159,11 +1114,61 @@ Assuming $\kappa/2\pi = \SI{2}{MHz}$:
 
 Both conditions are amply satisfied, ensuring high-fidelity readout.
 
-\section{Two-Qubit System Numerical Analysis}
+% =============================================================================
+% Wave I — Step 2.B placeholder skeleton (added 2026-05-08)
+% Empty section that will absorb content currently scattered in §1, §2, §6, §7
+% during Step 2.C. Cross-reference labels of the original sections
+% (sec:cavity_mediated_couplings, sec:gate_strategy, subsec:erratum_eq239)
+% are still attached to their old locations and will be moved here together
+% with their content, sub-section by sub-section, in Step 2.C.
+% =============================================================================
+\section{Two-qubit system: baseline configuration}
+\label{sec:two_qubit_baseline}
 
-In this section, we present the numerical analysis summary of two transmon qubits coupled through a microwave cavity resonator in the dispersive regime, optimized for operation at \SIrange{10}{20}{mK} temperatures.
+\subsection{System architecture and parameters}
+\label{sec:system_params}
 
-\subsection{System Architecture}
+\subsubsection{Physical Interpretation}
+
+The Hamiltonian consists of three parts:
+\begin{table}[h]
+\centering
+\begin{tabular}{@{}lp{0.55\textwidth}@{}}
+\toprule
+\textbf{Term} & \textbf{Physical meaning} \\
+\midrule
+$\hbar\omega_r \hat{a}^\dagger\hat{a}$                                                 & free evolution of the cavity photon field \\
+$\hbar\omega_{q,i}\hat{\sigma}_z^{(i)}/2$                                              & free evolution of the two qubits \\
+$\hbar g_i\bigl(\hat{a}^\dagger\hat{\sigma}_-^{(i)} + \hat{a}\hat{\sigma}_+^{(i)}\bigr)$ & coherent qubit--cavity exchange via single-photon processes \\
+\bottomrule
+\end{tabular}
+\caption{Three contributions to the Jaynes--Cummings Hamiltonian Eq.~\eqref{eq:JC_2qubit}.}
+\label{tab:hamiltonian_terms}
+\end{table}
+
+
+We consider the following representative parameters:
+\begin{table}[h]
+\centering
+\begin{tabular}{@{}lc@{}}
+\toprule
+\textbf{Quantity} & \textbf{Value} \\
+\midrule
+Cavity frequency $\omega_r/2\pi$       & $\SI{6.5}{GHz}$ \\
+Qubit 1 frequency $\omega_{q1}/2\pi$    & $\SI{5.8}{GHz}$ \\
+Qubit 2 frequency $\omega_{q2}/2\pi$    & $\SI{5.2}{GHz}$ \\
+Qubit--cavity couplings $g_1/2\pi=g_2/2\pi$ & $\SI{80}{MHz}$ \\
+\bottomrule
+\end{tabular}
+\caption{Baseline-mK HEATS-Q nominal parameters.}
+\label{tab:heatsQ_baseline_params}
+\end{table}
+
+The detunings are:
+\begin{align}
+\Delta_1 &= \omega_{q1} - \omega_r = \SI{-0.7}{GHz} \\
+\Delta_2 &= \omega_{q2} - \omega_r = \SI{-1.3}{GHz}
+\end{align}
 
 Figure~\ref{fig:system_schematic} shows the physical architecture of the two-qubit system. Two transmon qubits (Q1 and Q2) are coupled to a common cavity resonator with coupling strengths $g_1$ and $g_2$. The qubits are detuned from the cavity frequency, placing the system in the dispersive regime where virtual photon exchange mediates an effective transverse exchange coupling $J/2\pi \simeq 6.5$~MHz (Sec.~\ref{sec:cavity_mediated_couplings}, Eq.~\ref{eq:transverse_J_intro}).
 
@@ -1174,19 +1179,6 @@ Figure~\ref{fig:system_schematic} shows the physical architecture of the two-qub
     Two transmon qubits (Q1 at 5.8~GHz, Q2 at 5.2~GHz) couple to a shared cavity resonator at 6.5~GHz with coupling strengths $g_1 = g_2 = 80$~MHz. The qubits are red-detuned from the cavity ($\Delta_1 = -0.7$~GHz, $\Delta_2 = -1.3$~GHz), enabling dispersive operation. Virtual photon exchange through the cavity mediates a transverse exchange coupling $J/2\pi \simeq 6.5$~MHz between the qubits (Sec.~\ref{sec:cavity_mediated_couplings}); the residual longitudinal cross-Kerr is $|\zeta_{zz}|/2\pi \simeq 1.7$~MHz, too small to drive a free-evolution CZ at high fidelity (Fig.~\ref{fig:CZ_unfeasible}), and the two-qubit gate is implemented as an echo cross-resonance instead. Figure regenerated post-G7 by \texttt{ok\_two\_qubit\_final\_corrected.py} in the companion \texttt{qh\_hardware} repository.}
     \label{fig:system_schematic}
 \end{figure}
-
-\subsection{System Parameters}
-
-The complete set of system parameters and the resulting performance metrics
-of this baseline-mK two-qubit architecture are collected in
-Tables~\ref{tab:heatsQ_baseline_params} and~\ref{tab:performance_summary_baseline}.
-Numerical values reflect the redesigned operating point introduced in
-Section~\ref{sec:cavity_mediated_couplings}, in which the dominant qubit--qubit
-interaction is the transverse exchange $J/2\pi \simeq 6.5$~MHz (rather than a
-direct $\sigma_z\!\otimes\!\sigma_z$ cross-Kerr) and the two-qubit gate is
-realised through the echo cross-resonance protocol of
-Section~\ref{sec:gate_strategy}, with $t_{\mathrm{CNOT}} \sim 250$~ns and
-$F_{\mathrm{avg}} \gtrsim 99\%$.
 
 \begin{figure}[htbp!]
     \centering
@@ -1213,24 +1205,6 @@ $F_{\mathrm{avg}} \gtrsim 99\%$.
     \label{fig:system_diagram}
 \end{figure}
 
-
-% =============================================================================
-% Wave I — Step 2.B placeholder skeleton (added 2026-05-08)
-% Empty section that will absorb content currently scattered in §1, §2, §6, §7
-% during Step 2.C. Cross-reference labels of the original sections
-% (sec:cavity_mediated_couplings, sec:gate_strategy, subsec:erratum_eq239)
-% are still attached to their old locations and will be moved here together
-% with their content, sub-section by sub-section, in Step 2.C.
-% =============================================================================
-\section{Two-qubit system: baseline configuration}
-\label{sec:two_qubit_baseline}
-
-\subsection{System architecture and parameters}
-\label{sub:tqb_architecture}
-% PLACEHOLDER — Wave I Step 2.C will migrate here:
-%   §1 lines 982--1026 (intro + tab:hamiltonian_terms + tab:heatsQ_baseline_params).
-% + §2 lines 1282--1330 (System Architecture, Fig. fig:system_schematic + fig:system_diagram).
-% Action: COPY+MERGE. Rename "for HEATS-Q" → "Baseline-mK system parameters".
 
 \subsection{Cavity-mediated qubit--qubit couplings}
 \label{sec:cavity_mediated_couplings}
