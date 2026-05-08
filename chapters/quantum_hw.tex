@@ -1159,22 +1159,6 @@ Assuming $\kappa/2\pi = \SI{2}{MHz}$:
 
 Both conditions are amply satisfied, ensuring high-fidelity readout.
 
-\subsection{Single-Qubit Gates}
-
-Single-qubit rotations are implemented with resonant microwave drives at the qubit frequency. A general rotation is:
-\begin{equation}
-R_i(\theta, \phi) = \exp\left(-i\frac{\theta}{2}\left[\cos(\phi)\hat{\sigma}_x^{(i)} + \sin(\phi)\hat{\sigma}_y^{(i)}\right]\right)
-\end{equation}
-
-Common gates:
-\begin{align}
-X_i &= R_i(\pi, 0) \quad \text{(bit flip)} \\
-Y_i &= R_i(\pi, \pi/2) \\
-H_i &= R_i(\pi/2, \pi/2) \cdot R_i(\pi, 0) \quad \text{(Hadamard)}
-\end{align}
-
-Typical gate times are $\tau_{\text{1Q}} \sim \SI{20}{ns}$ for high-fidelity operations with DRAG pulse shaping.
-
 \subsection{Two-Qubit Gates: CNOT Gate Implementation}
 
 \subsubsection{CNOT Truth Table}
@@ -1474,9 +1458,18 @@ Thermal noise           & $n_{\text{th}} < 10^{-5}$ \\
 
 \subsection{Single-qubit gates}
 \label{sub:tqb_singleq}
-% PLACEHOLDER — Wave I Step 2.C will migrate here:
-%   §1 lines 1162--1177 (~15 lines).
-% Action: KEEP.
+
+Single-qubit rotations are implemented with resonant microwave drives at the qubit frequency. A general rotation is
+\begin{equation}
+R_i(\theta, \phi) = \exp\left(-i\frac{\theta}{2}\left[\cos(\phi)\hat{\sigma}_x^{(i)} + \sin(\phi)\hat{\sigma}_y^{(i)}\right]\right).
+\end{equation}
+Common gates are obtained as
+\begin{align}
+X_i &= R_i(\pi, 0) \quad \text{(bit flip)}, \\
+Y_i &= R_i(\pi, \pi/2), \\
+H_i &= R_i(\pi/2, \pi/2) \cdot R_i(\pi, 0) \quad \text{(Hadamard)}.
+\end{align}
+Typical gate times are $\tau_{\text{1Q}} \sim \SI{20}{ns}$ for high-fidelity operations with DRAG pulse shaping.
 
 \subsection{Two-qubit gate: cross-resonance with echo correction}
 \label{sub:tqb_twoq_cr}
