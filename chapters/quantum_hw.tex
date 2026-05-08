@@ -703,149 +703,6 @@ The baseline therefore plays the role of a controlled reference for the modellin
 
 \part[Baseline Performance]{Standard Cryogenic Operation}
 
-\subsection{Dispersive Regime Transformation}
-
-\subsubsection{Criterion for Dispersive Regime}
-
-The system operates in the dispersive regime when:
-\begin{equation}
-|\Delta_i| \gg g_i \quad \text{for all qubits } i
-\end{equation}
-
-For our parameters:
-\begin{align}
-\frac{|\Delta_1|}{g_1} &= 8.8 \quad (\text{satisfied})\\
-\frac{|\Delta_2|}{g_2} &= 16.2 \quad (\text{satisfied})
-\end{align}
-
-In this regime, real photon exchange between qubits and cavity is suppressed, but virtual processes lead to effective qubit-qubit interactions mediated by the cavity.
-
-\subsubsection{Effective Dispersive Hamiltonian}
-
-Under a Schrieffer-Wolff transformation (second-order perturbation theory in $g_i/\Delta_i$), the Hamiltonian becomes:
-\begin{equation}
-\hat{H}_{\text{disp}} = \hbar\tilde{\omega}_r \hat{a}^\dagger\hat{a} + \sum_{i=1}^{2} \frac{\hbar\tilde{\omega}_{q,i}}{2}\hat{\sigma}_z^{(i)} + \sum_{i=1}^{2} \hbar\chi_i \hat{\sigma}_z^{(i)} \hat{a}^\dagger\hat{a} + \hbar\zeta \hat{\sigma}_z^{(1)}\hat{\sigma}_z^{(2)}
-\label{eq:dispersive_hamiltonian}
-\end{equation}
-
-where the dispersive shifts are:
-\begin{equation}
-\chi_i = \frac{g_i^2}{\Delta_i}
-\end{equation}
-
-and the effective \emph{transverse} qubit--qubit exchange coupling
-(Majer~\textit{et~al.}~\cite{Majer2007}) is
-\begin{equation}
-J = \frac{g_1 g_2}{2}\left(\frac{1}{\Delta_1} + \frac{1}{\Delta_2}\right) .
-\label{eq:J_dispersive}
-\end{equation}
-This is the coupling appearing as $J(\hat{\sigma}_+^{(1)}\hat{\sigma}_-^{(2)}
-+ \mathrm{h.c.})$ in the rotated frame; the residual longitudinal
-$\hat{\sigma}_z\!\otimes\!\hat{\sigma}_z$ cross-Kerr~$\zeta_{zz}$ requires
-the transmon anharmonicity and is derived in
-Section~\ref{sec:cavity_mediated_couplings}. Note: in earlier versions of this
-manuscript the symbol $\zeta$ was used for the coefficient
-$\hbar\zeta\,\hat{\sigma}_z^{(1)}\hat{\sigma}_z^{(2)}$ in
-Eq.~\eqref{eq:dispersive_hamiltonian}; this was an inadvertent mislabelling
-of the transverse exchange coupling, addressed in detail in
-Section~\ref{subsec:erratum_eq239}.
-
-In the dispersive regime and for weak anharmonicity, the transmon-induced dispersive shift is well
-approximated by
-\begin{equation}
-\frac{\chi_i}{2\pi}\simeq
-\frac{\left(\frac{g_i}{2\pi}\right)^2 \left(\frac{\alpha_i}{2\pi}\right)}
-{\left(\frac{\Delta_i}{2\pi}\right)\left(\frac{\Delta_i}{2\pi}+\frac{\alpha_i}{2\pi}\right)} ,
-\label{eq:chi_transmon}
-\end{equation}
-where \(\Delta_i = \omega_i-\omega_r\) and \(\alpha_i=\omega_{12,i}-\omega_{01,i}<0\).
-
-The renormalized frequencies are:
-\begin{align}
-\tilde{\omega}_r &= \omega_r + \chi_1 + \chi_2 \\
-\tilde{\omega}_{q,i} &= \omega_{q,i} + \chi_i
-\end{align}
-
-\subsubsection{Numerical Values for HEATS-Q (redesigned operating point)}
-
-Adopting the redesigned operating point $\Delta_q/2\pi = 280$~MHz
-($\omega_{q,1}/2\pi = 5.640$~GHz, $\omega_{q,2}/2\pi = 5.360$~GHz; see
-discussion of the cross-resonance sweet spot in
-Section~\ref{subsec:dq_optimization}), the dispersive shifts become
-\begin{align}
-\chi_1 &= \frac{g_1^2}{\Delta_1}\frac{\alpha}{\Delta_1+\alpha}
-       = \SI{-12.9}{MHz} ,\\
-\chi_2 &= \frac{g_2^2}{\Delta_2}\frac{\alpha}{\Delta_2+\alpha}
-       = \SI{+24.3}{MHz} ,
-\end{align}
-and the transverse exchange coupling is
-\begin{equation}
-J = \frac{g_1 g_2}{2}\!\left(\frac{1}{\Delta_1}+\frac{1}{\Delta_2}\right)
-  = \SI{-6.5}{MHz} .
-\end{equation}
-The corresponding longitudinal cross-Kerr from
-Eq.~\eqref{eq:zeta_zz_correct} is
-$\zeta_{zz}/2\pi \simeq -1.7$~MHz: large enough to require active
-cancellation via the echo-CR sequence (Section~\ref{subsec:echoCR}), but
-suppressed relative to $J$ by a factor $\sim 4$. The chosen working point
-sits on the high-$\Delta_q$ side of the straddling resonance
-$\Delta_q\!=\!|\alpha|=200$~MHz; the actual $\zeta_{zz}$ value should be
-calibrated experimentally and the operating point fine-tuned accordingly.
-
-\noindent\emph{Erratum to previous numerical values.}
-The pre-revision version of this section reported
-$\chi_1 = -9.14$~MHz, $\chi_2 = -4.92$~MHz and a single coupling
-$\zeta = -7.03$~MHz, the latter quoted as the $\sigma_z\!\otimes\!\sigma_z$
-coupling. As explained above (and in
-Section~\ref{subsec:erratum_eq239}), the formula
-$(g_1 g_2/2)(\Delta_1^{-1}+\Delta_2^{-1})$ in fact gives the transverse
-exchange $J$, not the longitudinal cross-Kerr $\zeta_{zz}$, and the
-operating point has been redesigned to $\Delta_q = 280$~MHz to enable a
-fast, high-fidelity cross-resonance gate.
-
-The frequency differences (relevant for dispersive readout) are:
-\begin{align}
-\omega_r(\ket{00}) - \omega_r(\ket{01}) &= 2\chi_2 = \SI{+48.6}{MHz} \\
-\omega_r(\ket{00}) - \omega_r(\ket{10}) &= 2\chi_1 = \SI{-25.8}{MHz} \\
-\omega_r(\ket{00}) - \omega_r(\ket{11}) &= 2(\chi_1 + \chi_2) = \SI{+22.8}{MHz}
-\end{align}
-The opposite signs of $\chi_1$ and $\chi_2$ at the redesigned operating point
-($\Delta_1 + \alpha < 0$, $\Delta_2 + \alpha > 0$) are a consequence of the
-straddling of the two qubit detunings around the resonance condition
-$\Delta = -\alpha$. This actually \emph{enlarges} the four-state separation
-in IQ space and is favourable for high-fidelity readout.
-
-\subsubsection{Readout Protocol}
-
-The readout proceeds in four steps: \emph{(i)} the cavity is driven with a weak
-coherent tone at $\omega_r$; \emph{(ii)} the transmitted (or reflected) signal is
-measured by IQ demodulation; \emph{(iii)} the measured phase and amplitude depend
-on the qubit state; \emph{(iv)} the state is then discriminated based on the
-measured IQ point.
-
-\subsubsection{Resolution Criterion}
-
-For good state discrimination, the dispersive shift must exceed the cavity linewidth:
-\begin{equation}
-2|\chi_i| > \kappa
-\end{equation}
-
-Assuming $\kappa/2\pi = \SI{2}{MHz}$:
-\begin{align}
-\frac{2|\chi_1|}{\kappa} &= \frac{25.8}{2} = 12.9 \quad (\text{excellent}) \\
-\frac{2|\chi_2|}{\kappa} &= \frac{48.6}{2} = 24.3 \quad (\text{excellent})
-\end{align}
-
-Both conditions are amply satisfied, ensuring high-fidelity readout.
-
-% =============================================================================
-% Wave I — Step 2.B placeholder skeleton (added 2026-05-08)
-% Empty section that will absorb content currently scattered in §1, §2, §6, §7
-% during Step 2.C. Cross-reference labels of the original sections
-% (sec:cavity_mediated_couplings, sec:gate_strategy, subsec:erratum_eq239)
-% are still attached to their old locations and will be moved here together
-% with their content, sub-section by sub-section, in Step 2.C.
-% =============================================================================
 \section{Two-qubit system: baseline configuration}
 \label{sec:two_qubit_baseline}
 
@@ -2143,28 +2000,152 @@ offering a non-zero $E_J(\Phi_0/2) = |E_\Delta| = \SI{3}{GHz}$ that maintains th
 
 
 \subsection{Dispersive regime in the elevated-temperature design}
-\label{sub:tqi_dispersive}
-% PLACEHOLDER — Wave I Step 2.C will migrate here:
-%   §1 lines 1027--1161 (Dispersive Regime Transformation; the numerical values
-%                        for HEATS-Q use post-G7 parameters and so belong to the
-%                        innovation block, not to the baseline).
-% + §5 lines 1837--1920 (Dispersive Regime and Two-Qubit Operations, whole section).
-% Action: MERGE. Existing label sec:dispersive (1 external ref) is moved here.
-
-% NOTE: per content_map §3 Sub 3 innovation, a "Numerical results" sub-section
-% is intentionally NOT created in Wave I. The innovation-regime numbers
-% (97.9% CNOT, T_1 = 20 µs, T_2 = 14.7 µs, ...) already exist in
-% §"Decoherence Analysis" and §"Summary of Findings"; cross-references suffice.
-% =============================================================================
-% End Wave I Step 2.B placeholder skeleton (innovation)
-% =============================================================================
-
-% =====
-\section{Dispersive Regime and Two-Qubit Operations}
 \label{sec:dispersive}
+\label{sub:tqi_dispersive}
+
+\subsubsection{Criterion for Dispersive Regime}
+
+The system operates in the dispersive regime when:
+\begin{equation}
+|\Delta_i| \gg g_i \quad \text{for all qubits } i
+\end{equation}
+
+For our parameters:
+\begin{align}
+\frac{|\Delta_1|}{g_1} &= 8.8 \quad (\text{satisfied})\\
+\frac{|\Delta_2|}{g_2} &= 16.2 \quad (\text{satisfied})
+\end{align}
+
+In this regime, real photon exchange between qubits and cavity is suppressed, but virtual processes lead to effective qubit-qubit interactions mediated by the cavity.
+
+\subsubsection{Effective Dispersive Hamiltonian}
+
+Under a Schrieffer-Wolff transformation (second-order perturbation theory in $g_i/\Delta_i$), the Hamiltonian becomes:
+\begin{equation}
+\hat{H}_{\text{disp}} = \hbar\tilde{\omega}_r \hat{a}^\dagger\hat{a} + \sum_{i=1}^{2} \frac{\hbar\tilde{\omega}_{q,i}}{2}\hat{\sigma}_z^{(i)} + \sum_{i=1}^{2} \hbar\chi_i \hat{\sigma}_z^{(i)} \hat{a}^\dagger\hat{a} + \hbar\zeta \hat{\sigma}_z^{(1)}\hat{\sigma}_z^{(2)}
+\label{eq:dispersive_hamiltonian}
+\end{equation}
+
+where the dispersive shifts are:
+\begin{equation}
+\chi_i = \frac{g_i^2}{\Delta_i}
+\end{equation}
+
+and the effective \emph{transverse} qubit--qubit exchange coupling
+(Majer~\textit{et~al.}~\cite{Majer2007}) is
+\begin{equation}
+J = \frac{g_1 g_2}{2}\left(\frac{1}{\Delta_1} + \frac{1}{\Delta_2}\right) .
+\label{eq:J_dispersive}
+\end{equation}
+This is the coupling appearing as $J(\hat{\sigma}_+^{(1)}\hat{\sigma}_-^{(2)}
++ \mathrm{h.c.})$ in the rotated frame; the residual longitudinal
+$\hat{\sigma}_z\!\otimes\!\hat{\sigma}_z$ cross-Kerr~$\zeta_{zz}$ requires
+the transmon anharmonicity and is derived in
+Section~\ref{sec:cavity_mediated_couplings}. Note: in earlier versions of this
+manuscript the symbol $\zeta$ was used for the coefficient
+$\hbar\zeta\,\hat{\sigma}_z^{(1)}\hat{\sigma}_z^{(2)}$ in
+Eq.~\eqref{eq:dispersive_hamiltonian}; this was an inadvertent mislabelling
+of the transverse exchange coupling, addressed in detail in
+Section~\ref{subsec:erratum_eq239}.
+
+In the dispersive regime and for weak anharmonicity, the transmon-induced dispersive shift is well
+approximated by
+\begin{equation}
+\frac{\chi_i}{2\pi}\simeq
+\frac{\left(\frac{g_i}{2\pi}\right)^2 \left(\frac{\alpha_i}{2\pi}\right)}
+{\left(\frac{\Delta_i}{2\pi}\right)\left(\frac{\Delta_i}{2\pi}+\frac{\alpha_i}{2\pi}\right)} ,
+\label{eq:chi_transmon}
+\end{equation}
+where \(\Delta_i = \omega_i-\omega_r\) and \(\alpha_i=\omega_{12,i}-\omega_{01,i}<0\).
+
+The renormalized frequencies are:
+\begin{align}
+\tilde{\omega}_r &= \omega_r + \chi_1 + \chi_2 \\
+\tilde{\omega}_{q,i} &= \omega_{q,i} + \chi_i
+\end{align}
+
+\subsubsection{Numerical Values for HEATS-Q (redesigned operating point)}
+
+Adopting the redesigned operating point $\Delta_q/2\pi = 280$~MHz
+($\omega_{q,1}/2\pi = 5.640$~GHz, $\omega_{q,2}/2\pi = 5.360$~GHz; see
+discussion of the cross-resonance sweet spot in
+Section~\ref{subsec:dq_optimization}), the dispersive shifts become
+\begin{align}
+\chi_1 &= \frac{g_1^2}{\Delta_1}\frac{\alpha}{\Delta_1+\alpha}
+       = \SI{-12.9}{MHz} ,\\
+\chi_2 &= \frac{g_2^2}{\Delta_2}\frac{\alpha}{\Delta_2+\alpha}
+       = \SI{+24.3}{MHz} ,
+\end{align}
+and the transverse exchange coupling is
+\begin{equation}
+J = \frac{g_1 g_2}{2}\!\left(\frac{1}{\Delta_1}+\frac{1}{\Delta_2}\right)
+  = \SI{-6.5}{MHz} .
+\end{equation}
+The corresponding longitudinal cross-Kerr from
+Eq.~\eqref{eq:zeta_zz_correct} is
+$\zeta_{zz}/2\pi \simeq -1.7$~MHz: large enough to require active
+cancellation via the echo-CR sequence (Section~\ref{subsec:echoCR}), but
+suppressed relative to $J$ by a factor $\sim 4$. The chosen working point
+sits on the high-$\Delta_q$ side of the straddling resonance
+$\Delta_q\!=\!|\alpha|=200$~MHz; the actual $\zeta_{zz}$ value should be
+calibrated experimentally and the operating point fine-tuned accordingly.
+
+\noindent\emph{Erratum to previous numerical values.}
+The pre-revision version of this section reported
+$\chi_1 = -9.14$~MHz, $\chi_2 = -4.92$~MHz and a single coupling
+$\zeta = -7.03$~MHz, the latter quoted as the $\sigma_z\!\otimes\!\sigma_z$
+coupling. As explained above (and in
+Section~\ref{subsec:erratum_eq239}), the formula
+$(g_1 g_2/2)(\Delta_1^{-1}+\Delta_2^{-1})$ in fact gives the transverse
+exchange $J$, not the longitudinal cross-Kerr $\zeta_{zz}$, and the
+operating point has been redesigned to $\Delta_q = 280$~MHz to enable a
+fast, high-fidelity cross-resonance gate.
+
+The frequency differences (relevant for dispersive readout) are:
+\begin{align}
+\omega_r(\ket{00}) - \omega_r(\ket{01}) &= 2\chi_2 = \SI{+48.6}{MHz} \\
+\omega_r(\ket{00}) - \omega_r(\ket{10}) &= 2\chi_1 = \SI{-25.8}{MHz} \\
+\omega_r(\ket{00}) - \omega_r(\ket{11}) &= 2(\chi_1 + \chi_2) = \SI{+22.8}{MHz}
+\end{align}
+The opposite signs of $\chi_1$ and $\chi_2$ at the redesigned operating point
+($\Delta_1 + \alpha < 0$, $\Delta_2 + \alpha > 0$) are a consequence of the
+straddling of the two qubit detunings around the resonance condition
+$\Delta = -\alpha$. This actually \emph{enlarges} the four-state separation
+in IQ space and is favourable for high-fidelity readout.
+
+\subsubsection{Readout Protocol}
+
+The readout proceeds in four steps: \emph{(i)} the cavity is driven with a weak
+coherent tone at $\omega_r$; \emph{(ii)} the transmitted (or reflected) signal is
+measured by IQ demodulation; \emph{(iii)} the measured phase and amplitude depend
+on the qubit state; \emph{(iv)} the state is then discriminated based on the
+measured IQ point.
+
+\subsubsection{Resolution Criterion}
+
+For good state discrimination, the dispersive shift must exceed the cavity linewidth:
+\begin{equation}
+2|\chi_i| > \kappa
+\end{equation}
+
+Assuming $\kappa/2\pi = \SI{2}{MHz}$:
+\begin{align}
+\frac{2|\chi_1|}{\kappa} &= \frac{25.8}{2} = 12.9 \quad (\text{excellent}) \\
+\frac{2|\chi_2|}{\kappa} &= \frac{48.6}{2} = 24.3 \quad (\text{excellent})
+\end{align}
+
+Both conditions are amply satisfied, ensuring high-fidelity readout.
+
+% =============================================================================
+% Wave I — Step 2.B placeholder skeleton (added 2026-05-08)
+% Empty section that will absorb content currently scattered in §1, §2, §6, §7
+% during Step 2.C. Cross-reference labels of the original sections
+% (sec:cavity_mediated_couplings, sec:gate_strategy, subsec:erratum_eq239)
+% are still attached to their old locations and will be moved here together
+% with their content, sub-section by sub-section, in Step 2.C.
 % =============================================================================
 
-\subsection{Dispersive Regime and Readout}
+\subsubsection{Dispersive Regime and Readout}
 
 The qubit is coupled to a microwave resonator (cavity) with Hamiltonian:
 \begin{equation}
@@ -2189,7 +2170,7 @@ This enables quantum non-demolition (QND) readout: the cavity frequency shifts b
 
 % ========================================================================
 
-\subsection{Dispersive Shift Calculations}
+\subsubsection{Dispersive Shift Calculations}
 
 From Eq.~\ref{eq:dispersive_shift}, the dispersive shift for each qubit is:
 \begin{equation}
@@ -2208,7 +2189,7 @@ From Eq.~\ref{eq:dispersive_shift}, the dispersive shift for each qubit is:
 \chi_2 &= \frac{(500)^2}{-40000} \frac{-15000}{-40000 - 15000} = \boxed{-1.70 \text{ MHz}}
 \end{align}
 
-\subsection{Physical Interpretation}
+\subsubsection{Physical Interpretation}
 
 The dispersive shift $\chi_i$ has three physically important consequences that we now
 describe in turn.
@@ -2245,7 +2226,7 @@ Figure~\ref{fig:dispersive_shifts}(b) illustrates the cavity frequency shifts fo
 % Audit: Modules 1-2 of equation-claim-audit, May 2026
 % =============================================================================
 
-\subsection{Dispersive Regime Validation}
+\subsubsection{Dispersive Regime Validation}
 
 For the dispersive approximation to be valid, we require $|\Delta|/g \gg 1$, typically $> 5$. Our system satisfies:
 \begin{align}
@@ -2256,7 +2237,7 @@ For the dispersive approximation to be valid, we require $|\Delta|/g \gg 1$, typ
 Both ratios greatly exceed the requirement, confirming we are in the \textit{strongly dispersive regime}. This ensures:
 This guarantees that perturbation theory is highly accurate, Lamb shift corrections are small ($< 1\%$), qubit--cavity hybridization is negligible, and two-qubit gates can reach high fidelity.
 
-\subsection{Purcell Decay}
+\subsubsection{Purcell Decay}
 \label{sec:purcell}
 
 The qubit coupling to the lossy cavity enhances decay through the Purcell effect:
@@ -2272,6 +2253,17 @@ T_{1,\text{Purcell},1} &= \frac{1}{\Gamma_{\text{Purcell},1}} = 320 \text{ $\mu$
 Similarly, $T_{1,\text{Purcell},2} = 1280$ $\mu$s. These Purcell-limited $T_1$ times greatly exceed typical intrinsic $T_1 \sim 20-50$ $\mu$s, confirming Purcell decay is well-suppressed by the large detunings.
 
 % =============================================================================
+
+
+% NOTE: per content_map §3 Sub 3 innovation, a "Numerical results" sub-section
+% is intentionally NOT created in Wave I. The innovation-regime numbers
+% (97.9% CNOT, T_1 = 20 µs, T_2 = 14.7 µs, ...) already exist in
+% §"Decoherence Analysis" and §"Summary of Findings"; cross-references suffice.
+% =============================================================================
+% End Wave I Step 2.B placeholder skeleton (innovation)
+% =============================================================================
+
+% =====
 \section{Decoherence Analysis}
 \label{sec:decoherence}
 % =============================================================================
