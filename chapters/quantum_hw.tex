@@ -1447,6 +1447,59 @@ Thermal noise           & $n_{\text{th}} < 10^{-5}$ \\
 
 \textbf{Conclusion:} The baseline design is sound and achieves performance comparable to leading quantum processors.
 
+% =============================================================================
+% Wave I — Step 2.B placeholder skeleton (added 2026-05-08)
+% Empty section that will absorb content currently scattered in §1, §2, §6, §7
+% during Step 2.C. Cross-reference labels of the original sections
+% (sec:cavity_mediated_couplings, sec:gate_strategy, subsec:erratum_eq239)
+% are still attached to their old locations and will be moved here together
+% with their content, sub-section by sub-section, in Step 2.C.
+% =============================================================================
+\section{Two-qubit system: baseline configuration}
+\label{sec:two_qubit_baseline}
+
+\subsection{System architecture and parameters}
+\label{sub:tqb_architecture}
+% PLACEHOLDER — Wave I Step 2.C will migrate here:
+%   §1 lines 982--1026 (intro + tab:hamiltonian_terms + tab:heatsQ_baseline_params).
+% + §2 lines 1282--1330 (System Architecture, Fig. fig:system_schematic + fig:system_diagram).
+% Action: COPY+MERGE. Rename "for HEATS-Q" → "Baseline-mK system parameters".
+
+\subsection{Cavity-mediated qubit--qubit couplings}
+\label{sub:tqb_couplings}
+% PLACEHOLDER — Wave I Step 2.C will migrate here:
+%   §6 lines 1922--2070 (whole section: transverse J, longitudinal ζ_zz, erratum to Eq. 2.39).
+% Action: KEEP. Existing labels sec:cavity_mediated_couplings (12 external refs)
+% and subsec:erratum_eq239 (3 external refs) will be moved here with content.
+
+\subsection{Single-qubit gates}
+\label{sub:tqb_singleq}
+% PLACEHOLDER — Wave I Step 2.C will migrate here:
+%   §1 lines 1162--1177 (~15 lines).
+% Action: KEEP.
+
+\subsection{Two-qubit gate: cross-resonance with echo correction}
+\label{sub:tqb_twoq_cr}
+% PLACEHOLDER — Wave I Step 2.C will migrate here:
+%   §1 lines 1178--1221 (CNOT decomposition, eq:cnot_decomp).
+% + §1 lines 1251--1276 (Gate-strategy redirection — merged as sub-section intro).
+% + §7 lines 2072--2178 (CR Hamiltonian, optimization of detuning, echo-CR, fidelity budget).
+% Action: KEEP+MERGE. DROP §1 lines 1222--1250 (Method 1 sqrt-iSWAP, abandoned method).
+% Existing label sec:gate_strategy (16 external refs) and sub-labels
+% subsec:CR_hamiltonian, subsec:dq_optimization, subsec:echoCR will be moved here.
+% NOTE: the single internal \ref{sec:gate_redirection} (line ~1607) will be
+% redirected to \ref{sub:tqb_twoq_cr} in Step 2.C — no alias label needed.
+
+\subsection{Numerical results and validation}
+\label{sub:tqb_numerical}
+% PLACEHOLDER — Wave I Step 2.C will migrate here:
+%   §2 lines 1332--1424 (energy levels, dispersive shifts, ZZ coupling, performance summary).
+% + §3 lines 1426--1450 (Baseline Validation, merged as closing paragraph).
+% Action: KEEP+MERGE. The current standalone §3 will be emptied in Step 2.D.
+% =============================================================================
+% End Wave I Step 2.B placeholder skeleton (baseline)
+% =============================================================================
+
 \part[Innovation]{Elevated-Temperature Operation at 300~GHz}
 
 \section[High-frequency, high-temperature environment system]{High-frequency, high-temperature\\ environment system}
@@ -1832,6 +1885,41 @@ Uniformity        & the total $E_J$ is more accurately controlled \\
 \caption{Advantages of an $N \times N$ array of small junctions over a single large junction.}
 \label{tab:array_advantages}
 \end{table}
+
+% =============================================================================
+% Wave I — Step 2.B placeholder skeleton (added 2026-05-08)
+% Empty section that will absorb the elevated-temperature material currently
+% scattered across §1 (Dispersive Regime Transformation, which uses post-G7
+% parameters and therefore belongs to the innovation block) and §5 (Dispersive
+% Regime and Two-Qubit Operations). Step 2.C will migrate the content.
+% =============================================================================
+\section{Two-qubit system: elevated-temperature configuration}
+\label{sec:two_qubit_innovation}
+
+\subsection{Design requirements at 300\,GHz / 4\,K}
+\label{sub:tqi_design}
+% PLACEHOLDER — Wave I Step 2.C will migrate here the entire current §4
+%   ("High-frequency, high-temperature environment system", lines 1452--1834
+%   of the present file), simply renaming \section → \subsection.
+% Internal labels sec:junction_design (2 refs) and sec:shunt_cap_array (2 refs)
+% are preserved in place.
+
+\subsection{Dispersive regime in the elevated-temperature design}
+\label{sub:tqi_dispersive}
+% PLACEHOLDER — Wave I Step 2.C will migrate here:
+%   §1 lines 1027--1161 (Dispersive Regime Transformation; the numerical values
+%                        for HEATS-Q use post-G7 parameters and so belong to the
+%                        innovation block, not to the baseline).
+% + §5 lines 1837--1920 (Dispersive Regime and Two-Qubit Operations, whole section).
+% Action: MERGE. Existing label sec:dispersive (1 external ref) is moved here.
+
+% NOTE: per content_map §3 Sub 3 innovation, a "Numerical results" sub-section
+% is intentionally NOT created in Wave I. The innovation-regime numbers
+% (97.9% CNOT, T_1 = 20 µs, T_2 = 14.7 µs, ...) already exist in
+% §"Decoherence Analysis" and §"Summary of Findings"; cross-references suffice.
+% =============================================================================
+% End Wave I Step 2.B placeholder skeleton (innovation)
+% =============================================================================
 
 % =====
 \section{Dispersive Regime and Two-Qubit Operations}
