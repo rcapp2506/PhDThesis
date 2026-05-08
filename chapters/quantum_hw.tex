@@ -1313,123 +1313,6 @@ $F_{\mathrm{avg}} \gtrsim 99\%$.
     \label{fig:system_diagram}
 \end{figure}
 
-\subsection{Energy Level Structure}
-
-The energy level structure is shown in Figure~\ref{fig:energy_levels}. The two qubits have different transition frequencies (5.8~GHz and 5.2~GHz), allowing individual addressability. Both qubits are detuned below the cavity frequency (6.5~GHz) by $\Delta_1 = -0.7$~GHz and $\Delta_2 = -1.3$~GHz, respectively. These large detunings ($|\Delta|/g \gg 1$) ensure the system operates in the dispersive regime where energy exchange is suppressed, and the dynamics are governed by effective frequency shifts.
-
-\begin{figure}[htbp]
-    \centering
-    \includegraphics[width=0.6\textwidth]{chapters/qh_figures/fig2_energy_levels.png}
-    \caption{\textbf{Energy level structure and detunings.} 
-    Energy levels of the two qubits and cavity mode. Qubit 1 (red, 5.8~GHz) and Qubit 2 (green, 5.2~GHz) are both red-detuned from the cavity (blue, 6.5~GHz). The detunings $\Delta_1 = -0.7$~GHz and $\Delta_2 = -1.3$~GHz satisfy the dispersive regime condition $|\Delta_i|/g_i > 5$, with ratios of 8.8 and 16.2 respectively. This large detuning suppresses direct photon exchange while enabling dispersive interactions.}
-    \label{fig:energy_levels}
-\end{figure}
-
-\subsection{Dispersive Frequency Shifts and Readout}
-
-Figure~\ref{fig:dispersive_shifts} demonstrates the dispersive frequency shifts that enable qubit state readout. Panel~(a) shows how the cavity frequency shifts by $\pm\chi_i$ depending on the state of each individual qubit. Panel~(b) shows that all four two-qubit states produce distinct cavity frequencies, separated by at least 1.31~MHz, which exceeds the typical cavity linewidth of 1~MHz and enables high-fidelity state discrimination.
-
-\begin{figure}[htbp]
-    \centering
-    \includegraphics[width=0.95\textwidth]{chapters/qh_figures/fig3_dispersive_shifts.png}
-    \caption{\textbf{Dispersive frequency shifts and two-qubit state readout.} 
-    \textbf{(a)} Single-qubit dispersive shifts. The cavity frequency shifts by $\chi_1 = -2.03$~MHz for Qubit~1 and $\chi_2 = -0.66$~MHz for Qubit~2, with opposite signs for $\ket{0}$ and $\ket{1}$ states. 
-    \textbf{(b)} Two-qubit state readout. Each of the four computational basis states ($\ket{00}$, $\ket{01}$, $\ket{10}$, $\ket{11}$) produces a unique cavity frequency according to $\omega_c = \omega_r + \chi_1 s_{z1} + \chi_2 s_{z2}$, where $s_z = \pm 1$. The minimum frequency separation of 1.31~MHz exceeds the cavity linewidth ($\kappa \sim 1$~MHz), enabling single-shot readout of all two-qubit states with high fidelity.}
-    \label{fig:dispersive_shifts}
-\end{figure}
-
-\clearpage
-
-\subsection{ZZ Coupling and Gate Operations}
-
-Figure~\ref{fig:zz_coupling_timing} characterizes the effective qubit--qubit interaction and gate performance. Panel~(a) shows the basis-state energy levels under the cavity-mediated transverse exchange of Eq.~\ref{eq:J_dispersive}: states $\ket{00}$ and $\ket{11}$ are shifted by $+J$ while $\ket{01}$ and $\ket{10}$ are shifted by $-J$, with $J/2\pi \simeq 6.5$~MHz at the baseline operating point. Panel~(b) compares the timing of the elementary operations: single-qubit gates (20~ns), the CNOT realized as an echo cross-resonance (250~ns at the redesigned operating point of Sec.~\ref{sec:gate_strategy}, consistent with $\sim\!\pi/(2J)$ to leading order), and dispersive readout (300~ns including cavity ring-up and signal integration). The echo-CR gate sits slightly above the 200~ns ``fast-gate'' threshold but well within the coherence-limited fidelity budget at \SI{4}{\kelvin} (Sec.~\ref{sec:decoherence}).
-
-The system operates without flux control, using only fixed-frequency qubits and microwave pulses, making it well-suited for elevated-temperature operation at 4--6~K where thermal stability is important.
-
-\begin{figure}[htbp]
-    \centering
-    \includegraphics[width=0.95\textwidth]{chapters/qh_figures/fig4_zz_coupling_timing_corrected.png}
-    \caption{\textbf{ZZ coupling spectrum and gate timing.}
-    \textbf{(a)} Basis-state energy levels under the cavity-mediated transverse exchange. The interaction Hamiltonian
-    $H_{J} = J\,\hat{\sigma}_+^{(1)}\hat{\sigma}_-^{(2)} + \mathrm{h.c.}$
-    in the rotated frame produces the pattern of conditional shifts $\pm J$ shown in the figure, with $J/2\pi \simeq 6.5$~MHz from Eq.~\ref{eq:J_dispersive} for $g_1 = g_2 = 80$~MHz, $\Delta_1 = -0.7$~GHz, $\Delta_2 = -1.3$~GHz. The longitudinal cross-Kerr $\zeta_{zz}$ is computed separately from Eq.~\ref{eq:zeta_zz_correct}; with $|\zeta_{zz}|/2\pi \simeq 1.7$~MHz it is too small to drive a free-evolution CZ at high fidelity (Fig.~\ref{fig:CZ_unfeasible}), motivating the echo-CR gate strategy of Sec.~\ref{sec:gate_strategy}.
-    \textbf{(b)} Gate timing comparison. Single-qubit gates (20~ns), echo-CR CNOT ($\sim 250$~ns at the redesigned operating point), and dispersive readout (300~ns) all sit within or close to the ``fast-gate'' band; cavity ring-up and signal integration dominate the readout window.}
-    \label{fig:zz_coupling_timing}
-\end{figure}
-
-\subsection{Performance Summary}
-
-The two-qubit system demonstrates excellent performance for fault-tolerant quantum computing:
-
-\begin{table}[h]
-\centering
-\begin{tabular}{@{}lp{0.62\textwidth}@{}}
-\toprule
-\textbf{Aspect} & \textbf{Result} \\
-\midrule
-Dispersive regime         & $|\Delta_1|/g_1 = 8.8$ and $|\Delta_2|/g_2 = 16.2$ (above the $|\Delta|/g > 5$ requirement) \\
-Transverse exchange $J$   & $|J|/2\pi = 6.5$~MHz (Eq.~\eqref{eq:J_dispersive}; cross-Kerr $|\zeta_{zz}|/2\pi \simeq 1.7$~MHz from Eq.~\eqref{eq:zeta_zz_correct}) \\
-Two-qubit gate            & echo-CR (Sheldon~\textit{et~al.}~\cite{Sheldon2016}); see Section~\ref{subsec:echoCR} \\
-Predicted $t_{\mathrm{CNOT}}$ & $\sim 250$~ns at the redesigned operating point ($\Delta_q/2\pi = 280$~MHz) \\
-Predicted gate fidelity   & $F_{\mathrm{avg}} \gtrsim 99\%$ with full pulse-engineering (Table~\ref{tab:fidelity_budget}) \\
-Readout                   & all four computational states distinguishable (Section~\ref{sec:dispersive}) \\
-\bottomrule
-\end{tabular}
-\caption{Performance summary of the baseline-mK two-qubit system at the redesigned
-$\Delta_q = 280$~MHz operating point. Gate-protocol details and fidelity budget
-are discussed in Section~\ref{sec:gate_strategy}.}
-\label{tab:performance_summary_baseline}
-\end{table}
-
-The system operates without flux control, using only fixed-frequency qubits and microwave pulses, making it well-suited for elevated-temperature operation at 4--6~K where thermal stability is important.
-
-The CNOT gate time at the redesigned operating point is approximately
-\begin{equation}
-    t_{\text{CNOT}} \;\sim\; \frac{\pi}{2|J|} \;=\; \frac{\pi}{2 \times 6.5~\text{MHz}} \;\approx\; 242~\text{ns},
-\end{equation}
-implemented as the echo cross-resonance protocol of Sec.~\ref{sec:gate_strategy} (Sheldon~\textit{et~al.}~\cite{Sheldon2016}); the precise gate duration depends on the calibration of the CR drive and the DRAG/echo cancellation overhead.
-
-\subsection{Two-Qubit Operation Take-away}
-
-The four figures presented characterise the two-qubit cavity-QED system.
-In summary, the two-qubit subsystem operates cleanly in the dispersive regime
-(large detuning ratios, all four computational basis states distinguishable),
-relies on the dominant transverse exchange coupling $J/2\pi \simeq 6.5$~MHz
-identified in Section~\ref{sec:cavity_mediated_couplings}, and uses the echo
-cross-resonance protocol of Section~\ref{sec:gate_strategy} to deliver a CNOT
-gate whose target performance ($\sim 250$~ns, $F_{\mathrm{avg}} \gtrsim 99\%$
-with full pulse engineering) lies above the surface-code threshold.
-
-These results validate the design for two-qubit quantum operations at elevated temperatures, with performance parameters consistent with state-of-the-art superconducting quantum processors operating at millikelvin temperatures.
-
-\begin{baselinebox}
-\textbf{Baseline Performance Summary at 10--20 mK:}
-Single-qubit gates achieve $F > 99.9\%$ and the two-qubit CNOT reaches $F = 99.55\%$; thermal effects are negligible ($< 10^{-5}\%$). The system is therefore \textbf{competitive with state-of-the-art} platforms.
-\end{baselinebox}
-
-\section{Baseline Validation}
-
-Our baseline analysis demonstrates that asymmetric SQUID qubits at 5--6~GHz operating at 10--20~mK achieve:
-
-\begin{table}[h]
-\centering
-\begin{tabular}{@{}lc@{}}
-\toprule
-\textbf{Metric} & \textbf{Value} \\
-\midrule
-Single-qubit fidelity   & $> 99.9\%$ \\
-Two-qubit fidelity      & $> 99.5\%$ \\
-Single-qubit gate time  & $20$~ns \\
-Two-qubit gate time     & $\sim 250$~ns (echo CR, see Section~\ref{sec:gate_strategy}) \\
-Dispersive ratio        & $|\Delta|/g > 8$ \\
-Thermal noise           & $n_{\text{th}} < 10^{-5}$ \\
-\bottomrule
-\end{tabular}
-\caption{Baseline-validation metrics at the redesigned operating point.}
-\label{tab:baseline_validation_metrics}
-\end{table}
-
-\textbf{Conclusion:} The baseline design is sound and achieves performance comparable to leading quantum processors.
 
 % =============================================================================
 % Wave I — Step 2.B placeholder skeleton (added 2026-05-08)
@@ -1485,10 +1368,123 @@ Typical gate times are $\tau_{\text{1Q}} \sim \SI{20}{ns}$ for high-fidelity ope
 
 \subsection{Numerical results and validation}
 \label{sub:tqb_numerical}
-% PLACEHOLDER — Wave I Step 2.C will migrate here:
-%   §2 lines 1332--1424 (energy levels, dispersive shifts, ZZ coupling, performance summary).
-% + §3 lines 1426--1450 (Baseline Validation, merged as closing paragraph).
-% Action: KEEP+MERGE. The current standalone §3 will be emptied in Step 2.D.
+
+\subsubsection{Energy Level Structure}
+
+The energy level structure is shown in Figure~\ref{fig:energy_levels}. The two qubits have different transition frequencies (5.8~GHz and 5.2~GHz), allowing individual addressability. Both qubits are detuned below the cavity frequency (6.5~GHz) by $\Delta_1 = -0.7$~GHz and $\Delta_2 = -1.3$~GHz, respectively. These large detunings ($|\Delta|/g \gg 1$) ensure the system operates in the dispersive regime where energy exchange is suppressed, and the dynamics are governed by effective frequency shifts.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.6\textwidth]{chapters/qh_figures/fig2_energy_levels.png}
+    \caption{\textbf{Energy level structure and detunings.} 
+    Energy levels of the two qubits and cavity mode. Qubit 1 (red, 5.8~GHz) and Qubit 2 (green, 5.2~GHz) are both red-detuned from the cavity (blue, 6.5~GHz). The detunings $\Delta_1 = -0.7$~GHz and $\Delta_2 = -1.3$~GHz satisfy the dispersive regime condition $|\Delta_i|/g_i > 5$, with ratios of 8.8 and 16.2 respectively. This large detuning suppresses direct photon exchange while enabling dispersive interactions.}
+    \label{fig:energy_levels}
+\end{figure}
+
+\subsubsection{Dispersive Frequency Shifts and Readout}
+
+Figure~\ref{fig:dispersive_shifts} demonstrates the dispersive frequency shifts that enable qubit state readout. Panel~(a) shows how the cavity frequency shifts by $\pm\chi_i$ depending on the state of each individual qubit. Panel~(b) shows that all four two-qubit states produce distinct cavity frequencies, separated by at least 1.31~MHz, which exceeds the typical cavity linewidth of 1~MHz and enables high-fidelity state discrimination.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.95\textwidth]{chapters/qh_figures/fig3_dispersive_shifts.png}
+    \caption{\textbf{Dispersive frequency shifts and two-qubit state readout.} 
+    \textbf{(a)} Single-qubit dispersive shifts. The cavity frequency shifts by $\chi_1 = -2.03$~MHz for Qubit~1 and $\chi_2 = -0.66$~MHz for Qubit~2, with opposite signs for $\ket{0}$ and $\ket{1}$ states. 
+    \textbf{(b)} Two-qubit state readout. Each of the four computational basis states ($\ket{00}$, $\ket{01}$, $\ket{10}$, $\ket{11}$) produces a unique cavity frequency according to $\omega_c = \omega_r + \chi_1 s_{z1} + \chi_2 s_{z2}$, where $s_z = \pm 1$. The minimum frequency separation of 1.31~MHz exceeds the cavity linewidth ($\kappa \sim 1$~MHz), enabling single-shot readout of all two-qubit states with high fidelity.}
+    \label{fig:dispersive_shifts}
+\end{figure}
+
+\clearpage
+
+\subsubsection{ZZ Coupling and Gate Operations}
+
+Figure~\ref{fig:zz_coupling_timing} characterizes the effective qubit--qubit interaction and gate performance. Panel~(a) shows the basis-state energy levels under the cavity-mediated transverse exchange of Eq.~\ref{eq:J_dispersive}: states $\ket{00}$ and $\ket{11}$ are shifted by $+J$ while $\ket{01}$ and $\ket{10}$ are shifted by $-J$, with $J/2\pi \simeq 6.5$~MHz at the baseline operating point. Panel~(b) compares the timing of the elementary operations: single-qubit gates (20~ns), the CNOT realized as an echo cross-resonance (250~ns at the redesigned operating point of Sec.~\ref{sec:gate_strategy}, consistent with $\sim\!\pi/(2J)$ to leading order), and dispersive readout (300~ns including cavity ring-up and signal integration). The echo-CR gate sits slightly above the 200~ns ``fast-gate'' threshold but well within the coherence-limited fidelity budget at \SI{4}{\kelvin} (Sec.~\ref{sec:decoherence}).
+
+The system operates without flux control, using only fixed-frequency qubits and microwave pulses, making it well-suited for elevated-temperature operation at 4--6~K where thermal stability is important.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.95\textwidth]{chapters/qh_figures/fig4_zz_coupling_timing_corrected.png}
+    \caption{\textbf{ZZ coupling spectrum and gate timing.}
+    \textbf{(a)} Basis-state energy levels under the cavity-mediated transverse exchange. The interaction Hamiltonian
+    $H_{J} = J\,\hat{\sigma}_+^{(1)}\hat{\sigma}_-^{(2)} + \mathrm{h.c.}$
+    in the rotated frame produces the pattern of conditional shifts $\pm J$ shown in the figure, with $J/2\pi \simeq 6.5$~MHz from Eq.~\ref{eq:J_dispersive} for $g_1 = g_2 = 80$~MHz, $\Delta_1 = -0.7$~GHz, $\Delta_2 = -1.3$~GHz. The longitudinal cross-Kerr $\zeta_{zz}$ is computed separately from Eq.~\ref{eq:zeta_zz_correct}; with $|\zeta_{zz}|/2\pi \simeq 1.7$~MHz it is too small to drive a free-evolution CZ at high fidelity (Fig.~\ref{fig:CZ_unfeasible}), motivating the echo-CR gate strategy of Sec.~\ref{sec:gate_strategy}.
+    \textbf{(b)} Gate timing comparison. Single-qubit gates (20~ns), echo-CR CNOT ($\sim 250$~ns at the redesigned operating point), and dispersive readout (300~ns) all sit within or close to the ``fast-gate'' band; cavity ring-up and signal integration dominate the readout window.}
+    \label{fig:zz_coupling_timing}
+\end{figure}
+
+\subsubsection{Performance Summary}
+
+The two-qubit system demonstrates excellent performance for fault-tolerant quantum computing:
+
+\begin{table}[h]
+\centering
+\begin{tabular}{@{}lp{0.62\textwidth}@{}}
+\toprule
+\textbf{Aspect} & \textbf{Result} \\
+\midrule
+Dispersive regime         & $|\Delta_1|/g_1 = 8.8$ and $|\Delta_2|/g_2 = 16.2$ (above the $|\Delta|/g > 5$ requirement) \\
+Transverse exchange $J$   & $|J|/2\pi = 6.5$~MHz (Eq.~\eqref{eq:J_dispersive}; cross-Kerr $|\zeta_{zz}|/2\pi \simeq 1.7$~MHz from Eq.~\eqref{eq:zeta_zz_correct}) \\
+Two-qubit gate            & echo-CR (Sheldon~\textit{et~al.}~\cite{Sheldon2016}); see Section~\ref{subsec:echoCR} \\
+Predicted $t_{\mathrm{CNOT}}$ & $\sim 250$~ns at the redesigned operating point ($\Delta_q/2\pi = 280$~MHz) \\
+Predicted gate fidelity   & $F_{\mathrm{avg}} \gtrsim 99\%$ with full pulse-engineering (Table~\ref{tab:fidelity_budget}) \\
+Readout                   & all four computational states distinguishable (Section~\ref{sec:dispersive}) \\
+\bottomrule
+\end{tabular}
+\caption{Performance summary of the baseline-mK two-qubit system at the redesigned
+$\Delta_q = 280$~MHz operating point. Gate-protocol details and fidelity budget
+are discussed in Section~\ref{sec:gate_strategy}.}
+\label{tab:performance_summary_baseline}
+\end{table}
+
+The system operates without flux control, using only fixed-frequency qubits and microwave pulses, making it well-suited for elevated-temperature operation at 4--6~K where thermal stability is important.
+
+The CNOT gate time at the redesigned operating point is approximately
+\begin{equation}
+    t_{\text{CNOT}} \;\sim\; \frac{\pi}{2|J|} \;=\; \frac{\pi}{2 \times 6.5~\text{MHz}} \;\approx\; 242~\text{ns},
+\end{equation}
+implemented as the echo cross-resonance protocol of Sec.~\ref{sec:gate_strategy} (Sheldon~\textit{et~al.}~\cite{Sheldon2016}); the precise gate duration depends on the calibration of the CR drive and the DRAG/echo cancellation overhead.
+
+\subsubsection{Two-Qubit Operation Take-away}
+
+The four figures presented characterise the two-qubit cavity-QED system.
+In summary, the two-qubit subsystem operates cleanly in the dispersive regime
+(large detuning ratios, all four computational basis states distinguishable),
+relies on the dominant transverse exchange coupling $J/2\pi \simeq 6.5$~MHz
+identified in Section~\ref{sec:cavity_mediated_couplings}, and uses the echo
+cross-resonance protocol of Section~\ref{sec:gate_strategy} to deliver a CNOT
+gate whose target performance ($\sim 250$~ns, $F_{\mathrm{avg}} \gtrsim 99\%$
+with full pulse engineering) lies above the surface-code threshold.
+
+These results validate the design for two-qubit quantum operations at elevated temperatures, with performance parameters consistent with state-of-the-art superconducting quantum processors operating at millikelvin temperatures.
+
+\begin{baselinebox}
+\textbf{Baseline Performance Summary at 10--20 mK:}
+Single-qubit gates achieve $F > 99.9\%$ and the two-qubit CNOT reaches $F = 99.55\%$; thermal effects are negligible ($< 10^{-5}\%$). The system is therefore \textbf{competitive with state-of-the-art} platforms.
+\end{baselinebox}
+
+A consolidated validation of the baseline configuration is summarised in Table~\ref{tab:baseline_validation_metrics}. The asymmetric SQUID qubits at 5--6~GHz operating at 10--20~mK achieve:
+
+\begin{table}[h]
+\centering
+\begin{tabular}{@{}lc@{}}
+\toprule
+\textbf{Metric} & \textbf{Value} \\
+\midrule
+Single-qubit fidelity   & $> 99.9\%$ \\
+Two-qubit fidelity      & $> 99.5\%$ \\
+Single-qubit gate time  & $20$~ns \\
+Two-qubit gate time     & $\sim 250$~ns (echo CR, see Section~\ref{sec:gate_strategy}) \\
+Dispersive ratio        & $|\Delta|/g > 8$ \\
+Thermal noise           & $n_{\text{th}} < 10^{-5}$ \\
+\bottomrule
+\end{tabular}
+\caption{Baseline-validation metrics at the redesigned operating point.}
+\label{tab:baseline_validation_metrics}
+\end{table}
+
+\textbf{Conclusion:} The baseline design is sound and achieves performance comparable to leading quantum processors.
+
 % =============================================================================
 % End Wave I Step 2.B placeholder skeleton (baseline)
 % =============================================================================
