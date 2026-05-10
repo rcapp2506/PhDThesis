@@ -72,19 +72,17 @@ The remainder of this dissertation is organised as follows.
 \paragraph{Chapter~\ref{ch:quantum_hardware} --- Quantum Hardware.}
 We develop a system-level design for an asymmetric-SQUID transmon qubit
 based on NbN/AlN/NbN Josephson junctions, targeting operation at
-$\sim$\,4\,K rather than at the conventional 20\,mK.  The analysis
-proceeds in two stages: a baseline configuration at 5.8\,GHz and 20\,mK,
-which serves to validate the modelling pipeline against established
+$\sim$\,4\,K.  The analysis proceeds in two stages: a baseline at
+5.8\,GHz and 20\,mK that anchors the modelling against established
 transmon performance, and an elevated-temperature configuration at
-300\,GHz and 4\,K, where the interplay of increased thermal noise,
-modified loss mechanisms, and higher qubit frequency is examined in
-detail.  The chapter derives flux-dependent Hamiltonians for the
-asymmetric SQUID, characterises the two flux-insensitive sweet spots
-of the design, models decoherence at elevated temperatures, and
-projects single- and two-qubit gate fidelities.  The cavity-mediated
-coupling between two transmons is analysed in the dispersive regime,
-with particular attention to the distinction between transverse
-exchange and longitudinal cross-Kerr interactions.
+300\,GHz and 4\,K where thermal noise, loss mechanisms, and qubit
+frequency are jointly examined.  The chapter derives flux-dependent
+Hamiltonians for the asymmetric SQUID, characterises its two
+flux-insensitive sweet spots, models decoherence, and projects
+single- and two-qubit gate fidelities.  The cavity-mediated coupling
+between two transmons is analysed in the dispersive regime,
+distinguishing transverse exchange from longitudinal cross-Kerr
+interactions.
 
 \paragraph{Chapter~\ref{ch:quantum_algorithms} --- Quantum Algorithms.}
 We design and benchmark a hybrid quantum-classical convolutional neural
@@ -132,7 +130,7 @@ one chapter.
 \begin{itemize}
     \item Quantum states are written in Dirac notation: $\ket{\psi}$ for kets, $\bra{\psi}$ for bras, and $\ket{\psi}\!\bra{\psi}$ for the corresponding rank-one density operator.
     \item Operators carry a hat: $\hat{H}$ for Hamiltonians, $\hat{\rho}$ for density matrices, $\hat{O}$ for a generic observable. Where no ambiguity arises (typically inside long derivations), the hat is dropped.
-    \item Pauli operators in the computational basis are denoted $\sigma_x$, $\sigma_y$, $\sigma_z$; the symbols $X$, $Y$, $Z$ are used interchangeably for the same operators when used as gates.
+    \item Pauli operators in the computational basis are denoted $\sigma_x$, $\sigma_y$, $\sigma_z$; the symbols $X$, $Y$, $Z$ denote the same operators in gate notation.
     \item Vectors in Euclidean space are typeset in boldface: $\mathbf{x}$, $\mathbf{E}$, $\mathbf{B}$.
     \item Frequencies and angular frequencies are kept distinct throughout: $f$ denotes a frequency in Hz, while $\omega = 2\pi f$ denotes the corresponding angular frequency in rad/s. Numerical values reported in GHz, MHz, kHz refer to $f$ unless explicitly labelled.
     \item Natural units with $\hbar = 1$ are adopted in formal derivations; SI units are restored whenever numerical results are reported.
