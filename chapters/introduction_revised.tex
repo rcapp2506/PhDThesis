@@ -153,12 +153,62 @@ than one chapter.
 
 The following abbreviations recur in more than one chapter. The expansion is given here once; later occurrences use the abbreviation directly, with the expansion repeated only where it improves readability.
 
-\begin{itemize}
-    \item \textbf{Quantum technologies, broadly.} QT: quantum technology. NISQ: noisy intermediate-scale quantum (era). SQL: standard quantum limit. QFI: quantum Fisher information.
+\medskip
 
-    \item \textbf{Superconducting hardware.} SQUID: superconducting quantum interference device. JJ: Josephson junction. TLS: two-level system (used as a generic term for spurious resonant defects in dielectrics). BCS: Bardeen--Cooper--Schrieffer (theory of superconductivity). cQED: circuit quantum electrodynamics, the framework for the dispersive coupling of a qubit to a microwave resonator. CQED: cavity quantum electrodynamics, the broader atomic-physics framework from which cQED is descended; the two are related but distinct~\cite{blais2021circuit}. CMOS: complementary metal--oxide--semiconductor (used in the cryo-CMOS variant for control electronics co-located at the cryogenic stage). DAC: digital-to-analogue converter. DRAG: derivative removal by adiabatic gate, a pulse-shaping protocol that suppresses leakage to the second excited state of the transmon~\cite{Motzoi2009}. HEATS-Q: high-temperature asymmetric-SQUID transmon qubit, the elevated-temperature design developed in Chapter~\ref{ch:quantum_hardware}.
+\noindent\begin{minipage}{\linewidth}
+\noindent\textbf{Quantum technologies, broadly.}
 
-    \item \textbf{Quantum machine learning.} VQC: variational quantum circuit. PQC: parametrised quantum circuit (used interchangeably with VQC; we follow the convention of using PQC for the architectural object and VQC for its training-time use). QML: quantum machine learning. CNN: classical convolutional neural network. QCNN: hybrid quantum-classical convolutional neural network, the architecture studied in Chapter~\ref{ch:quantum_algorithms}. SGD: stochastic gradient descent. ASAP, ALAP: as-soon-as-possible and as-late-as-possible scheduling policies in transpilation. SNR: signal-to-noise ratio.
+\begin{tabularx}{\linewidth}{@{}l@{\hspace{1em}}X@{}}
+    \textbf{NISQ} & noisy intermediate-scale quantum (era). \\
+    \textbf{QFI}  & quantum Fisher information. \\
+    \textbf{QT}   & quantum technology. \\
+    \textbf{SQL}  & standard quantum limit. \\
+\end{tabularx}
+\end{minipage}
 
-    \item \textbf{Quantum sensing.} EIT: electromagnetically induced transparency. SSFI: state-selective field ionisation, the standard detection technique for cold Rydberg atoms.
-\end{itemize}
+\medskip
+
+\noindent\begin{minipage}{\linewidth}
+\noindent\textbf{Superconducting hardware.}
+
+\begin{tabularx}{\linewidth}{@{}l@{\hspace{1em}}X@{}}
+    \textbf{BCS}     & Bardeen--Cooper--Schrieffer (theory of superconductivity). \\
+    \textbf{CMOS}    & complementary metal--oxide--semiconductor (used in the cryo-CMOS variant for control electronics co-located at the cryogenic stage). \\
+    \textbf{cQED}    & circuit quantum electrodynamics, the framework for the dispersive coupling of a qubit to a microwave resonator. \\
+    \textbf{CQED}    & cavity quantum electrodynamics, the broader atomic-physics framework from which cQED is descended; the two are related but distinct~\cite{blais2021circuit}. \\
+    \textbf{DAC}     & digital-to-analogue converter. \\
+    \textbf{DRAG}    & derivative removal by adiabatic gate, a pulse-shaping protocol that suppresses leakage to the second excited state of the transmon~\cite{Motzoi2009}. \\
+    \textbf{HEATS-Q} & high-temperature asymmetric-SQUID transmon qubit, the elevated-temperature design developed in Chapter~\ref{ch:quantum_hardware}. \\
+    \textbf{JJ}      & Josephson junction. \\
+    \textbf{SQUID}   & superconducting quantum interference device. \\
+    \textbf{TLS}     & two-level system (used as a generic term for spurious resonant defects in dielectrics). \\
+\end{tabularx}
+\end{minipage}
+
+\medskip
+
+\noindent\begin{minipage}{\linewidth}
+\noindent\textbf{Quantum machine learning.}
+
+\begin{tabularx}{\linewidth}{@{}l@{\hspace{1em}}X@{}}
+    \textbf{ASAP, ALAP} & as-soon-as-possible and as-late-as-possible scheduling policies in transpilation. \\
+    \textbf{CNN}        & classical convolutional neural network. \\
+    \textbf{PQC}        & parametrised quantum circuit (used interchangeably with VQC; we follow the convention of using PQC for the architectural object and VQC for its training-time use). \\
+    \textbf{QCNN}       & hybrid quantum-classical convolutional neural network, the architecture studied in Chapter~\ref{ch:quantum_algorithms}. \\
+    \textbf{QML}        & quantum machine learning. \\
+    \textbf{SGD}        & stochastic gradient descent. \\
+    \textbf{SNR}        & signal-to-noise ratio. \\
+    \textbf{VQC}        & variational quantum circuit. \\
+\end{tabularx}
+\end{minipage}
+
+\medskip
+
+\noindent\begin{minipage}{\linewidth}
+\noindent\textbf{Quantum sensing.}
+
+\begin{tabularx}{\linewidth}{@{}l@{\hspace{1em}}X@{}}
+    \textbf{EIT}  & electromagnetically induced transparency. \\
+    \textbf{SSFI} & state-selective field ionisation, the standard detection technique for cold Rydberg atoms. \\
+\end{tabularx}
+\end{minipage}
