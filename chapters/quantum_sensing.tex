@@ -402,14 +402,16 @@ for times $t < T_a$, where $T_a$ is the characteristic amplification time:
     \label{eq:amplification_time}
 \end{equation}
 
-The amplification factor, defined as the ratio of the final to initial excitation number, scales with the system size:
+The amplification factor, defined as the ratio of the final to initial excitation number, scales with the system size as
 
 \begin{equation}
-    \mathcal{A} = \frac{S(T_a)}{S(0)} \sim N
+    \mathcal{A} = \frac{S(T_a)}{S(0)} \sim \frac{N}{2}
     \label{eq:amplification_factor}
 \end{equation}
 
-For a system of $N = 11$ atoms with $\Omega_{\mathrm{gr}}/(2\pi) = 0.2$ MHz, we obtain $T_a \sim 8.8$ $\mu$s and $\mathcal{A} \sim 5$--8, consistent with the theoretical predictions of Ref.~\cite{Nill2024}.
+where the factor of $1/2$ reflects the saturation of the one-dimensional chain: starting from a central seed, the two avalanche fronts reach the boundaries simultaneously and the chain saturates at on average $N/2 + 1$ Rydberg excitations.
+
+For a system of $N = 11$ atoms with $\Omega_{\mathrm{gr}}/(2\pi) = 0.2$ MHz, the simulation yields $T_a \sim 8.8$~$\mu$s and $\mathcal{A} \approx 5.3$, in agreement with the $\mathcal{A} \sim N/2$ scaling and with the predictions of Ref.~\cite{Nill2024}.
 
 \subsubsection{Spatial Correlations}
 
@@ -839,7 +841,7 @@ is non-monotonic in $N$ and admits a finite optimum $N^*$ at which $\eta_{\rm ef
 Figure~\ref{fig:backaction} illustrates the two regimes for the parameters quoted in the cavity integration discussion above ($g/2\pi\!=\!1$~MHz, $\kappa/2\pi\!=\!50$~kHz at $Q\!=\!10^5$, $\gamma_\perp/2\pi\!=\!1$~kHz). Three observations emerge directly from the plot:
 
 \begin{enumerate}
-    \item In the resonant regime, even a single atom would already provide $\eta_{\rm eff}^{\rm res}\!\to\!1$ (the cooperativity is $C_1\!\sim\!2\!\times\!10^4$), so the array size of $N\!=\!11$ adopted in this work sits comfortably in the saturated regime with negligible room for improvement from larger ensembles. The Purcell broadening at $N\!=\!11$ is $\kappa_{\rm eff}/2\pi\!\sim\!22$~MHz, still much smaller than the avalanche bandwidth $\Omega_{\rm gr}/2\pi\!=\!0.2$~MHz divided by the cooperativity, and therefore not a practical limitation.
+    \item In the resonant regime, even a single atom would already provide $\eta_{\rm eff}^{\rm res}\!\to\!1$ (the cooperativity is $C_1\!\sim\!2\!\times\!10^4$), so the array size of $N\!=\!11$ adopted in this work sits comfortably in the saturated regime with negligible room for improvement from larger ensembles. The Purcell broadening at $N\!=\!11$ is $\kappa_{\rm eff}/2\pi\!\sim\!22$~GHz, still much smaller than the avalanche bandwidth $\Omega_{\rm gr}/2\pi\!=\!0.2$~MHz divided by the cooperativity, and therefore not a practical limitation.
     \item In the dispersive regime, the optimum value $\eta_{\rm eff}^{\rm disp}(N^*)$ is small ($\lesssim\!10^{-5}$) for any reasonable choice of detuning $\Delta$. Increasing $|\Delta|$ pushes $N^*$ to larger values but reduces the peak efficiency further, because the small-cooperativity penalty $\propto 1/\Delta^2$ wins over the slow growth $\delta\omega_c\!\propto\!1/\Delta$ of the cavity shift.
     \item Comparison of panels (a) and (b) makes the engineering choice transparent: the resonant configuration ($\Delta = 0$, atomic transition tuned exactly to the cavity mode) is the only viable architecture for high-efficiency single-photon detection in the haloscope context. This is the configuration assumed throughout the rest of this chapter, and the multi-atom avalanche scheme is fully consistent with this requirement.
 \end{enumerate}
