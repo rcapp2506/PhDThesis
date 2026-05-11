@@ -345,14 +345,14 @@ At high magnetic fields, different $\ell$ and $m_\ell$ states with the same $n$ 
     \label{eq:state_mixing}
 \end{equation}
 
-This mixing affects the van der Waals coefficients $C_6$ that determine interaction strengths. Empirically, we find that the Rydberg-Rydberg interaction strength $V_{rr}$ decreases with magnetic field according to:
+This mixing affects the van der Waals coefficients $C_6$ that determine the interaction strengths. A first-principles treatment requires the full diagonalisation of the pair-state Hamiltonian including the diamagnetic term, which is beyond the scope of the present avalanche-dynamics model. In its place we adopt a simple Lorentzian soft-saturation ansatz,
 
 \begin{equation}
-    V_{rr}(B) = V_{rr}(0) \left[ 1 - \alpha \left(\frac{B}{B_0}\right)^2 \right]
+    V_{rr}(B) = \frac{V_{rr}(0)}{1 + (B/B_c)^2}
     \label{eq:interaction_suppression}
 \end{equation}
 
-where $\alpha \sim 0.1$--0.2 is the suppression coefficient and $B_0 \sim 1$ T is a characteristic field scale. For $B = 5$ T, this yields approximately 8--9\% suppression of the interaction strength, which we have verified through our simulations.
+with characteristic scale $B_c = 5$ T calibrated so that $V_{rr}$ is reduced by a factor of two at the strongest field considered in this work. The ansatz is monotonic, smooth, free of cutoffs, and reduces in the small-field limit to the quadratic suppression $V_{rr}(B) \simeq V_{rr}(0)\left[1 - (B/B_c)^2 + O(B^4)\right]$ expected from second-order perturbation theory. The downstream results are insensitive to the precise functional form, because the laser auto-detuning (Sec.~\ref{sec:zeeman_correction}) maintains the facilitation condition $\Delta_{\mathrm{gr}}(B) + V_{rr}(B) = 0$ at every $B$ by construction; the only observable consequence is a mild rescaling of the avalanche timescale $T_a$ through $V_{rr}(B)$ entering as the dominant energy scale of the pair-state dynamics.
 
 \subsection*{Avalanche Amplification Mechanism}
 
@@ -368,7 +368,7 @@ In the \emph{facilitation} (or anti-blockade) regime, the laser is detuned by th
 
 \subsubsection*{Facilitation Condition}
 
-Consider a one-dimensional chain of $N$ atoms, initially all in the ground state $|g\rangle$. A laser couples the ground state to a Rydberg state $|r\rangle$ with Rabi frequency $\Omega_{\mathrm{gr}}$ and detuning $\Delta_{\mathrm{gr}}$. When one atom is excited to the Rydberg state, it shifts the energy of its neighbors by the interaction strength $V_{rr}$. If the laser detuning is chosen such that:
+Consider a one-dimensional chain of $N$ atoms, initially all in the ground state $|g\rangle$. A laser couples the ground state to a Rydberg state $|r\rangle$ with Rabi frequency $\Omega_{\mathrm{gr}}$ and detuning $\Delta_{\mathrm{gr}}$. Throughout this chapter $\Omega_{\mathrm{gr}}$, $\Delta_{\mathrm{gr}}$ and the interaction strengths $V_{rr}$, $V_{ee}$, $V_{er}$ are understood as \emph{angular} frequencies (rad/s), consistent with the convention used in the rotating-frame Hamiltonian (Eq.~\eqref{eq:h_laser} below) and in the QuTiP simulation code. Whenever a numerical value is quoted as ``$\Omega_{\mathrm{gr}}/(2\pi)$ = 0.2~MHz'' it refers to the ordinary frequency obtained from the angular one by division by $2\pi$. When $\Omega_{\mathrm{gr}}$ appears without the explicit $2\pi$, the angular form is meant. When one atom is excited to the Rydberg state, it shifts the energy of its neighbours by the interaction strength $V_{rr}$. If the laser detuning is chosen such that:
 
 \begin{equation}
     \Delta_{\mathrm{gr}} + V_{rr} \approx 0
@@ -377,14 +377,14 @@ Consider a one-dimensional chain of $N$ atoms, initially all in the ground state
 
 then atoms adjacent to an existing Rydberg excitation are brought into resonance with the laser, while isolated atoms remain off-resonant. This creates a \textit{facilitation} effect: the presence of one Rydberg atom promotes the excitation of its neighbors.
 
-In the presence of a magnetic field, Eq.~\eqref{eq:facilitation_condition} must be modified to account for the Zeeman shift:
+In the presence of a magnetic field, the bare $|g\rangle \to |r\rangle$ transition shifts by the Zeeman energy of the involved sublevels (Eq.~\eqref{eq:zeeman_shift}) and the interaction term itself becomes field-dependent (Eq.~\eqref{eq:interaction_suppression}). Throughout this chapter we work in the rotating frame of the driving laser, and we assume that the laser frequency is actively retuned to follow the field-shifted transition---e.g.\ via a Pound--Drever--Hall lock to a Zeeman-tracked reference. In that frame, the single-atom Zeeman shifts are absorbed into the choice of laser frequency and do not appear in the Hamiltonian; the only field-dependent parameters that remain are the interaction $V_{rr}(B)$ and, through the laser detuning, the residual rotating-frame detuning $\Delta_{\mathrm{gr}}(B)$. The facilitation condition then reads
 
 \begin{equation}
-    \Delta_{\mathrm{gr}}(B) + V_{rr}(B) \approx 0
+    \Delta_{\mathrm{gr}}(B) + V_{rr}(B) = 0
     \label{eq:facilitation_condition_b}
 \end{equation}
 
-where both terms are field-dependent according to Eqs.~\eqref{eq:zeeman_shift} and~\eqref{eq:interaction_suppression}.
+at every $B$. Operationally, the laser is offset by $-V_{rr}(B)$ from the field-shifted transition, so that $\Delta_{\mathrm{gr}}(B) = -V_{rr}(B)$ holds by construction. This is the implementation chosen in the simulation code: the rotating-frame detuning is set to $-V_{rr}(B)$ directly, and the facilitation residual $\Delta_{\mathrm{gr}}(B) + V_{rr}(B)$ is identically zero to machine precision at every $B$, not approximately small. This is the origin of the $B$-independent amplification factor observed in Sec.~\ref{sec:axion_benchmarking} (Fig.~\ref{fig:B_field_scan}(b)).
 
 \subsubsection{Ballistic Expansion}
 
@@ -841,7 +841,7 @@ is non-monotonic in $N$ and admits a finite optimum $N^*$ at which $\eta_{\rm ef
 Figure~\ref{fig:backaction} illustrates the two regimes for the parameters quoted in the cavity integration discussion above ($g/2\pi\!=\!1$~MHz, $\kappa/2\pi\!=\!50$~kHz at $Q\!=\!10^5$, $\gamma_\perp/2\pi\!=\!1$~kHz). Three observations emerge directly from the plot:
 
 \begin{enumerate}
-    \item In the resonant regime, even a single atom would already provide $\eta_{\rm eff}^{\rm res}\!\to\!1$ (the cooperativity is $C_1\!\sim\!2\!\times\!10^4$), so the array size of $N\!=\!11$ adopted in this work sits comfortably in the saturated regime with negligible room for improvement from larger ensembles. The Purcell broadening at $N\!=\!11$ is $\kappa_{\rm eff}/2\pi\!\sim\!22$~GHz, still much smaller than the avalanche bandwidth $\Omega_{\rm gr}/2\pi\!=\!0.2$~MHz divided by the cooperativity, and therefore not a practical limitation.
+    \item In the resonant regime, even a single atom would already provide $\eta_{\rm eff}^{\rm res}\!\to\!1$ (the cooperativity is $C_1\!\sim\!2\!\times\!10^4$), so the array size of $N\!=\!11$ adopted in this work sits comfortably in the saturated regime with negligible room for improvement from larger ensembles. For the parameters considered, the system is in the regime of collective strong coupling rather than bad-cavity Purcell decay: the collective Rabi splitting $2g\sqrt{N}/(2\pi) \approx 6.6$~MHz at $N = 11$ exceeds both $\kappa/(2\pi) = 50$~kHz and $\gamma_\perp/(2\pi) = 1$~kHz by more than two orders of magnitude. The bad-cavity Purcell broadening formula $\kappa_{\rm eff}(N) = \kappa\,[1+2C(N)]$ plotted on the right axis of panel~(a) is therefore to be read only as a diagnostic of how rapidly the absorption channel opens at small $N$, not as the physical linewidth of the dressed atom--cavity system at $N = 11$.
     \item In the dispersive regime, the optimum value $\eta_{\rm eff}^{\rm disp}(N^*)$ is small ($\lesssim\!10^{-5}$) for any reasonable choice of detuning $\Delta$. Increasing $|\Delta|$ pushes $N^*$ to larger values but reduces the peak efficiency further, because the small-cooperativity penalty $\propto 1/\Delta^2$ wins over the slow growth $\delta\omega_c\!\propto\!1/\Delta$ of the cavity shift.
     \item Comparison of panels (a) and (b) makes the engineering choice transparent: the resonant configuration ($\Delta = 0$, atomic transition tuned exactly to the cavity mode) is the only viable architecture for high-efficiency single-photon detection in the haloscope context. This is the configuration assumed throughout the rest of this chapter, and the multi-atom avalanche scheme is fully consistent with this requirement.
 \end{enumerate}
