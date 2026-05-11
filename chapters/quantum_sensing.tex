@@ -503,7 +503,7 @@ The laser coupling term is:
     \label{eq:h_laser}
 \end{equation}
 
-where $\sigma_{\pm}^j = |r\rangle_j\langle g| \pm |g\rangle_j\langle r|$ are the raising and lowering operators for atom $j$.
+where $\sigma_+^j = |r\rangle_j\langle g|$ and $\sigma_-^j = |g\rangle_j\langle r| = (\sigma_+^j)^\dagger$ are the raising and lowering operators for atom $j$.
 
 The detuning term, including Zeeman corrections, is:
 
@@ -612,7 +612,7 @@ Magnetic field range & $B$ & 0--5 T \\
 \end{tabular}
 \end{table}
 
-The interaction strength $V_{rr}(0)$ corresponds to a lattice spacing of approximately 3 $\mu$m, achievable with optical tweezer arrays~\cite{Barredo2018}. The detuning $\Delta_{\mathrm{gr}}$ is automatically adjusted at each magnetic field to maintain the facilitation condition~\eqref{eq:facilitation_condition_b}.
+The interaction strength $V_{rr}(0)$ corresponds to a lattice spacing of approximately 6 $\mu$m, achievable with optical tweezer arrays~\cite{Barredo2018}. The detuning $\Delta_{\mathrm{gr}}$ is automatically adjusted at each magnetic field to maintain the facilitation condition~\eqref{eq:facilitation_condition_b}.
 
 \subsection*{Magnetic Field Dependence}
 
@@ -633,7 +633,7 @@ A residual signature of the magnetic field appears in the optimal detection time
 
 Panel (c) presents the dark count rate as a function of both magnetic field (solid line, $T = 4$ K) and temperature (dashed lines, various $B$). The dark rate exhibits weak dependence on magnetic field but strong (exponential) dependence on temperature, as predicted by Eq.~\eqref{eq:thermal_rate}. At $T = 4$ K, the dark count rate remains below 0.01 Hz across all magnetic fields, almost two orders of magnitude below the $1$~Hz nominal target plotted in panel (c). Cooling to $T = 1$ K reduces the dark rate by approximately two orders of magnitude, while operation at $T = 300$ mK (achievable with $^3$He refrigeration or dilution refrigerators) yields dark rates below $10^{-4}$ Hz.
 
-Panel (d) illustrates the spatiotemporal dynamics of the avalanche at $B = 5$ T through a density plot of $S_j(t)$. The initial excitation at the central site ($j = 6$) spreads outward in both directions, creating the characteristic V-shaped profile. The slopes of the V correspond to the avalanche propagation velocity $v \sim 0.6$ $\mu$m/$\mu$s for the chosen parameters. This spatial correlation structure is a key signature that distinguishes true single-photon events from uncorrelated background excitations, potentially enabling further background suppression through spatially resolved readout.
+Panel (d) illustrates the spatiotemporal dynamics of the avalanche at $B = 5$ T through a density plot of $S_j(t)$. The initial excitation at the central site ($j = 6$) spreads outward in both directions, creating the characteristic V-shaped profile. The slopes of the V correspond to the avalanche propagation velocity $v \approx 5.5$ $\mu$m/$\mu$s, extracted from the simulated centre-of-mass of the right-propagating excitation front (lattice spacing $a = 6\,\mu$m, Rabi frequency $\Omega_{\mathrm{gr}}/2\pi = 0.2$ MHz). This value is consistent with the coherent facilitation regime~\cite{Valado2016,Festa2022}, in which the front propagates faster than the naive nearest-neighbour Rabi hopping estimate by a factor of order $\pi$. This spatial correlation structure is a key signature that distinguishes true single-photon events from uncorrelated background excitations, potentially enabling further background suppression through spatially resolved readout.
 
 \subsection*{Performance Metrics}
 
@@ -772,7 +772,7 @@ Experimental realisation of the Rydberg avalanche detector for axion searches wo
 
 Cold Rubidium or Cesium atoms trapped in an optical lattice or tweezer array provide the required control and isolation. State-of-the-art atom trapping experiments routinely achieve:
 \begin{itemize}
-    \item Lattice spacings $a \sim 1$--5 $\mu$m (tunable via optical wavelength)
+    \item Lattice spacings $a \sim 1$--7 $\mu$m (tunable via optical wavelength)
     \item Atom numbers $N \sim 10$--100 with near-unity filling fraction
     \item Trapping lifetimes $> 1$ s (sufficient for multiple detection cycles)
 \end{itemize}
