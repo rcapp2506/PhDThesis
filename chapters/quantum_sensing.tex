@@ -238,20 +238,20 @@ Real sensors interact with their environment, introducing dephasing and relaxati
 where $L_k$ are Lindblad operators. This formalism enables analytical and numerical studies of decoherence-limited sensitivity.
 
 \subsection*{Taxonomy of Quantum Sensors}
-Quantum sensors can be categorised by their underlying physical platform and target observable. Table~\ref{tab:taxonomy} summarises representative implementations.
+Quantum sensors can be categorised by their underlying physical platform and target observable. Table~\ref{tab:taxonomy} summarises representative implementations, expanding the relevant acronyms at first occurrence.
 
 \begin{table}[h]
 \centering
-\caption{Representative quantum sensing platforms and their target observables.}
+\caption{Representative quantum sensing platforms and their target observables. ODMR: optically detected magnetic resonance; NV: nitrogen-vacancy; EIT: electromagnetically induced transparency.}
 \resizebox{\columnwidth}{!}{
 \begin{tabular}{l l l}
 \toprule
 Platform & Resource & Observable \\
 \midrule
 Superconducting circuits & Josephson effect, flux quantisation & Magnetic field, current \\
-NV centres in diamond & Spin triplet, ODMR & Magnetic/electric field, temperature \\
+Nitrogen-vacancy (NV) centres in diamond & Spin triplet, optically detected magnetic resonance (ODMR) & Magnetic/electric field, temperature \\
 Trapped ions & Hyperfine states, Ramsey interferometry & Frequency, force \\
-Cold/Rydberg atoms & EIT, Rabi oscillations & RF/THz field, photon number \\
+Cold/Rydberg atoms & Electromagnetically induced transparency (EIT), Rabi oscillations & RF/THz field, photon number \\
 Optomechanical sensors & Radiation pressure, squeezing & Force, acceleration \\
 Atomic interferometers & Matter-wave phase shift & Gravity, rotation \\
 \bottomrule
@@ -261,11 +261,11 @@ Atomic interferometers & Matter-wave phase shift & Gravity, rotation \\
 \end{table}
 
 \subsection*{Quantum Magnetometry and Interferometry}
-Quantum magnetometers such as NV-centre sensors detect magnetic fields via Zeeman shifts in spin transitions, read out optically through photoluminescence contrast. SQUIDs exploit flux quantisation and Josephson interference, providing fT/$\sqrt{\text{Hz}}$ sensitivity at cryogenic temperatures. Atomic interferometers measure phase shifts induced by acceleration or rotation, achieving sub-ppb precision.
+Quantum magnetometers such as NV-centre sensors detect magnetic fields via Zeeman shifts in spin transitions, read out optically through photoluminescence contrast. Superconducting quantum interference devices (SQUIDs) exploit flux quantisation and Josephson interference, providing fT/$\sqrt{\text{Hz}}$ sensitivity at cryogenic temperatures. Atomic interferometers measure phase shifts induced by acceleration or rotation, achieving sub-ppb precision.
 
 \section{Rydberg-Atom Quantum Sensing}
 
-The primary experimental technique for detecting axion dark matter is the haloscope method~\cite{Sikivie1983, Sikivie2021}, which exploits the Primakoff effect: in the presence of a strong magnetic field, axions can convert to photons with the same frequency as the axion mass. Current haloscope experiments, such as ADMX~\cite{Backes2021} and HAYSTAC~\cite{Zhong2018}, employ high-quality-factor microwave cavities immersed in strong magnetic fields (typically 5--10 T) to resonantly enhance this conversion. The expected photon production rate is extraordinarily low, with typical powers on the order of $10^{-22}$ W or less~\cite{Sikivie2021,Graham2015}, necessitating single-photon detection capabilities.
+The primary experimental technique for detecting axion dark matter is the haloscope method~\cite{Sikivie1983, Sikivie2021}, which exploits the Primakoff effect: in the presence of a strong magnetic field, axions can convert to photons with the same frequency as the axion mass. Current haloscope experiments, such as the Axion Dark Matter eXperiment (ADMX)~\cite{Backes2021} and the Haloscope At Yale Sensitive To Axion Cold dark matter (HAYSTAC)~\cite{Zhong2018}, employ high-quality-factor microwave cavities immersed in strong magnetic fields (typically 5--10 T) to resonantly enhance this conversion. The expected photon production rate is extraordinarily low, with typical powers on the order of $10^{-22}$ W or less~\cite{Sikivie2021,Graham2015}, necessitating single-photon detection capabilities.
 
 \subsection*{The Detection Challenge}
 
@@ -280,7 +280,7 @@ The requirements for axion detection impose a unique and demanding set of constr
     \item \textbf{Bandwidth}: Tunability to scan the axion mass range
 \end{enumerate}
 
-Existing detector technologies struggle to satisfy all these requirements simultaneously. Transition edge sensors (TES)~\cite{Guo2017} offer excellent sensitivity at THz frequencies but are incompatible with strong magnetic fields. Josephson junction detectors~\cite{Pankratov2022} achieve quantum-limited performance but require extreme cooling ($< 100$ mK) and have limited magnetic field tolerance. Superconducting nanowire detectors (SNSPDs)~\cite{Chiles2019} provide ultra-low dark counts but operate primarily at optical wavelengths. Superconducting qubit-based amplifiers~\cite{Backes2021}, while achieving near-quantum-limited sensitivity, are highly sensitive to magnetic fields and require operation at $\sim 10$ mK.
+Existing detector technologies struggle to satisfy all these requirements simultaneously. Transition edge sensors (TES)~\cite{Guo2017} offer excellent sensitivity at THz frequencies but are incompatible with strong magnetic fields. Josephson junction (JJ) detectors~\cite{Pankratov2022} achieve quantum-limited performance but require extreme cooling ($< 100$ mK) and have limited magnetic field tolerance. Kinetic inductance detectors (KID)~\cite{Guo2017} are well suited to far-infrared imaging arrays but offer modest single-photon sensitivity in the microwave regime. Superconducting nanowire detectors (SNSPDs)~\cite{Chiles2019} provide ultra-low dark counts but operate primarily at optical wavelengths. Superconducting qubit-based amplifiers~\cite{Backes2021}, while achieving near-quantum-limited sensitivity, are highly sensitive to magnetic fields and require operation at $\sim 10$ mK.
 
 This technological gap motivates the exploration of alternative detection schemes that can satisfy the complete parameter space required by axion searches.
 
@@ -682,7 +682,7 @@ To contextualise the performance of the Rydberg avalanche detector, we compare i
 
 \begin{table}[htbp]
 \centering
-\caption{Comparison of single-photon detection technologies for axion searches}
+\caption{Comparison of single-photon detection technologies for axion searches. Acronyms: TES, transition edge sensor; JJ, Josephson junction; KID, kinetic inductance detector; SNSPD, superconducting nanowire single-photon detector; SC qubit, superconducting qubit.}
 \label{tab:technology_comparison}
 \begin{tabular}{lccccc}
 \hline\hline
@@ -763,7 +763,7 @@ Rydberg atoms offer exceptional tunability: by changing the principal quantum nu
 
 \subsection*{Technology Readiness Level}
 
-It is important to note that the Rydberg avalanche detector is at an earlier stage of technological development (TRL 3--4: proof-of-concept) compared to mature superconducting technologies (TRL 7--9: deployed systems). The simulations presented here provide theoretical validation, but experimental demonstration of single-photon detection in strong magnetic fields has not yet been performed. This represents both a challenge and an opportunity: significant development work is required, but the potential performance advantages justify the effort.
+It is important to note that the Rydberg avalanche detector is at an earlier stage of technological development (Technology Readiness Level, TRL 3--4: proof-of-concept) compared to mature superconducting technologies (TRL 7--9: deployed systems). The simulations presented here provide theoretical validation, but experimental demonstration of single-photon detection in strong magnetic fields has not yet been performed. This represents both a challenge and an opportunity: significant development work is required, but the potential performance advantages justify the effort.
 
 %==============================================================================
 \section{Discussion}
