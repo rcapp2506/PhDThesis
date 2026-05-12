@@ -877,7 +877,7 @@ The amplification factor $\mathcal{A} \sim N$ suggests that larger systems provi
 
 \subsubsection{Hilbert Space Growth}
 
-The exact quantum simulation scales exponentially as $\mathcal{O}(2^N)$ in memory and $\mathcal{O}(4^N)$ for time evolution, becoming prohibitive for $N > 15$ atoms ($\sim 32,000$ basis states). For larger systems, approximate methods such as matrix product states or truncated Wigner approximations are required. Classical trajectory methods or tensor network approaches may extend simulations to larger systems; however, hardware limitations ultimately necessitate experimental validation. Simulation on quantum computing systems could also be explored.
+The exact quantum simulation scales exponentially as $\mathcal{O}(2^N)$ in memory and $\mathcal{O}(2^N \cdot N_{\rm steps})$ in time for sparse-Hamiltonian evolution. In practice we have performed direct sesolve simulations up to $N = 17$ atoms ($2^{17} \approx 1.3 \times 10^5$ basis states, $\sim 200$~MB peak memory, $\sim 1$~h walltime per magnetic-field point on a single CPU core); $N = 19$ remains tractable but with a runtime of several hours. Beyond $N \gtrsim 21$ approximate methods such as matrix product states or truncated Wigner approximations are required, exploiting the one-dimensional geometry and weak-excitation regime. Hardware limitations ultimately necessitate experimental validation. Simulation on quantum computing systems could also be explored.
 
 \subsubsection{Decoherence}
 
@@ -993,7 +993,7 @@ By mixing the microwave signal with a local oscillator, the detection frequency 
 Recent work~\cite{Gallagher2022,Walther2024} has explored the use of Rydberg excitons in the semiconductor Cu$_2$O as solid-state analogues of Rydberg atoms. These systems offer the advantage of compact, cryogenic-compatible platforms but face challenges from disorder and phonon coupling. Extension of avalanche amplification to this platform remains an open question.
 
 \section{Comparison with Other Platforms}
-Rydberg sensors complement superconducting and solid-state platforms. While SQUIDs achieve unmatched magnetic sensitivity, they require cryogenics and are limited in frequency range. Rydberg sensors operate at room temperature and offer wide spectral tunability, at the cost of larger footprint and lower time resolution. Table~\ref{tab:compare} summarises their comparative attributes.
+Rydberg sensors complement superconducting and solid-state platforms with two distinct operating regimes: Rydberg \emph{electrometers}, based on EIT readout, operate at room temperature and offer wide spectral tunability for field sensing, while the \emph{photon-counting} architecture studied in this chapter is operated cryogenically (4~K) to suppress blackbody-induced dark counts. SQUIDs achieve unmatched magnetic sensitivity but require sub-Kelvin cryogenics and have limited frequency range. NV centres operate at room temperature with modest magnetic sensitivity. Table~\ref{tab:compare} summarises their comparative attributes.
 
 \begin{table}[htbp]
 \centering
@@ -1004,8 +1004,8 @@ Platform & Temperature & Sensitivity & Bandwidth \\
 \midrule
 SQUID & 4~K & fT/$\sqrt{Hz}$ & kHz--MHz \\
 NV centre & 300~K & nT/$\sqrt{Hz}$ & MHz \\
-Rydberg atom (photon detection) & 300 K & $\sim 10^{-22}$ W & Hz-THz \\
-Rydberg atom (field sensing) & 300~K & $<1~\mu$V/cm/$\sqrt{Hz}$ & Hz--THz \\
+Rydberg atom (photon detection, this work) & 4~K & $\sim 10^{-22}$ W & Hz-THz \\
+Rydberg atom (field sensing, EIT) & 300~K & $<1~\mu$V/cm/$\sqrt{Hz}$ & Hz--THz \\
 Trapped ion & 4~K & nT/$\sqrt{Hz}$ & Hz--kHz \\
 \bottomrule
 \end{tabular}
@@ -1023,7 +1023,7 @@ We have presented a comprehensive theoretical investigation of Rydberg avalanche
 \subsection*{Key Findings}
 
 \begin{enumerate}
-    \item \textbf{Robust amplification in magnetic fields}: The avalanche mechanism maintains amplification factor of $\mathcal{A} \approx 5.3\times$ across magnetic fields from 0 to 5 T, despite interaction suppression from state mixing. Automatic compensation of Zeeman shifts through laser detuning adjustment preserves the facilitation condition.
+    \item \textbf{Robust amplification in magnetic fields, and linear scaling with $N$}: The avalanche mechanism maintains amplification factor $\mathcal{A} \approx 5.3$ at $N=11$ atoms across magnetic fields from 0 to 5~T, despite interaction suppression from state mixing. Direct simulation at $N = 11, 13, 15, 17$ establishes a linear scaling $\mathcal{A}(N) = 2.31 + 0.286\,N$ that holds uniformly across the entire field range, with the four $B$ values overlapping to within $1\%$ at every $N$. Automatic compensation of Zeeman shifts through laser auto-detuning preserves the facilitation condition exactly.
 
     \item \textbf{Ultra-low thermal background}: Exponential suppression of thermal excitations yields dark count rates below 0.01 Hz at 4 K, decreasing to $< 10^{-4}$ Hz at 300 mK. This performance rivals or exceeds superconducting technologies while operating at higher temperatures.
 
@@ -1032,8 +1032,8 @@ We have presented a comprehensive theoretical investigation of Rydberg avalanche
     \item \textbf{Broad tunability}: By adjusting the principal quantum number, the detector can cover the axion mass range from $\sim 1$ $\mu$eV to $\sim 1$ meV (GHz to THz frequencies) without hardware changes.
 
     \item \textbf{Spatiotemporal correlations}: The ballistic avalanche expansion creates characteristic V-shaped patterns in the excitation density, providing a signature to distinguish true events from random background and enabling potential further background suppression through machine learning algorithms.
-    \item \textbf{Decoherence robustness:} The avalanche mechanism persists for moderate dephasing rates $\gamma_{\phi} < \Omega_{gr}$, as confirmed by Lindblad simulations including pure dephasing $L_{\phi} = \sqrt{\gamma_{\phi}}\sigma_z$. This suggests experimental feasibility with current atom trap lifetimes ($\sim 100$~ms).
-    \item \textbf{Detection compatibility}: State-selective field ionisation, the standard detection technique for cold Rydberg atoms \cite{Gallagher2005, Saffman2016}, achieves efficiencies of $\eta_{\rm det} \approx 40$--70\% \cite{Ryabtsev2007, Andersen2013}. While lower than ground-state imaging fidelities ($>95\%$) demonstrated in current tweezer experiments \cite{Tao2024, Manetsch2025}, the amplification factors demonstrated here ($\mathcal{A} \approx 5.3$) provide sufficient signal enhancement to maintain single-photon sensitivity across the full magnetic field range. The finite detection efficiency affects only the readout stage and does not alter the underlying avalanche physics.
+    \item \textbf{Decoherence robustness:} The avalanche timescale $T_a \sim 10\,\mu$s is shorter than the typical Rydberg-state radiative lifetime ($\sim 100\,\mu$s for $n \sim 70$~\cite{Beterov2009}) by an order of magnitude, suggesting that the coherent regime modelled here is the relevant operating regime in practice. A full Lindblad treatment of pure dephasing has not been performed within the present work and is left to future analyses; systematic studies of comparable facilitation schemes~\cite{Festa2022} report robust amplification at moderate dephasing rates, suggesting the mechanism is not fragile to decoherence on the timescale of an avalanche event.
+    \item \textbf{Detection compatibility}: State-selective field ionisation, the standard detection technique for cold Rydberg atoms \cite{Gallagher2005, Saffman2016}, achieves end-to-end efficiencies of $\eta_{\rm det} \approx 40$--70\% \cite{Ryabtsev2007, Andersen2013} and provides a single-shot detection probability of $99.3\%$ at $N=17$. For applications that demand the formal $3\sigma$ threshold, loss imaging with $\eta_{\rm det} \geq 95\%$ \cite{Tao2024, Manetsch2025} delivers $P_{\rm detect} = 99.83\%$ at $N=15$ via direct simulation. The choice between readouts is an experimental design parameter; the underlying avalanche physics is independent of either readout.
 \end{enumerate}
 
 \subsection*{Outlook}
