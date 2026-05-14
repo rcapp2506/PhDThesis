@@ -1,6 +1,104 @@
 % !TEX root = ../main.tex
 \begin{comment}
 === Revision log ===
+2026-05-14  R. Cappuccio / Claude  (Wave K — Cap.3 Phase B audit + Signorelli S4/S5/S7 cleanup)
+  Round 1 of Cap.3 (Quantum Algorithms) audit closeout.
+  Five sets of patches in this commit:
+
+    * Patch A (equation-claim-audit) — 3-sigma shot-noise threshold,
+      Sec.~\ref{subsec:hw_results}. The formula was previously written
+      as "3/(s sqrt(N_z)) = 0.019" with s=500, N_z=50, which yields
+      8.5e-4 rather than 0.019. The correct expression for the
+      standard error of the per-block mean over N_z independent
+      circuits, each estimated from s shots, is sigma_mean
+      = 1/sqrt(s N_z), so the 3-sigma threshold is 3/sqrt(s N_z).
+      The numerical value 0.019 is unchanged; the formula is rewritten
+      to match its derivation and a one-sentence definition of
+      sigma_mean is inserted.
+
+    * Patch B (calibration-aware initial layout, Sec.~\ref{subsec:transpilation}) —
+      the previous text described "excluding the bottom 10 (qubit
+      indices {4,21,28,31,35,46})", which is internally inconsistent
+      (the list has 6 indices, not 10). The actual procedure is a
+      two-stage pruning: six lowest-readout-fidelity qubits flagged
+      as unusable, plus four further qubits set aside as a routing
+      reserve, available to the transpiler should the calibration
+      snapshot fail to reflect a real-time degradation. The text now
+      reflects this 6 + 4 partition; the caption of
+      Fig.~\ref{fig:emerald_topology} is updated in lockstep.
+
+    * Patch C (Qiskit version disambiguation) — the previous text
+      gave the Qiskit pin only for the hardware campaign
+      (iqm-client 34.0.2 / Qiskit 1.4.2). The simulator-based
+      architecture search and pre-training run on a different version
+      and the chapter did not say so. A clarifying sentence is now
+      added at the head of the "Software stack" paragraph
+      (Sec.~\ref{subsec:backend_setup}) and the "Simulator-first
+      search" paragraph (Sec.~\ref{sec:train-opt}) is retitled
+      "Simulator-first search (Qiskit 2.2)" with a one-sentence
+      version pin.
+
+    * Patch D (eliminazione "quantum advantage" — Signorelli style
+      directive). Three coordinated substitutions:
+
+         - Sec.~\ref{sec:qcnn_training_dynamics} (previously
+           "Training Dynamics and Quantum Advantage",
+           sec:qcnn_advantage) — completely rewritten in
+           descriptive style. The unsupported "quantum
+           advantage = T_classical/T_quantum approx 3x" equation
+           is removed (the figures show, at most, a 2x epoch-count
+           differential at epsilon=90%, and the same paragraph
+           already says both architectures converge in ~5 epochs);
+           the bullet lists "Rapid convergence / Early-epoch /
+           Comparable final performance", "Practical implications
+           (energy savings, faster prototyping, shot budget)",
+           "Why Not Higher Final Accuracy?" and the final bold
+           "Key insight:" are all removed. The replacement is three
+           descriptive paragraphs that report what the curves show
+           without inferring asymptotic behaviour, plus an explicit
+           disclaimer that the first-epoch margin is not, by itself,
+           evidence of an advantage.
+
+         - Sec.~\ref{sec:discussion} first paragraph — softened from
+           "results indicate ... accelerate early learning and reduce
+           final validation loss" to a calibrated statement.
+
+         - Sec.~\ref{sec:discussion} "Training Efficiency as
+           Near-Term Quantum Advantage" paragraph (and its
+           sec:qcnn_near_term_advantage label, which has no incoming
+           ref) — removed in full. The label "What may drive the
+           gains?" is retitled "What may drive the early-epoch
+           margin." and the connecting sentence is softened.
+
+         - Sec.~\ref{sec:takeaways} (Takeaways) — the sentence
+           "Gains appear already in the first epoch and persist
+           through convergence" is removed: it is not supported by
+           the figures (the gap closes by epoch ~4).
+
+    * Patch E (Signorelli S5 — caption -> body) for Cap.3:
+
+         - Fig.~\ref{fig:training-dynamics} caption: the interpretive
+           sentence about "inherits the learning trajectory ... this
+           checkpoint is loaded onto Emerald" is moved into a new
+           body paragraph immediately after the figure.
+
+         - Fig.~\ref{fig:emerald_finetune_curves} caption: the
+           interpretive sentence about "recovers the simulator's
+           100% accuracy in two epochs" is removed; the same
+           conclusion is already explicitly discussed in the body
+           that follows the figure (subsec:finetune_results bullet 1).
+
+  Compile sanity check: 165 pages, 0 undefined references,
+  0 multiply-defined labels, 0 undefined citations.
+
+  Deferred to Round 2:
+    - Conversion of remaining argumentative bullet lists to prose
+      (sec:variants early/late fusion, sec:hw_summary 5-item enumerate,
+      subsec:finetune_results 3-item observation list, Cost-model
+      anatomy bullets) — Signorelli S3.
+    - Cleanup of residual bold emphases in table captions and
+      paragraph headers.
+
 2026-05-07  R. Cappuccio / Claude  (Wave D — Signorelli S6/S7 targeted sweep)
   PARTIAL CLOSURE of S6 and S7 — 4 patches in this file (algorithms
   chapter):
@@ -445,8 +543,8 @@ so each partial derivative requires two additional forward evaluations. On Qiski
 \end{equation}
 Hence, we schedule $S$ to increase during training (low $S$ for exploration, high $S$ for convergence) to lower Standard Error (SE).
 
-\paragraph{Simulator-first search (Qiskit).}
-For relatively rapid prototyping, we rely on Qiskit Aer backends. Where relevant, we use (i) exact statevector simulation for sanity checks (no sampling noise), (ii) shot-based simulation to match the training signal of hardware, and (iii) device-aware transpilation (layout and coupling map) to estimate depth and two-qubit counts faithfully. For IQM-targeted experiments, we employ the IQM Qiskit adapter to simulate circuits with IQM-specific noise models (when available) and topology, so that the selected candidate is realistic with respect to gate set, connectivity, and expected error channels \cite{IQMClientDocs2025,QiskitOnIQMGuide}. The per-batch cost of a forward–backward pass is
+\paragraph{Simulator-first search (Qiskit 2.2).}
+For relatively rapid prototyping, we rely on Qiskit Aer backends under Qiskit~2.2 (primitives V2). Where relevant, we use (i) exact statevector simulation for sanity checks (no sampling noise), (ii) shot-based simulation to match the training signal of hardware, and (iii) device-aware transpilation (layout and coupling map) to estimate depth and two-qubit counts faithfully. For IQM-targeted experiments, we employ the IQM Qiskit adapter to simulate circuits with IQM-specific noise models (when available) and topology, so that the selected candidate is realistic with respect to gate set, connectivity, and expected error channels \cite{IQMClientDocs2025,QiskitOnIQMGuide}. The per-batch cost of a forward–backward pass is
 \begin{equation}
 \mathcal{O}\!\big(N_{\text{patch}}\;C\,L\,D\,S\big)
 \end{equation}
@@ -682,9 +780,11 @@ Figure~\ref{fig:training-dynamics} compares the learning curves (cross-entropy l
 \begin{figure}[H]
     \centering
     \includegraphics[width=\linewidth]{chapters/qa_figures/plot1_pretrain_vs_ablation.png}
-    \caption{Pre-training learning curves on the simulator: hybrid Q-CNN (blue) vs.\ classical ablation (orange), both trained for 10 epochs on the binary EuroSAT subset with mini-batch size $m=2$, learning rate $10^{-3}$, weight decay $10^{-4}$, and seed $42$. \textbf{Left:} cross-entropy loss; \textbf{Right:} accuracy. Solid lines are training-set metrics (averaged over the $10$ optimizer steps of each epoch), dashed lines are end-of-epoch validation metrics on the $20$ held-out images. The hybrid Q-CNN inherits the learning trajectory of the classical baseline within run-to-run variability; this checkpoint is the one loaded onto Emerald in Sec.~\ref{sec:hw_validation} for the hardware fine-tuning campaign.}
+    \caption{Pre-training learning curves on the simulator: hybrid Q-CNN (blue) vs.\ classical ablation (orange), both trained for 10 epochs on the binary EuroSAT subset with mini-batch size $m=2$, learning rate $10^{-3}$, weight decay $10^{-4}$, and seed $42$. Left: cross-entropy loss. Right: accuracy. Solid lines are training-set metrics (averaged over the $10$ optimizer steps of each epoch); dashed lines are end-of-epoch validation metrics on the $20$ held-out images.}
     \label{fig:training-dynamics}
 \end{figure}
+
+Reading these curves: the hybrid Q-CNN follows the same broad learning trajectory as the classical ablation within run-to-run variability, with the largest visible difference at the first epoch and a comparable plateau thereafter. The simulator checkpoint that is loaded onto Emerald in Sec.~\ref{sec:hw_validation} for the hardware fine-tuning campaign is the one obtained at the end of this run.
 
 \subsection{Architectural variants and ablations}
 \label{sec:variants}
@@ -848,46 +948,14 @@ representing the standard deviation across ten runs.
     \label{fig:Quantum-only-with-std}
 \end{figure}
 
-\subsection{Training Dynamics and Quantum Advantage}
-\label{sec:qcnn_advantage}
+\subsection{Training Dynamics}
+\label{sec:qcnn_training_dynamics}
 
-Figure~\ref{fig:QCNN-with-std} reveals the primary quantum advantage of our hybrid architecture: \textbf{training efficiency rather than final accuracy}. We observe:
+Figure~\ref{fig:QCNN-with-std} together with the pre-training curves of Fig.~\ref{fig:training-dynamics} characterizes the training dynamics of the hybrid model on the simulator. We report three observations of these curves without inferring any asymptotic behaviour.
 
-\begin{itemize}
-    \item \textbf{Rapid convergence}: Both the Q-CNN and the classical ablation reach $\geq 90\%$ validation accuracy within $\sim 5$ epochs of pre-training (Fig.~\ref{fig:training-dynamics}); the quantum filter does not slow down the convergence appreciably with respect to the classical baseline.
-    
-    \item \textbf{Early-epoch performance}: At epoch 1, the Q-CNN reaches $\approx 85\%$ accuracy (from $\sim 60\%$ initialization), while the classical CNN remains at $\approx 75\%$. This $10\%$ gap demonstrates the quantum circuit's ability to extract discriminative features more rapidly.
-    
-    \item \textbf{Comparable final performance}: Both architectures converge to $\approx 92\%$ validation accuracy, indicating that the quantum advantage lies in \textit{how quickly} the target performance is reached, not in surpassing classical limits.
-\end{itemize}
+First, the hybrid Q-CNN and the classical ablation both converge to a comparable validation plateau at approximately 92\% accuracy within roughly five epochs on the binary EuroSAT subset, with run-to-run variability that is consistent with the per-seed dispersion of Sec.~\ref{sec:stats-significance}. Second, at the first epoch the hybrid model exhibits a higher validation accuracy than the purely classical baseline (Fig.~\ref{fig:training-dynamics}, right panel): the visible gap of order $20$ percentage points at epoch~$1$ shrinks over the subsequent epochs and is no longer present once both models have reached the plateau. Third, the per-step training loss of the hybrid model carries a moderately larger step-to-step variance than the classical ablation, in a manner consistent with the residual sampling noise of the parameter-shift gradient estimator at $S=500$ shots per observable.
 
-\paragraph{Interpretation: Training Efficiency as Quantum Utility}
-
-This behavior aligns with recent literature on \textit{near-term quantum utility}~\cite{Preskill2018, cerezo2021}: in the NISQ era, quantum advantage often manifests as \textbf{resource efficiency} rather than asymptotic superiority. Specifically:
-
-\begin{equation}
-\text{Quantum advantage} = \frac{T_{\text{classical}}(\epsilon)}{T_{\text{quantum}}(\epsilon)} \approx 3\times
-\end{equation}
-
-where $T(\epsilon)$ is the number of training iterations to reach target accuracy $\epsilon = 90\%$. 
-
-\textbf{Practical implications}:
-\begin{itemize}
-    \item \textbf{Energy savings}: Fewer training epochs translate to proportionally reduced computational energy, critical for edge devices and sustainable AI.
-    \item \textbf{Faster prototyping}: Reduced iteration time enables rapid model exploration in resource-constrained scenarios (e.g., satellite onboard processing).
-    \item \textbf{Shot budget optimization}: For hardware implementations, fewer epochs mean lower total shot requirements, mitigating quantum sampling overhead.
-\end{itemize}
-
-\paragraph{Why Not Higher Final Accuracy?}
-
-The comparable final performance between quantum and classical models is expected due to:
-\begin{enumerate}
-    \item \textbf{Dataset constraints}: EuroSAT's inherent class overlap limits any architecture to $\sim 92\%$ accuracy ceiling.
-    \item \textbf{Expressivity saturation}: Both quantum and classical models have sufficient expressivity for this task; quantum circuits provide a \textit{different inductive bias} that accelerates learning, not a fundamentally larger hypothesis space.
-    \item \textbf{NISQ limitations}: Shallow quantum circuits (Fig.~\ref{fig:qcnn_ansatz}) avoid barren plateaus but sacrifice some representational power compared to deeper circuits.
-\end{enumerate}
-
-\textbf{Key insight}: Our results demonstrate that \textit{quantum advantage in near-term machine learning may primarily manifest as training acceleration} rather than accuracy gains, shifting the value proposition from "better models" to "faster model development."
+These observations should be read narrowly. The binary subset of EuroSAT used here saturates close to the inherent class-overlap ceiling already after a handful of epochs, so the convergence scale itself is short, and any epoch-count differential measured on it has limited resolving power. The first-epoch margin is presented here as a property of the simulated training trajectory in the present setting; it does not by itself support a claim that the quantum filter accelerates training in a meaningful, transferable sense. A quantitative comparison with stronger classical baselines and on multi-class targets, together with a controlled study of the effect of seed and initialisation, would be required before any inference about the relative learning speeds of the two architectures is drawn.
 
 \subsection{Reproducibility and controls}
 To isolate architectural effects, we ablated max-pooling near the quantum layer and found that removing pooling improves downstream metrics (lower loss, higher accuracy), indicating that aggressive spatial downsampling before the quantum kernel can discard discriminative high-frequency content. All results are averaged over multiple seeds; we report mean validation metrics at the last epoch and monitor early stopping to check for instability.
@@ -913,6 +981,7 @@ The simulator-based architecture search of Sec.~\ref{sec:baselines} identified t
 Emerald is a 54-qubit Crystal-architecture device with native gate set $\{R(\theta,\phi),\; CZ\}$ supplemented by \texttt{measure}, \texttt{reset}, \texttt{delay}, and \texttt{if\_else} primitives. The device exposes 82 directed CZ couplings; characterization metrics for the 2026-05-01 calibration cycle yield a mean two-qubit gate fidelity of 0.987 (range 0.904--0.999) and a mean readout fidelity of 0.978 (range 0.903--0.994 across the 54 qubits). A 4-qubit transmon block with linear connectivity, which is what our QCNN ansatz requires per quantum filter, fits comfortably within the local connectivity but is non-trivially distributed across the global device.
 
 \paragraph{Software stack.}
+The simulator-based architecture search and pre-training of Sec.~\ref{sec:train-opt} are run on Qiskit~2.2 (primitives V2). The hardware campaign on Emerald, by contrast, is constrained to a different Qiskit minor version by the IQM-side software pairing described below.
 The IQM Resonance platform exposes its devices through the \texttt{iqm-client} Python adapter, whose major version determines the Qiskit version against which the adapter is binary-compatible. The version available at the time of this work, \texttt{iqm-client}~34.0.2 (with the underlying \texttt{iqm-station-control-client}~12.1.2), is paired with Qiskit~1.4.2. This pairing reflects the present synchronization between the IQM stack and the upstream Qiskit release cadence, and an alignment to Qiskit~2.x is expected as the IQM adapter tracks future Qiskit releases. The methodological content of this section -- transpilation strategy, calibration-aware layout selection, cost-model calibration, and mini-batch stochastic-gradient-descent (SGD) adaptation -- is independent of the specific Qiskit minor version and applies equally to subsequent versions of the toolchain. All numerical results in this section are reproducible against the explicit version pinning reported in the supporting code repository.\footnote{Repository \texttt{qh\_algorithms} (\url{https://github.com/rcapp2506/qh_algorithms}), notebook \texttt{HQCNN.ipynb} for simulator benchmarks and the \texttt{hybrid\_qcnn\_v4\_2\_*\_emerald.ipynb} family for hardware execution. Calibration data are archived as JSON snapshots downloaded from the IQM Resonance dashboard.}
 
 \paragraph{Authentication and connection.}
@@ -997,12 +1066,12 @@ $K$ & qubits used & status & depth & SWAP \\
 We adopt $K=11$ for the production runs of Sec.~\ref{subsec:hw_results}--\ref{subsec:finetune_results}. With $K=11$ blocks of 4 qubits, our circuit occupies 44 of the 54 qubits of Emerald, leaving 10 qubits unused -- a margin we exploit in Sec.~\ref{subsec:transpilation} to deliberately exclude qubits with poor readout fidelity from the chosen layout.
 
 \paragraph{Calibration-aware initial layout.}
-By default, \texttt{SabreLayout} chooses a logical-to-physical mapping based on the coupling graph alone, ignoring the calibration-resolved per-qubit readout fidelity. On a 54-qubit device with substantial qubit-to-qubit fidelity dispersion (Emerald's 2026-05-01 readout fidelities span the range $[0.903,\, 0.994]$, see Fig.~\ref{fig:emerald_topology}a), this choice can place a logical block on a low-quality region of the chip. We mitigate this by parsing the calibration JSON snapshot of the day, ranking qubits by readout fidelity, and excluding the bottom~10 (qubit indices $\{4,21,28,31,35,46\}$ in 1-based labeling). On the remaining 44 qubits we run a greedy-iterative search over the coupling subgraph to identify $K=11$ disjoint chains of 4 qubits, requiring per-chain minimum readout fidelity above 0.95. The resulting layout, depicted in Fig.~\ref{fig:emerald_topology}b and listed in Tab.~\ref{tab:initial_layout}, has a global minimum readout fidelity of 0.954 (chain~10) and a worst-case CZ fidelity of 0.987 across all chains. We pass this mapping as \texttt{initial\_layout} to Qiskit's \texttt{transpile()} call so that Sabre's layout pass becomes a no-op while routing optimization remains active.
+By default, \texttt{SabreLayout} chooses a logical-to-physical mapping based on the coupling graph alone, ignoring the calibration-resolved per-qubit readout fidelity. On a 54-qubit device with substantial qubit-to-qubit fidelity dispersion (Emerald's 2026-05-01 readout fidelities span the range $[0.903,\, 0.994]$, see Fig.~\ref{fig:emerald_topology}a), this choice can place a logical block on a low-quality region of the chip. We mitigate this in two stages. First, we parse the calibration JSON snapshot of the day, rank qubits by readout fidelity, and mark the six lowest-ranked qubits (indices $\{4,21,28,31,35,46\}$ in 1-based labeling) as unusable; in addition, we set aside four further qubits as a routing reserve, available to the transpiler should the snapshot fail to reflect a real-time degradation. The two sets combined account for the ten qubits removed from the assignable pool. Second, on the remaining 44 qubits we run a greedy-iterative search over the coupling subgraph to identify $K=11$ disjoint chains of 4 qubits, requiring per-chain minimum readout fidelity above 0.95. The resulting layout, depicted in Fig.~\ref{fig:emerald_topology}b and listed in Tab.~\ref{tab:initial_layout}, has a global minimum readout fidelity of 0.954 (chain~10) and a worst-case CZ fidelity of 0.987 across all chains. We pass this mapping as \texttt{initial\_layout} to Qiskit's \texttt{transpile()} call so that Sabre's layout pass becomes a no-op while routing optimization remains active.
 
 \begin{figure}[h]
 \centering
 \includegraphics[width=\linewidth]{chapters/qa_figures/emerald_topology.png}
-\caption{Device topology and 11-chain layout used for the parallel Hybrid Q-CNN circuit on IQM Emerald. \textbf{(a)} Crystal-54 coupling graph with per-qubit readout fidelity colour-coded from the 2026-05-01 calibration snapshot; the six qubits with the lowest readout fidelity (thick red ring) are excluded from the layout. \textbf{(b)} Calibration-aware initial layout: each colour identifies one of the $K=11$ disjoint 4-qubit chains used as the \texttt{initial\_layout} argument of Qiskit's \texttt{transpile()}. Hatched markers indicate the qubits excluded for low readout fidelity; grey markers indicate qubits not assigned by the greedy procedure.}
+\caption{Device topology and 11-chain layout used for the parallel Hybrid Q-CNN circuit on IQM Emerald. (a) Crystal-54 coupling graph with per-qubit readout fidelity colour-coded from the 2026-05-01 calibration snapshot; the six qubits with the lowest readout fidelity (thick red ring) are excluded from the layout. (b) Calibration-aware initial layout: each colour identifies one of the $K=11$ disjoint 4-qubit chains used as the \texttt{initial\_layout} argument of Qiskit's \texttt{transpile()}. Hatched markers indicate the six qubits excluded for low readout fidelity; grey markers indicate the four qubits set aside as a routing reserve, available to the transpiler should the calibration snapshot fail to reflect a real-time degradation.}
 \label{fig:emerald_topology}
 \end{figure}
 
@@ -1184,7 +1253,7 @@ Before launching the fine-tuning campaign, we executed a minicheck phase (\emph{
 The Bell-state fidelity test (Sec.~\ref{subsec:backend_setup}) was repeated at the start of each session that used the device. Across three independent sessions over a single day, the observed Bell fidelity $P(00)+P(11)$ took values $0.989$, $0.980$ and $0.990$, consistent within shot noise with the per-qubit readout fidelity floor of the device. We take this stability as evidence that the calibration set used by Emerald did not change appreciably across the campaign, and that the fine-tuning epochs of Sec.~\ref{subsec:finetune_results} are mutually comparable.
 
 \paragraph{Per-block bias under zero input.}
-With $\boldsymbol{x}^{(k)}=\mathbf{0}$ and $\boldsymbol{w}=\mathbf{0}$ for all blocks $k$, the output of each block in Eq.~\ref{eq:parallel_circuit} reduces to a single $H$ followed by a chain of CX gates and a $Z$-basis measurement on qubit $q^{(k)}_0$, which produces an unbiased estimator $\langle Z_0^{(k)}\rangle = 0$ in the absence of noise. We submitted 50 such circuits and recorded the per-block sample mean $\widehat{\langle Z_0^{(k)}\rangle}$ and its standard error. The 3-$\sigma$ shot-noise threshold is $3/(s\sqrt{N_z})=0.019$ with $s=500$ shots and $N_z=50$ circuits.
+With $\boldsymbol{x}^{(k)}=\mathbf{0}$ and $\boldsymbol{w}=\mathbf{0}$ for all blocks $k$, the output of each block in Eq.~\ref{eq:parallel_circuit} reduces to a single $H$ followed by a chain of CX gates and a $Z$-basis measurement on qubit $q^{(k)}_0$, which produces an unbiased estimator $\langle Z_0^{(k)}\rangle = 0$ in the absence of noise. We submitted 50 such circuits and recorded the per-block sample mean $\widehat{\langle Z_0^{(k)}\rangle}$ and its standard error. The standard error of the per-block mean over $N_z$ independent circuits, each estimated from $s$ shots, is $\sigma_{\mathrm{mean}}=1/\sqrt{s\,N_z}$. The corresponding 3-$\sigma$ shot-noise threshold is $3/\sqrt{s\,N_z}=0.019$ with $s=500$ shots and $N_z=50$ circuits.
 
 \begin{table}[h]
 \centering
@@ -1231,7 +1300,7 @@ Tab.~\ref{tab:emerald_convergence} reports the per-epoch metrics, and Fig.~\ref{
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.75\linewidth]{chapters/qa_figures/plot2_finetune_curves.png}
-\caption{Validation accuracy along the fine-tuning trajectory on Emerald (red diamonds), compared to the simulator dry-run reference of Phase~C (green squares) and to the simulator pre-training plateau (dotted line at $100\%$, label \emph{Pretrain end}). The Emerald run recovers the simulator's $100\%$ classification accuracy in two on-device epochs, despite the per-block readout biases reported in Tab.~\ref{tab:per_block_bias}.}
+\caption{Validation accuracy along the fine-tuning trajectory on Emerald (red diamonds), compared to the simulator dry-run reference of Phase~C (green squares) and to the simulator pre-training plateau (dotted line at $100\%$, label \emph{Pretrain end}).}
 \label{fig:emerald_finetune_curves}
 \end{figure}
 
@@ -1285,23 +1354,16 @@ The infrastructure described in Sec.~\ref{subsec:backend_setup}--\ref{subsec:min
 
 
 \subsection{Takeaways}
-Late fusion with moderately wide quantum channels is a robust design point on this task. Gains appear already in the first epoch and persist through convergence. Beyond simulator results, the candidate transfers to physical hardware: the credit-bounded fine-tuning campaign on IQM Emerald (Sec.~\ref{sec:hw_validation}) recovers the simulator's $100\%$ validation accuracy in two on-device epochs, despite per-block readout biases consistent with the device calibration, and demonstrates that parameter-shift fine-tuning of the trainable quantum weights remains effective at the modest scale of the present ansatz ($n_w=4$). Future work will extend the evaluation to multi-class EuroSAT and other remote-sensing benchmarks, and explore noise-aware training (gradient-aware shot allocation, advanced error mitigation, deeper variational ansätze) where barren-plateau and noise-induced gradient suppression effects~\cite{McClean2018,Holmes2022PRXQ,Wang2021NoiseInducedBP} are expected to play a larger role.
+On the binary EuroSAT subset, late fusion with moderately wide quantum channels gives a stable design point across the configurations tested, with a visible margin over the purely classical ablation at the first epoch that does not, however, persist once both architectures have reached the convergence plateau. Beyond the simulator results, the candidate has been transferred to physical hardware: the credit-bounded fine-tuning campaign on IQM Emerald (Sec.~\ref{sec:hw_validation}) recovers the simulator's $100\%$ validation accuracy in two on-device epochs, despite per-block readout biases consistent with the device calibration. This indicates that parameter-shift fine-tuning of the trainable quantum weights remains usable at the modest scale of the present ansatz ($n_w=4$); the result is not, by itself, evidence of a behaviour that would extrapolate to deeper variational ansätze. Future work will extend the evaluation to multi-class EuroSAT and other remote-sensing benchmarks, and explore noise-aware training (gradient-aware shot allocation, advanced error mitigation, deeper variational ansätze) where barren-plateau and noise-induced gradient suppression effects~\cite{McClean2018,Holmes2022PRXQ,Wang2021NoiseInducedBP} are expected to play a larger role.
 
 \section{Discussion}
-Our results indicate that inserting a shallow, locality-preserving quantum layer within a CNN pipeline can (i) accelerate early learning and (ii) reduce final validation loss on the EuroSAT binary task. We read this as evidence that patch-wise quantum embeddings provide an inductive bias that is complementary to classical convolutions, enriching the effective feature space~\cite{Havlicek2019,Schuld2019PRA,Cong2019}. In particular, \emph{late fusion} with moderately wide quantum channels consistently yields the best trade-off between accuracy and variance, whereas merely increasing circuit depth does not—aligning with theory that relates expressibility to gradient magnitudes and trainability~\cite{Holmes2022PRXQ,cerezo2021}.
+On the binary EuroSAT subset and within the model family explored here, inserting a shallow, locality-preserving quantum layer into a CNN pipeline produces (i) a visible margin at epoch~$1$ of the simulated training trajectory and (ii) validation losses that are comparable to, and not systematically larger than, those of the classical ablation at convergence. We read these observations as compatible with the view that patch-wise quantum embeddings provide an inductive bias that is complementary to classical convolutions~\cite{Havlicek2019,Schuld2019PRA,Cong2019}, without further inferring a category of speed-up. In particular, \emph{late fusion} with moderately wide quantum channels appears to yield the most favourable trade-off between accuracy and variance among the configurations tested, while merely increasing circuit depth does not — a behaviour that is consistent with the relation between expressibility and gradient magnitude reported in the trainability literature~\cite{Holmes2022PRXQ,cerezo2021}.
 
 \paragraph{Statistical robustness.}
-Reported accuracy gains are accompanied by Wilson 95\% confidence intervals and, for paired model comparisons on the same validation set, McNemar tests (Sec.~\ref{sec:stats-significance}). In all cases where we claim an improvement, intervals do not overlap materially and McNemar’s exact test yields small $p$-values, indicating that improvements stem from consistent item-wise wins rather than random fluctuations.
+Reported accuracy gains are accompanied by Wilson 95\% confidence intervals and, for paired model comparisons on the same validation set, McNemar tests (Sec.~\ref{sec:stats-significance}). In all cases where we claim an improvement, intervals do not overlap materially and McNemar's exact test yields small $p$-values, indicating that improvements stem from consistent item-wise wins rather than random fluctuations.
 
-\paragraph{Training Efficiency as Near-Term Quantum Advantage}
-\label{sec:qcnn_near_term_advantage}
-
-The primary possible quantum advantage of our hybrid architecture manifests 
-as \textit{training efficiency} rather than final accuracy. Hybrid QCNNs typically show a rapid first-epoch accuracy increase and then stabilize within a few epochs, while the late-fusion, wider quantum channel variant converges to the best validation metrics among the QCNNs.
-
-
-\paragraph{What may drive the gains?}
-Rotation (angle) encoding followed by short-range entanglers creates non-separable features on small receptive fields; data re-uploading further expands the accessible Fourier spectrum without adding qubits~\cite{PerezSalinas2020,Schuld2020Expressivity}. The QCNN-style locality (logarithmic light-cone) is known to mitigate exponential gradient decay~\cite{Pesah2021PRX}, and we observe empirically that shallow depth ($D{=}1$–$3$) with local entanglement is preferable to globally entangling, highly expressive blocks that risk entering barren-plateau regimes~\cite{McClean2018,Marrero2021PRXQ,Holmes2022PRXQ}. These observations are consistent with the “feature-map” viewpoint~\cite{Havlicek2019,Schuld2019PRA}: the quantum layer acts as a task-aligned kernel on top of already denoised classical features (late fusion), stabilizing optimization.
+\paragraph{What may drive the early-epoch margin.}
+Rotation (angle) encoding followed by short-range entanglers creates non-separable features on small receptive fields; data re-uploading further expands the accessible Fourier spectrum without adding qubits~\cite{PerezSalinas2020,Schuld2020Expressivity}. The QCNN-style locality (logarithmic light-cone) is known to mitigate exponential gradient decay~\cite{Pesah2021PRX}, and we observe empirically that shallow depth ($D{=}1$–$3$) with local entanglement is preferable to globally entangling, highly expressive blocks that risk entering barren-plateau regimes~\cite{McClean2018,Marrero2021PRXQ,Holmes2022PRXQ}. These observations are consistent with the ``feature-map'' viewpoint~\cite{Havlicek2019,Schuld2019PRA}: the quantum layer acts as a task-aligned kernel on top of already denoised classical features (late fusion), and may explain why the simulated curves show a margin at epoch~$1$ on top of an otherwise comparable classical trajectory.
 
 
 
