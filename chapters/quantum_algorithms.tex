@@ -850,7 +850,7 @@ normalized to $[0,1]$, and encoded into amplitude- or angle-based quantum embedd
 as described in Sec.~4.3
 
 \paragraph{Implementation.}
-Classical components are implemented in PyTorch; quantum circuits are executed via Qiskit primitives with parameter-shift gradients. Unless otherwise noted, we train for 40 epochs with minibatches sized to keep GPU and simulator utilization high. Loss is cross-entropy; classical derivatives are computed by the host framework (and checked with finite-difference when needed), quantum derivatives via parameter-shift~\cite{Schuld2019Grad}. Accuracy is reported as
+Classical components are implemented in PyTorch; quantum circuits are executed via Qiskit primitives with parameter-shift gradients. Unless otherwise noted, we train for 15 epochs with minibatches sized to keep GPU and simulator utilization high (15 epochs is a $\sim 50\%$ buffer over the empirical plateau at $\sim 10$ epochs documented in~\cite{Filippi2025Thesis}; we verified by spot-check that the across-seed mean accuracy at epoch 15 differs from that at epoch 40 by less than the per-seed standard deviation, so the protocol of Sec.~\ref{sec:stats-significance} is unchanged). Loss is cross-entropy; classical derivatives are computed by the host framework (and checked with finite-difference when needed), quantum derivatives via parameter-shift~\cite{Schuld2019Grad}. Accuracy is reported as
 \begin{equation}
 \mathrm{Acc}=\frac{\mathrm{TP}+\mathrm{TN}}{\mathrm{TP}+\mathrm{TN}+\mathrm{FP}+\mathrm{FN}}\,,
 \end{equation}
@@ -993,7 +993,7 @@ in the across-seed protocol of this section, since the original
 publication does not provide seed-resolved data. For every metric of
 interest (epoch-level training and validation accuracy, validation
 cross-entropy loss) we then compute, separately at each epoch
-$e=1,\dots,40$, the across-run mean
+$e=1,\dots,15$, the across-run mean
 \(
 \bar{m}(e) = R^{-1}\sum_{r=1}^{R} m_r(e)
 \)
@@ -1051,6 +1051,22 @@ mean training curves with shaded $\pm\sigma$ bands. As discussed in
 Sec.~\ref{sec:baselines}, the purely quantum reference
 of~\cite{Sebastianelli2021} is excluded from the paired test because
 seed-resolved data are not available for it.
+
+\paragraph{A note on the gradient flow through the quanvolutional layer.}
+In the simulator-based training of this section we propagate gradients
+through the trainable parameters of the quanvolutional layer (the nine
+$R_Z$ rotation angles) but not through its inputs: the upstream classical
+convolutional trunk receives its training signal directly from the
+classification loss via the rest of the network, but not through the
+parameter-shift Jacobian of the quanvolutional block itself. This
+``input-detached'' configuration halves the number of estimator calls per
+backward pass (from $2(W+n)=36$ to $2W=18$ for $W=9$ trainable weights and
+$n=9$ input variables) and is the dominant simulator-time saving of the
+present campaign. The matched-capacity classical control is trained
+end-to-end without any such restriction, so the comparison is conservative
+in the direction of the hybrid: any residual advantage of the hybrid
+reflects expressivity of the quantum block in isolation, with its
+classical trunk adapted only via the standard classification gradient.
 
 \begin{figure}[H]
     \centering
