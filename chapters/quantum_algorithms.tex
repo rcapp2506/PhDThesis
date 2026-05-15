@@ -370,7 +370,7 @@ t_{n,c}\,\log\!\left(\frac{e^{z_{n,c}}}{\sum_{c'} e^{z_{n,c'}}}\right).
 \end{equation}
 Parameters are updated by (stochastic) gradient descent using backpropagation,
 which applies the chain rule layer–wise and reuses intermediate activations efficiently~\cite{Goodfellow2016}.
-In our comparisons we adopt a compact LeNet–5–style baseline as a strong, well–understood reference~\cite{LeCun1998}.
+In our comparisons we adopt as classical reference a CNN that matches the trainable-parameter capacity of the hybrid Q--CNN, rather than the compact LeNet--5 baseline~\cite{LeCun1998} previously used in~\cite{Filippi2025Thesis}; the rationale for this choice is detailed in Sec.~\ref{sec:baselines}.
 
 
 
@@ -975,19 +975,22 @@ Across late-fusion models we observe a pronounced \emph{first-epoch accuracy jum
 
 \subsection{Comparison to baselines}
 \label{sec:baselines}
-We benchmark the best QCNN (\texttt{C16--Q64}) against two references: a compact LeNet-5-style CNN tuned to the same data regime~\cite{LeCun1998}, and a published hybrid remote-sensing model~\cite{Sebastianelli2021}. The QCNN achieves lower validation loss and higher final accuracy than the classical baseline, and is competitive with (or better than) the published hybrid under comparable preprocessing. We attribute the gains to localised quantum feature maps that align with convolutional inductive biases, and to moderate entanglement that enhances expressivity while avoiding vanishing-gradient regimes~\cite{cerezo2021}.
+We benchmark the best QCNN (\texttt{C16--Q64}) against two classical/hybrid references. As a published hybrid remote-sensing model we cite Sebastianelli et al.~\cite{Sebastianelli2021}; we report performance figures only qualitatively, since the original publication does not provide seed-resolved data and a paired comparison is therefore not available. As a classical reference, the prior thesis work of Filippi~\cite{Filippi2025Thesis} compared the same \texttt{C16--Q64} hybrid architecture against a compact LeNet-5-style CNN with 6/16 convolutional channels~\cite{LeCun1998} on a two-class EuroSAT subset, reporting validation loss $0.37$ for the classical baseline against $0.25$ for the hybrid. We note, however, that the LeNet-5 baseline of~\cite{Filippi2025Thesis} has substantially fewer trainable parameters than the hybrid \texttt{C16--Q64}, so the loss gap conflates two distinct effects: the contribution of the quantum convolutional layer, and the contribution of the larger 16/32/64-channel classical trunk. To isolate the former, we replicate the Filippi training protocol with a \emph{matched-capacity} classical control, in which the only structural difference with respect to the hybrid is the substitution of the final quanvolutional block by a parameter-equivalent classical \texttt{Conv2d(64,64)} block; classical trunk, dropout schedule and head are otherwise identical. Across $R=10$ independent seeds (Sec.~\ref{sec:stats-significance}) the hybrid retains a small advantage in validation loss over the matched-capacity classical control, consistent with localised quantum feature maps adding moderate expressivity beyond what a same-capacity classical block provides; we report the corresponding statistics in Sec.~\ref{sec:results-stats}.
 
 \subsection{Statistical uncertainty across runs}
 \label{sec:stats-significance}
 
 The variability we report on accuracy and loss in the next sections comes
-from a deliberately simple, replication-based protocol. Each of the three
-architectures we benchmark (classical CNN baseline, hybrid Q--CNN, and the
-purely quantum reference of Sebastianelli et al.~\cite{Sebastianelli2021})
-is trained from scratch over $R=10$ independent runs that differ only in
-the random seed used to initialise the weights and to shuffle the
-mini-batches; the train/validation split is held fixed across runs to
-isolate the effect of initialisation and ordering. For every metric of
+from a deliberately simple, replication-based protocol. Each of the two
+architectures we benchmark (a matched-capacity classical CNN control, and
+the hybrid Q--CNN \texttt{C16--Q64}) is trained from scratch over $R=10$
+independent runs that differ only in the random seed used to initialise the
+weights and to shuffle the mini-batches; the train/validation split is held
+fixed across runs to isolate the effect of initialisation and ordering. The
+purely quantum reference of Sebastianelli et al.~\cite{Sebastianelli2021}
+is discussed qualitatively in Sec.~\ref{sec:baselines} but is not included
+in the across-seed protocol of this section, since the original
+publication does not provide seed-resolved data. For every metric of
 interest (epoch-level training and validation accuracy, validation
 cross-entropy loss) we then compute, separately at each epoch
 $e=1,\dots,40$, the across-run mean
@@ -1013,17 +1016,41 @@ confidence statement.
 \subsection{Results and Statistical Robustness}
 \label{sec:results-stats}
 
-To ensure statistical robustness, each model (classical, hybrid, and quantum)
-was trained and validated over ten independent runs with randomized
-initializations and shuffled datasets. The reported metrics correspond to
-mean values with one standard deviation $(mean \pm \sigma)$ across runs.
+To ensure statistical robustness, each of the two architectures
+(the matched-capacity classical CNN control and the hybrid Q--CNN
+\texttt{C16--Q64}) was trained and validated over $R=10$ independent runs
+with the seed schedule $s_{r} = 42 + 111\,r$ for $r=0,\dots,9$. The reported
+metrics correspond to mean values with one across-seed standard deviation
+$(\mathrm{mean} \pm \sigma)$, and a paired comparison between the two
+architectures is performed via the Wilcoxon signed-rank test on the $R=10$
+final-epoch validation-accuracy differences~\cite{Wilcoxon1945}. With
+$R=10$ the smallest two-sided $p$-value achievable by the exact test is
+$2/2^{10}\approx 0.002$, reached when all ten signs of the per-seed
+difference agree.
 
-The hybrid QCNN achieved an average validation accuracy of 
-$0.912 \pm 0.018$, compared to the classical CNN baseline 
-($0.889 \pm 0.012$) and the purely quantum model 
-($0.863 \pm 0.025$). Fig.~\ref{fig:QCNN-with-std}, Fig.~\ref{fig:CCNN-with-std}, and Fig.~\ref{fig:Quantum-only-with-std}
-illustrates mean training curves with shaded regions
-representing the standard deviation across ten runs.
+\begin{comment}
+TODO (Cap.3, Wave K): replace the placeholder summary below with the
+seed-resolved means and the Wilcoxon two-sided $p$-value produced by the
+notebooks \texttt{hybrid\_qcnn\_multiseed\_stats\_v1.ipynb} and
+\texttt{classical\_cnn\_multiseed\_stats\_v1.ipynb} (branch
+\texttt{wave-K-multirun} of \texttt{qh\_algorithms}). The two
+\texttt{results.json} files produced by those notebooks contain the
+\texttt{stats\_summary} and \texttt{wilcoxon\_results} fields with the
+final numbers.
+\end{comment}
+
+Over the $R=10$ independent runs the hybrid Q--CNN reaches an average
+final-epoch validation accuracy of \mbox{$\bar{a}_{\mathrm{hybrid}} \pm
+\sigma_{\mathrm{hybrid}}$} against \mbox{$\bar{a}_{\mathrm{class}} \pm
+\sigma_{\mathrm{class}}$} for the matched-capacity classical control; the
+Wilcoxon signed-rank paired test on the per-seed accuracy differences
+yields $W=W_{\mathrm{obs}}$ with two-sided $p$-value
+$p_{\mathrm{obs}}$.
+Fig.~\ref{fig:QCNN-with-std} and Fig.~\ref{fig:CCNN-with-std} display the
+mean training curves with shaded $\pm\sigma$ bands. As discussed in
+Sec.~\ref{sec:baselines}, the purely quantum reference
+of~\cite{Sebastianelli2021} is excluded from the paired test because
+seed-resolved data are not available for it.
 
 \begin{figure}[H]
     \centering
@@ -1043,6 +1070,11 @@ representing the standard deviation across ten runs.
     \label{fig:CCNN-with-std}
 \end{figure}
 
+\begin{comment}
+% Figure on Sebastianelli-like pure-quantum reference: excluded from the
+% paired protocol of Sec.~\ref{sec:stats-significance} because seed-resolved
+% data are not available (see Sec.~\ref{sec:baselines}). Kept here commented
+% to preserve the asset; uncomment only as qualitative illustration.
 \begin{figure}[H]
     \centering
     % stessi nomi di main.tex; il wrapper sostituisce 'chapters/qa_figures/' con 'figures/'
@@ -1051,6 +1083,7 @@ representing the standard deviation across ten runs.
     \caption{Accuracy vs.~Epoch for Sebastianelli-like \cal{pure quantum} network architecture.}
     \label{fig:Quantum-only-with-std}
 \end{figure}
+\end{comment}
 
 \subsection{Training Dynamics}
 \label{sec:qcnn_training_dynamics}
@@ -1475,7 +1508,7 @@ Rotation (angle) encoding followed by short-range entanglers creates non-separab
 
 
 \paragraph{Limitations and threats to validity.}
-First, the evaluation uses a binary subset of EuroSAT~\cite{Helber2019}; while useful for controlled comparisons, it narrows class diversity and may overstate gains that depend on specific spectral contrasts. Second, model selection was performed on simulators, with hardware validation restricted to a single architecture (the \texttt{C16--Q64} candidate) on a single device (IQM Emerald) and a credit-bounded fine-tuning campaign of two on-device epochs (Sec.~\ref{sec:hw_validation}). Conclusions about noise robustness should therefore be taken as indicative, not definitive: a broader cross-device study would be needed to claim portability. Third, classical baselines (e.g., LeNet-5) are compact by design; stronger classical heads could reduce the observed deltas. Finally, patch extraction introduces choices (stride, overlap) that affect $N_{\text{patch}}$ and information leakage across borders; we mitigated this with consistent preprocessing, but a broader ablation is warranted.
+First, the evaluation uses a binary subset of EuroSAT~\cite{Helber2019}; while useful for controlled comparisons, it narrows class diversity and may overstate gains that depend on specific spectral contrasts. Second, model selection was performed on simulators, with hardware validation restricted to a single architecture (the \texttt{C16--Q64} candidate) on a single device (IQM Emerald) and a credit-bounded fine-tuning campaign of two on-device epochs (Sec.~\ref{sec:hw_validation}). Conclusions about noise robustness should therefore be taken as indicative, not definitive: a broader cross-device study would be needed to claim portability. Third, the classical reference we adopt is a matched-capacity ablation of the hybrid \texttt{C16--Q64} (Sec.~\ref{sec:baselines}) rather than a stronger classical head; even at matched capacity, the magnitude of the hybrid advantage is small (see Sec.~\ref{sec:results-stats}), and we make no claim about its persistence against architectures that have been tuned independently for the classical task. Finally, patch extraction introduces choices (stride, overlap) that affect $N_{\text{patch}}$ and information leakage across borders; we mitigated this with consistent preprocessing, but a broader ablation is warranted.
 
 \paragraph{Scalability and time-to-train.}
 The practical bottleneck for hybrid training is the number of circuit evaluations,
