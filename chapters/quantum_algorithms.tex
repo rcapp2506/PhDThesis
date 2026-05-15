@@ -1061,7 +1061,19 @@ U_{\mathrm{hybrid}}$]); the Wilcoxon signed-rank paired test on the
 per-seed accuracy differences yields $W=W_{\mathrm{obs}}$ with two-sided
 $p$-value $p_{\mathrm{obs}}$.
 Fig.~\ref{fig:QCNN-with-std} and Fig.~\ref{fig:CCNN-with-std} display the
-mean training curves with shaded $\pm\sigma$ bands. As discussed in
+mean training curves with shaded $\pm\sigma$ bands.\footnote{A small
+transient is visible on the training-loss curve at epoch~2 of both
+architectures, where the per-seed loss briefly rises before returning to
+its descending trajectory; the validation curve is essentially unaffected.
+We attribute this to the interaction between the \texttt{LazyLinear}
+parameter shape inference of the classification head and the Adam
+optimizer: the head's parameter tensors are only instantiated at the first
+forward pass, so Adam's running estimates of the first and second moments
+of the gradient have not yet been populated when the second optimizer step
+begins, and one to two steps are needed for the moment buffers to settle
+on this layer. The effect is independent of the quanvolutional block and
+appears symmetrically in the matched-capacity classical control, which
+serves as a useful internal cross-check.} As discussed in
 Sec.~\ref{sec:baselines}, the purely quantum reference
 of~\cite{Sebastianelli2021} is excluded from the paired test because
 seed-resolved data are not available for it.
