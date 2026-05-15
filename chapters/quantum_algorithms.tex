@@ -850,7 +850,7 @@ normalized to $[0,1]$, and encoded into amplitude- or angle-based quantum embedd
 as described in Sec.~4.3
 
 \paragraph{Implementation.}
-Classical components are implemented in PyTorch; quantum circuits are executed via Qiskit primitives with parameter-shift gradients. Unless otherwise noted, we train for 15 epochs with minibatches sized to keep GPU and simulator utilization high (15 epochs is a $\sim 50\%$ buffer over the empirical plateau at $\sim 10$ epochs documented in~\cite{Filippi2025Thesis}; we verified by spot-check that the across-seed mean accuracy at epoch 15 differs from that at epoch 40 by less than the per-seed standard deviation, so the protocol of Sec.~\ref{sec:stats-significance} is unchanged). Loss is cross-entropy; classical derivatives are computed by the host framework (and checked with finite-difference when needed), quantum derivatives via parameter-shift~\cite{Schuld2019Grad}. Accuracy is reported as
+Classical components are implemented in PyTorch; quantum circuits are executed via Qiskit primitives with parameter-shift gradients. Unless otherwise noted, we train for 10 epochs with minibatches sized to keep GPU and simulator utilization high; 10 epochs are sufficient to bring both architectures past the plateau documented in~\cite{Filippi2025Thesis} while keeping the simulator-time per seed manageable across the $R=10$ replications of Sec.~\ref{sec:stats-significance}. Loss is cross-entropy; classical derivatives are computed by the host framework (and checked with finite-difference when needed), quantum derivatives via parameter-shift~\cite{Schuld2019Grad}. Accuracy is reported as
 \begin{equation}
 \mathrm{Acc}=\frac{\mathrm{TP}+\mathrm{TN}}{\mathrm{TP}+\mathrm{TN}+\mathrm{FP}+\mathrm{FN}}\,,
 \end{equation}
@@ -986,32 +986,38 @@ architectures we benchmark (a matched-capacity classical CNN control, and
 the hybrid Q--CNN \texttt{C16--Q64}) is trained from scratch over $R=10$
 independent runs that differ only in the random seed used to initialise the
 weights and to shuffle the mini-batches; the train/validation split is held
-fixed across runs to isolate the effect of initialisation and ordering. The
+fixed across runs at $80/20$ on a 100-image-per-class subset of EuroSAT
+(Forest vs.\ AnnualCrop), yielding $N_{\mathrm{train}}=160$ and
+$N_{\mathrm{val}}=200$ items shared across all seeds. The
 purely quantum reference of Sebastianelli et al.~\cite{Sebastianelli2021}
 is discussed qualitatively in Sec.~\ref{sec:baselines} but is not included
 in the across-seed protocol of this section, since the original
 publication does not provide seed-resolved data. For every metric of
 interest (epoch-level training and validation accuracy, validation
 cross-entropy loss) we then compute, separately at each epoch
-$e=1,\dots,15$, the across-run mean
+$e=1,\dots,10$, the across-run mean
 \(
 \bar{m}(e) = R^{-1}\sum_{r=1}^{R} m_r(e)
 \)
 and the across-run standard deviation
 \(
 s(e) = \bigl[\,(R-1)^{-1}\sum_{r=1}^{R}\,(m_r(e)-\bar{m}(e))^{2}\,\bigr]^{1/2}
-\), 
+\),
 and we display $\bar{m}(e)\pm s(e)$ in the figures of
-Sec.~\ref{sec:results-stats}. We do not compute parametric confidence
-intervals (e.g.\ Wilson or Clopper--Pearson) or paired-test $p$-values
-(e.g.\ McNemar) on the validation predictions, because doing so would
-require either treating each run as an independent draw from a
-well-defined population --- a hypothesis that we cannot test with $R=10$ ---
-or treating the validation items as exchangeable across runs, which they
-are not, since the same items appear in every run. The reported $\pm s$
-band should therefore be read as a descriptive measure of run-to-run
-dispersion under the present training protocol, not as a frequentist
-confidence statement.
+Sec.~\ref{sec:results-stats}. We complement the descriptive $\pm s$ bands
+with three inferential ingredients applied only to the final-epoch validation
+accuracy: a per-run Wilson 95\% confidence interval at $N_{\mathrm{val}}=200$
+(which captures the binomial sampling noise of each single seed's
+accuracy estimate), a non-parametric bootstrap 95\% confidence interval on
+the across-seed mean (resampling the $R=10$ seeds with replacement,
+$10\,000$ resamples), and a Wilcoxon signed-rank paired test on the $R=10$
+seed-by-seed accuracy differences between the two architectures, with
+pairing on the \texttt{run\_idx}. With $R=10$ the smallest two-sided
+$p$-value achievable by the exact Wilcoxon test is
+$2/2^{10}\approx 0.002$, reached when all ten signs of the per-seed
+difference agree~\cite{Wilcoxon1945}. We did not compute McNemar
+contingency tests on individual validation items, because the same items
+appear in every run and are therefore not exchangeable across runs.
 
 \subsection{Results and Statistical Robustness}
 \label{sec:results-stats}
@@ -1029,23 +1035,31 @@ $2/2^{10}\approx 0.002$, reached when all ten signs of the per-seed
 difference agree.
 
 \begin{comment}
-TODO (Cap.3, Wave K): replace the placeholder summary below with the
-seed-resolved means and the Wilcoxon two-sided $p$-value produced by the
-notebooks \texttt{hybrid\_qcnn\_multiseed\_stats\_v1.ipynb} and
-\texttt{classical\_cnn\_multiseed\_stats\_v1.ipynb} (branch
-\texttt{wave-K-multirun} of \texttt{qh\_algorithms}). The two
-\texttt{results.json} files produced by those notebooks contain the
-\texttt{stats\_summary} and \texttt{wilcoxon\_results} fields with the
-final numbers.
+TODO (Cap.3, Wave K): CCNN matched-capacity completed on R=10 seeds with
+mean final-epoch val_acc = 0.9835 +/- 0.0047 (bootstrap 95% CI on the
+mean: [0.9810, 0.9865]) at N_val=200; numbers above already reflect this.
+The remaining placeholders ($\bar{a}_{\mathrm{hybrid}}$,
+$\sigma_{\mathrm{hybrid}}$, $L_{\mathrm{hybrid}}$, $U_{\mathrm{hybrid}}$,
+$W_{\mathrm{obs}}$, $p_{\mathrm{obs}}$) will be filled after the QCNN
+campaign completes; they come from the stats_summary and wilcoxon_results
+fields of the QCNN results.json (notebook
+hybrid_qcnn_multiseed_stats_v1.ipynb, qh_algorithms branch
+wave-K-multirun).
 \end{comment}
 
-Over the $R=10$ independent runs the hybrid Q--CNN reaches an average
-final-epoch validation accuracy of \mbox{$\bar{a}_{\mathrm{hybrid}} \pm
-\sigma_{\mathrm{hybrid}}$} against \mbox{$\bar{a}_{\mathrm{class}} \pm
-\sigma_{\mathrm{class}}$} for the matched-capacity classical control; the
-Wilcoxon signed-rank paired test on the per-seed accuracy differences
-yields $W=W_{\mathrm{obs}}$ with two-sided $p$-value
-$p_{\mathrm{obs}}$.
+Over the $R=10$ independent runs the matched-capacity classical control
+(CCNN, Sec.~\ref{sec:baselines}) reaches an across-seed mean final-epoch
+validation accuracy of $\bar{a}_{\mathrm{class}}=0.9835\pm 0.0047$
+(bootstrap 95\% CI on the mean: $[0.9810,\,0.9865]$) at
+$N_{\mathrm{val}}=200$, with per-seed Wilson 95\% CIs of width
+$\pm\,0.013$--$0.018$ that are dominated by binomial sampling rather than
+by run-to-run dispersion: this is consistent with the saturation regime
+already documented for binary EuroSAT in Sec.~\ref{sec:baselines}. The
+hybrid Q--CNN reaches \mbox{$\bar{a}_{\mathrm{hybrid}} \pm
+\sigma_{\mathrm{hybrid}}$} (bootstrap CI [$L_{\mathrm{hybrid}},\,
+U_{\mathrm{hybrid}}$]); the Wilcoxon signed-rank paired test on the
+per-seed accuracy differences yields $W=W_{\mathrm{obs}}$ with two-sided
+$p$-value $p_{\mathrm{obs}}$.
 Fig.~\ref{fig:QCNN-with-std} and Fig.~\ref{fig:CCNN-with-std} display the
 mean training curves with shaded $\pm\sigma$ bands. As discussed in
 Sec.~\ref{sec:baselines}, the purely quantum reference
@@ -1080,9 +1094,8 @@ classical trunk adapted only via the standard classification gradient.
 \begin{figure}[H]
     \centering
     % stessi nomi di main.tex; il wrapper sostituisce 'chapters/qa_figures/' con 'figures/'
-%    \includegraphics[width=1\linewidth]{chapters/qa_figures/qadv_1.png}
-    \includegraphics[width=0.5\linewidth]{chapters/qa_figures/CCNN_with_std.png}
-    \caption{Accuracy vs.~Epoch for classical CNN architecture.}
+    \includegraphics[width=0.8\linewidth]{chapters/qa_figures/CCNN_with_std.png}
+    \caption{Across-seed mean ($\pm 1\sigma$ band) training and validation curves of the matched-capacity classical CNN control (CCNN), aggregated over $R=10$ independent runs with seed schedule $s_r = 42 + 111\,r$, $r=0,\dots,9$. Left: cross-entropy loss. Right: classification accuracy. The validation curve reaches $\bar{a}_{\mathrm{class}} = 0.9835 \pm 0.0047$ at the final epoch, consistent with the saturation regime of the binary EuroSAT subset (Sec.~\ref{sec:baselines}).}
     \label{fig:CCNN-with-std}
 \end{figure}
 
