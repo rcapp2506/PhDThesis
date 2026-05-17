@@ -46,15 +46,21 @@ associated reduction in cryogenic infrastructure cost could be
 substantial.
 
 The hybrid quantum-classical convolutional neural network studied in
-Chapter~\ref{ch:quantum_algorithms} reaches target accuracy on the
-EuroSAT satellite-image benchmark in roughly one third of the training
-epochs required by a matched classical baseline.  The effect is
-consistent across independent runs, and the hardware-validation
-campaign on IQM and IBM processors confirms functional correctness
-of the circuit implementations.  Whether this training-efficiency gain
-constitutes a durable advantage or is an artefact of the specific
-architecture and dataset is a question that will require broader
-benchmarking to settle.
+Chapter~\ref{ch:quantum_algorithms} shows, at $R=10$ independent seeds
+on a binary EuroSAT subset, a $\sim 29$-percentage-point
+training-efficiency advantage at the first training epoch against a
+structurally isomorphic matched-capacity classical control, paired with
+a $\sim 2.6$-percentage-point asymptotic-accuracy deficit against the
+same control at the final epoch ($p=2.7\times 10^{-2}$, paired Wilcoxon
+exact). The credit-bounded fine-tuning campaign on the IQM Emerald
+54-qubit superconducting processor confirms that parameter-shift
+gradients are usable on noisy quantum hardware in the small-parameter
+regime: two on-device epochs recover the full simulator validation
+accuracy, on a credit-bounded budget tracked by an explicitly
+calibrated cost model. Whether the early-epoch training-efficiency
+gain constitutes a durable, transferable advantage or is an artefact
+of the specific architecture and dataset is a question that will
+require broader benchmarking to settle.
 
 The master-equation model of a Rydberg-atom avalanche detector
 (Chapter~\ref{ch:quantum_sensing}) predicts that single-photon
@@ -91,8 +97,10 @@ fabrication and measurement of NbN/AlN/NbN junctions at 300\,GHz will
 be needed to test whether the loss models used here---extrapolated
 from lower-frequency data---remain valid in the target regime.  The
 Q-CNN results were obtained on a single benchmark dataset and a
-specific circuit ansatz; the extent to which the observed training
-speedup generalises to other tasks and architectures is unknown.
+specific circuit ansatz; the extent to which the observed
+training-efficiency advantage at the first epoch and the corresponding
+small asymptotic-accuracy deficit generalise to other tasks,
+architectures and capacity regimes is unknown.
 The Rydberg-detector model assumes idealised state preparation and
 readout, and does not account for Doppler broadening, stray electric
 fields, or finite laser linewidth, all of which will affect

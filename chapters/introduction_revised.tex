@@ -85,15 +85,28 @@ distinguishing transverse exchange from longitudinal cross-Kerr
 interactions.
 
 \paragraph{Chapter~\ref{ch:quantum_algorithms} --- Quantum Algorithms.}
-We design and benchmark a hybrid quantum-classical convolutional neural
-network (QCNN) for satellite-image classification on the EuroSAT
-dataset.  The architecture replaces one classical convolutional layer
-with a variational quantum circuit trained via the parameter-shift rule.
-Training dynamics are compared with those of a matched classical baseline
-under controlled conditions.  The chapter includes a hardware-validation
-campaign on IBM and IQM quantum processors, whose role is to confirm
-functional correctness and to characterise execution latency rather than
-to claim a definitive performance advantage.
+We design, train and physically validate a hybrid quantum-classical
+convolutional neural network (Q-CNN) for binary satellite-image
+classification on a subset of EuroSAT. The architecture inserts a
+nine-qubit, eighteen-parameter quanvolutional layer into a classical
+convolutional trunk; pixel patches are encoded via rotation angles,
+processed through a shallow hardware-efficient entangling block, and
+read out as Pauli-$Z$ expectations that feed the classical head.
+A multi-seed campaign at $R=10$ independent seeds compares the hybrid
+against two purpose-built classical controls --- a structurally
+isomorphic matched-capacity baseline (within $0.07\%$ of the hybrid's
+parameter count) and a high-capacity reference ($\sim 185\times$ the
+hybrid's parameter count) --- with paired Wilcoxon exact tests
+documenting a $\sim 2.6$~pp asymptotic-accuracy deficit of the
+hybrid against the matched control ($p=2.7\times 10^{-2}$) and a
+$\sim 29$~pp training-efficiency advantage at the first epoch on the
+same comparison. The chapter also derives a runtime-aware credit-cost
+model that links bound-circuit count to a-priori credit consumption,
+calibrated against $195$ jobs of the IQM Emerald production campaign,
+and closes the loop with a credit-bounded fine-tuning of the
+simulator-trained checkpoint on the IQM Emerald 54-qubit
+superconducting processor, where parameter-shift gradients restore
+$100\%$ validation accuracy in two on-device epochs.
 
 \paragraph{Chapter~\ref{ch:quantum_sensing} --- Quantum Sensing.}
 We construct a master-equation model of a Rydberg-atom avalanche
