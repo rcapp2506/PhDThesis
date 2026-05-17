@@ -290,11 +290,7 @@ to potentially augment representation power and learning dynamics~\cite{biamonte
 Among hybrid models, quantum convolutional neural networks (QCNNs) extend classical convolutions
 with quantum kernels for local feature extraction~\cite{Cong2019}. Prior work has explored hybrid
 architectures for remote sensing classification~\cite{Sebastianelli2021}, yet the specific role and
-design of quantum convolutional layers remain under-explored. This paper develops a QCNN layer,
-benchmarks multiple architectures on EuroSAT~\cite{Helber2019}, and compares with a classical CNN
-baseline~\cite{LeCun1998} and a published hybrid network~\cite{Sebastianelli2021}. Our contributions are:
-(i) a modular QCNN layer compatible with common ML toolchains; (ii) an empirical study of circuit design
-choices; and (iii) evidence of distinctive early-epoch learning behavior in QCNNs.
+design of quantum convolutional layers remain under-explored. The present chapter builds on the quanvolutional ansatz design of the prior thesis work of Filippi~\cite{Filippi2025Thesis} (Eq.~\ref{eq:parallel_circuit}, Fig.~\ref{fig:qconv}, Fig.~\ref{fig:qcnn_ansatz}), and extends it along three dimensions of our own: (i) a multi-seed statistical campaign with explicit matched-capacity classical controls and paired non-parametric significance testing (Sec.~\ref{sec:results-stats}); (ii) a runtime-aware cost model that links circuit-level scheduling to credit-bounded training on cloud-accessed superconducting hardware (Sec.~\ref{sec:runtime-metric}); and (iii) the first end-to-end transfer of the trained hybrid Q-CNN onto a $\geq 50$-qubit superconducting device, with parameter-shift fine-tuning on the IQM Emerald processor (Sec.~\ref{sec:hw_validation}). The chapter develops the QCNN layer formally, benchmarks multiple architectures on EuroSAT~\cite{Helber2019}, compares the chosen candidate with a classical CNN baseline~\cite{LeCun1998} and a published hybrid network~\cite{Sebastianelli2021}, and closes the loop on physical hardware. Where a figure or an equation is adapted from~\cite{Filippi2025Thesis}, the caption flags the provenance explicitly; everything else is original to this work.
 
 \section{Background}
 Hybrid quantum--classical learning integrates short-depth quantum computations\ into a larger classical optimization loop, aiming to exploit quantum resources (superposition, entanglement, and measurement-induced nonlinearities) while remaining compatible with near-term noisy hardware. The conceptual and algorithmic underpinnings are well documented in the monograph by Schuld and Petruccione, which frames quantum models as feature maps and variational learners trained by classical optimizers~\cite{SchuldPetruccione2021}. Complementary surveys emphasize the role of Parameterized Quantum Circuits (PQCs) as flexible hypothesis classes, where the inductive bias, that is, the model’s built-in assumptions about the structure of the target function, emerges from how classical data are encoded into quantum states and from the topology of the entangling gates used. In particular, the choice of encoding scheme and entangling pattern determines the expressivity, trainability, and generalization properties of variational quantum models~\cite{Benedetti2019,cerezo2021}.
@@ -861,16 +857,40 @@ All model selection is performed on device-aware simulators. To validate portabi
 
 \subsection{Training dynamics and learning curves}
 \label{sec:results-curves}
+
+\paragraph{Why a simulator pre-training stage.}
+We refer to the training run summarised in
+Fig.~\ref{fig:training-dynamics} as a \emph{pre-training} stage rather
+than simply ``training'' because of the hardware-validation strategy
+that closes this chapter (Sec.~\ref{sec:hw_validation}). The
+end-of-run weights of this simulator stage are not the final deployment
+of the hybrid Q-CNN: they are the checkpoint from which a subsequent,
+credit-bounded \emph{fine-tuning} run is launched directly on the IQM
+Emerald quantum processor. The split between a simulator-based
+pre-training phase and an on-device fine-tuning phase is forced by the
+economics of cloud-accessed superconducting QPUs. A full $R=10$ multi-seed,
+ten-epoch training campaign on Emerald at the production
+$N_{\mathrm{train}}=160$ scale of the simulator would consume on the
+order of $\sim 10^{5}$ credits (Sec.~\ref{subsec:cost_model}), against
+the $2{,}000$-credit budget allocated to this campaign; the production
+runs on Emerald therefore freeze the classical trunk at its
+simulator-pretrained values and update only the four trainable quantum
+weights $\boldsymbol{w}$ via parameter-shift gradients on the device
+(Sec.~\ref{subsec:minibatch_sgd}). This is a routine choice in the
+hybrid quantum--classical literature, and it has the additional benefit
+of decoupling the model-selection question (best on simulator) from the
+noise-robustness question (best after on-device fine-tuning).
+
 Figure~\ref{fig:training-dynamics} compares the learning curves (cross-entropy loss and binary accuracy versus epoch) of our hybrid Q-CNN backbone against the classical-only ablation, both trained on the simulator under identical preprocessing, optimizer settings and binary subset of EuroSAT (Forest vs.\ AnnualCrop, $10$ images/class for both train and val splits). The two models share the convolutional feature extractor; the only difference is whether the quanvolutional layer is replaced by a classical pointwise convolution (the classical ablation, Sec.~\ref{sec:variants}) or by the parameterized quantum filter (the hybrid Q-CNN). Both models reach $\geq 90\%$ validation accuracy within a handful of epochs and saturate at $\approx 95\%$ at the end of pre-training; the validation curves are essentially indistinguishable beyond epoch~6, while the training-loss trajectory of the hybrid model exhibits the moderately larger step-to-step variance expected from the parameter-shift gradient estimator on $S=500$ shots.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=\linewidth]{chapters/qa_figures/plot1_pretrain_vs_ablation.png}
-    \caption{Pre-training learning curves on the simulator: hybrid Q-CNN (blue) vs.\ classical ablation (orange), both trained for 10 epochs on the binary EuroSAT subset with mini-batch size $m=2$, learning rate $10^{-3}$, weight decay $10^{-4}$, and seed $42$. Left: cross-entropy loss. Right: accuracy. Solid lines are training-set metrics (averaged over the $10$ optimizer steps of each epoch); dashed lines are end-of-epoch validation metrics on the $20$ held-out images.}
+    \caption{Simulator pre-training learning curves: hybrid Q-CNN (blue) vs.\ classical ablation (orange), both trained for 10 epochs on the binary EuroSAT subset with mini-batch size $m=2$, learning rate $10^{-3}$, weight decay $10^{-4}$, and seed $42$. Left: cross-entropy loss. Right: accuracy. Solid lines are training-set metrics (averaged over the $10$ optimizer steps of each epoch); dashed lines are end-of-epoch validation metrics on the $20$ held-out images. The end-of-run weights of the hybrid Q-CNN serve as the simulator-pretrained checkpoint subsequently loaded onto IQM Emerald for the hardware fine-tuning campaign of Sec.~\ref{sec:hw_validation}.}
     \label{fig:training-dynamics}
 \end{figure}
 
-Reading these curves: the hybrid Q-CNN follows the same broad learning trajectory as the classical ablation within run-to-run variability, with the largest visible difference at the first epoch and a comparable plateau thereafter. The simulator checkpoint that is loaded onto Emerald in Sec.~\ref{sec:hw_validation} for the hardware fine-tuning campaign is the one obtained at the end of this run.
+Reading these curves: the hybrid Q-CNN follows the same broad learning trajectory as the classical ablation within run-to-run variability, with the largest visible difference at the first epoch and a comparable plateau thereafter. The simulator checkpoint that is loaded onto Emerald in Sec.~\ref{sec:hw_validation} for the hardware fine-tuning campaign is the one obtained at the end of this run, with only the four trainable quantum weights $\boldsymbol{w}\in\mathbb{R}^{4}$ remaining unfrozen during on-device adaptation.
 
 \subsection{Architectural variants and ablations}
 \label{sec:variants}
@@ -975,24 +995,38 @@ Across late-fusion models we observe a pronounced \emph{first-epoch accuracy jum
 
 \subsection{Comparison to baselines}
 \label{sec:baselines}
-We benchmark the best QCNN (\texttt{C16--Q64}) against two classical/hybrid references. As a published hybrid remote-sensing model we cite Sebastianelli et al.~\cite{Sebastianelli2021}; we report performance figures only qualitatively, since the original publication does not provide seed-resolved data and a paired comparison is therefore not available. As a classical reference, the prior thesis work of Filippi~\cite{Filippi2025Thesis} compared the same \texttt{C16--Q64} hybrid architecture against a compact LeNet-5-style CNN with 6/16 convolutional channels~\cite{LeCun1998} on a two-class EuroSAT subset, reporting validation loss $0.37$ for the classical baseline against $0.25$ for the hybrid. We note, however, that the LeNet-5 baseline of~\cite{Filippi2025Thesis} has substantially fewer trainable parameters than the hybrid \texttt{C16--Q64}, so the loss gap conflates two distinct effects: the contribution of the quantum convolutional layer, and the contribution of the larger 16/32/64-channel classical trunk. To isolate the former, we replicate the Filippi training protocol with a \emph{matched-capacity} classical control, in which the only structural difference with respect to the hybrid is the substitution of the final quanvolutional block by a parameter-equivalent classical \texttt{Conv2d(64,64)} block; classical trunk, dropout schedule and head are otherwise identical. Across $R=10$ independent seeds (Sec.~\ref{sec:stats-significance}) the hybrid retains a small advantage in validation loss over the matched-capacity classical control, consistent with localised quantum feature maps adding moderate expressivity beyond what a same-capacity classical block provides; we report the corresponding statistics in Sec.~\ref{sec:results-stats}.
+We benchmark the best QCNN (\texttt{C16--Q64}) against two classical/hybrid references. As a published hybrid remote-sensing model we cite Sebastianelli et al.~\cite{Sebastianelli2021}; we report performance figures only qualitatively, since the original publication does not provide seed-resolved data and a paired comparison is therefore not available.
+
+\paragraph{Filippi's classical baseline and the capacity confounder.}
+The prior thesis work of Filippi~\cite{Filippi2025Thesis} compared the same \texttt{C16--Q64} hybrid architecture against a compact LeNet-5-style CNN with $6/16$ convolutional channels~\cite{LeCun1998} on a two-class EuroSAT subset, reporting validation loss $0.37$ for the classical baseline against $0.25$ for the hybrid. As reported in~\cite{Filippi2025Thesis}, the LeNet-5 baseline has substantially fewer trainable parameters than the hybrid \texttt{C16--Q64}, so the loss gap, when read as a quantum-vs-classical contrast, conflates two distinct effects: the contribution of the quantum convolutional layer, and the contribution of the larger $16/32/64$-channel classical trunk that surrounds it. The work reported in this thesis builds on Filippi's quanvolutional ansatz design (Eq.~\ref{eq:parallel_circuit}, Fig.~\ref{fig:qconv}, Fig.~\ref{fig:qcnn_ansatz}, all adapted from~\cite{Filippi2025Thesis} as flagged in the respective captions) and extends it along three new directions of our own.
+
+\paragraph{Original contributions of this work.}
+First, we replace Filippi's LeNet-5 reference with two newly trained classical controls described in detail in Sec.~\ref{sec:results-stats}: a high-capacity ablation that matches the parameter count of Filippi's original \texttt{C16--Q64} hybrid (Level~1 of that section, $\sim 85.6\times 10^{6}$ trainable parameters), and a structurally isomorphic matched-capacity ablation that differs from the hybrid only by the substitution of the quanvolutional block with a parameter-equivalent $\mathrm{Conv2d}(6{\to}6,\,k{=}3)$ block (Level~2, $\sim 4.64\times 10^{5}$ trainable parameters, within $0.07\%$ of the simulator-trained hybrid of Level~3). Second, we run all three architectures in an $R=10$ multi-seed campaign on a fixed train/validation partition, enabling the paired non-parametric statistics that Filippi's single-seed report could not support (Sec.~\ref{sec:results-stats}). Third, the hybrid Q-CNN is transferred to physical quantum hardware (IQM Emerald, Sec.~\ref{sec:hw_validation}) with a credit-bounded fine-tuning campaign, an experimental dimension that is not present in~\cite{Filippi2025Thesis}.
+
+The corresponding numerical results, reported in detail in Sec.~\ref{sec:results-stats}, show that with both classical references in place the matched-capacity classical control (Level~2) reaches $0.9700\pm 0.0133$ final-epoch validation accuracy against $0.9445\pm 0.0243$ for the simulator-trained hybrid (Level~3), a paired difference of $-2.6$ percentage points at $p=2.7\times 10^{-2}$; conversely, at epoch~$1$ the hybrid is $\sim 29$ percentage points ahead of the same matched-capacity control, indicating a training-efficiency advantage that does not translate into an asymptotic-accuracy advantage on this dataset. The pattern is consistent with localised quantum feature maps producing informative features earlier than a freshly initialised classical convolution of equal parameter count, while not exceeding the asymptotic representational capacity of the latter on a saturated binary task.
 
 \subsection{Statistical uncertainty across runs}
 \label{sec:stats-significance}
 
 The variability we report on accuracy and loss in the next sections comes
-from a deliberately simple, replication-based protocol. Each of the two
-architectures we benchmark (a matched-capacity classical CNN control, and
-the hybrid Q--CNN \texttt{C16--Q64}) is trained from scratch over $R=10$
-independent runs that differ only in the random seed used to initialise the
-weights and to shuffle the mini-batches; the train/validation split is held
-fixed across runs at $80/20$ on a 100-image-per-class subset of EuroSAT
-(Forest vs.\ AnnualCrop), yielding $N_{\mathrm{train}}=160$ and
-$N_{\mathrm{val}}=200$ items shared across all seeds. The
-purely quantum reference of Sebastianelli et al.~\cite{Sebastianelli2021}
-is discussed qualitatively in Sec.~\ref{sec:baselines} but is not included
-in the across-seed protocol of this section, since the original
-publication does not provide seed-resolved data. For every metric of
+from a deliberately simple, replication-based protocol. Each of the three
+architectures we benchmark in Sec.~\ref{sec:results-stats} — a
+high-capacity classical CNN reference (Level~1, $\sim 85.6\times 10^{6}$
+trainable parameters), a matched-capacity classical CNN control
+(Level~2, $\sim 4.64\times 10^{5}$ trainable parameters, isomorphic to
+the hybrid except for the substitution of the quanvolutional block with
+an equivalent classical convolution), and the hybrid Q-CNN itself
+(Level~3, $\sim 4.64\times 10^{5}$ trainable parameters) — is trained
+from scratch over $R=10$ independent runs that differ only in the
+random seed used to initialise the weights and to shuffle the
+mini-batches; the train/validation split is held fixed across runs at
+$80/20$ on a 100-image-per-class subset of EuroSAT (Forest vs.\
+AnnualCrop), yielding $N_{\mathrm{train}}=160$ and $N_{\mathrm{val}}=200$
+items shared across all seeds. The purely quantum reference of
+Sebastianelli et al.~\cite{Sebastianelli2021} is discussed qualitatively
+in Sec.~\ref{sec:baselines} but is not included in the across-seed
+protocol of this section, since the original publication does not
+provide seed-resolved data. For every metric of
 interest (epoch-level training and validation accuracy, validation
 cross-entropy loss) we then compute, separately at each epoch
 $e=1,\dots,10$, the across-run mean
@@ -1462,7 +1496,7 @@ $p$-values.
 
 Figure~\ref{fig:QCNN-with-std} together with the pre-training curves of Fig.~\ref{fig:training-dynamics} characterizes the training dynamics of the hybrid model on the simulator. We report three observations of these curves without inferring any asymptotic behaviour.
 
-First, the hybrid Q-CNN and the classical ablation both converge to a comparable validation plateau at approximately 92\% accuracy within roughly five epochs on the binary EuroSAT subset, with run-to-run variability that is consistent with the per-seed dispersion of Sec.~\ref{sec:stats-significance}. Second, at the first epoch the hybrid model exhibits a higher validation accuracy than the purely classical baseline (Fig.~\ref{fig:training-dynamics}, right panel): the visible gap of order $20$ percentage points at epoch~$1$ shrinks over the subsequent epochs and is no longer present once both models have reached the plateau. Third, the per-step training loss of the hybrid model carries a moderately larger step-to-step variance than the classical ablation, in a manner consistent with the residual sampling noise of the parameter-shift gradient estimator at $S=500$ shots per observable.
+First, the hybrid Q-CNN reaches an across-seed mean final-epoch validation accuracy of $\bar{a}_{\mathrm{hybrid}}=0.945$, against $\bar{a}_{\mathrm{small}}=0.970$ for the matched-capacity classical control (Sec.~\ref{sec:results-stats}); the two architectures therefore plateau within $\sim 2.6$ percentage points of each other within roughly five epochs on the binary EuroSAT subset, with run-to-run variability that is consistent with the per-seed dispersion of Sec.~\ref{sec:stats-significance}. Second, at the first epoch the hybrid model exhibits a substantially higher validation accuracy than the matched-capacity classical control (Fig.~\ref{fig:QCNN-with-std}, right panel): the across-seed mean gap of $\sim 29$ percentage points at epoch~$1$ shrinks over the subsequent epochs, reverses sign around epoch~$3$, and asymptotes to the $\sim 2.6$~pp deficit reported above once both models have reached their respective plateaus. Third, the per-step training loss of the hybrid model carries a moderately larger step-to-step variance than the classical control, in a manner consistent with the residual sampling noise of the parameter-shift gradient estimator at $S=500$ shots per observable.
 
 These observations should be read narrowly. The binary subset of EuroSAT used here saturates close to the inherent class-overlap ceiling already after a handful of epochs, so the convergence scale itself is short, and any epoch-count differential measured on it has limited resolving power. The first-epoch margin is presented here as a property of the simulated training trajectory in the present setting; it does not by itself support a claim that the quantum filter accelerates training in a meaningful, transferable sense. A quantitative comparison with stronger classical baselines and on multi-class targets, together with a controlled study of the effect of seed and initialisation, would be required before any inference about the relative learning speeds of the two architectures is drawn.
 
@@ -1471,7 +1505,6 @@ To isolate architectural effects, we ablated max-pooling near the quantum layer 
 
 
 % -------------- refs you may already have --------------
-% \cite{Helber2019EuroSAT, LeCun1998, Goodfellow2016, Schuld2019Gradients, Schuld2019FeatureMaps, Havlicek2019FeatureSpaces, cerezo2021VQA, Sebastianelli2021, Qiskit2019}
 
 \subsection{Runtime on simulator vs hardware (IQM)}
 \label{sec:runtime-iqm}
