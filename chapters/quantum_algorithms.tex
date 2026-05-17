@@ -290,7 +290,7 @@ to potentially augment representation power and learning dynamics~\cite{biamonte
 Among hybrid models, quantum convolutional neural networks (QCNNs) extend classical convolutions
 with quantum kernels for local feature extraction~\cite{Cong2019}. Prior work has explored hybrid
 architectures for remote sensing classification~\cite{Sebastianelli2021}, yet the specific role and
-design of quantum convolutional layers remain under-explored. The present chapter builds on the quanvolutional ansatz design of the prior thesis work of Filippi~\cite{Filippi2025Thesis} (Eq.~\ref{eq:parallel_circuit}, Fig.~\ref{fig:qconv}, Fig.~\ref{fig:qcnn_ansatz}), and extends it along three dimensions of our own: (i) a multi-seed statistical campaign with explicit matched-capacity classical controls and paired non-parametric significance testing (Sec.~\ref{sec:results-stats}); (ii) a runtime-aware cost model that links circuit-level scheduling to credit-bounded training on cloud-accessed superconducting hardware (Sec.~\ref{sec:runtime-metric}); and (iii) the first end-to-end transfer of the trained hybrid Q-CNN onto a $\geq 50$-qubit superconducting device, with parameter-shift fine-tuning on the IQM Emerald processor (Sec.~\ref{sec:hw_validation}). The chapter develops the QCNN layer formally, benchmarks multiple architectures on EuroSAT~\cite{Helber2019}, compares the chosen candidate with a classical CNN baseline~\cite{LeCun1998} and a published hybrid network~\cite{Sebastianelli2021}, and closes the loop on physical hardware. Where a figure or an equation is adapted from~\cite{Filippi2025Thesis}, the caption flags the provenance explicitly; everything else is original to this work.
+design of quantum convolutional layers remain under-explored. The present chapter builds on the quanvolutional ansatz design of the prior thesis work of Filippi~\cite{Filippi2025Thesis}\footnote{Master's thesis at Università di Siena, supervised by the present author.} (Eq.~\ref{eq:parallel_circuit}, Fig.~\ref{fig:qconv}, Fig.~\ref{fig:qcnn_ansatz}), and extends it along three dimensions of our own: (i) a multi-seed statistical campaign with explicit matched-capacity classical controls and paired non-parametric significance testing (Sec.~\ref{sec:results-stats}); (ii) a runtime-aware cost model that links circuit-level scheduling to credit-bounded training on cloud-accessed superconducting hardware (Sec.~\ref{sec:runtime-metric}); and (iii) the first end-to-end transfer of the trained hybrid Q-CNN onto a $\geq 50$-qubit superconducting device, with parameter-shift fine-tuning on the IQM Emerald processor (Sec.~\ref{sec:hw_validation}). The chapter develops the QCNN layer formally, benchmarks multiple architectures on EuroSAT~\cite{Helber2019}, compares the chosen candidate with a classical CNN baseline~\cite{LeCun1998} and a published hybrid network~\cite{Sebastianelli2021}, and closes the loop on physical hardware. Where a figure or an equation is adapted from~\cite{Filippi2025Thesis}, the caption flags the provenance explicitly; everything else is original to this work.
 
 \section{Background}
 Hybrid quantum--classical learning integrates short-depth quantum computations\ into a larger classical optimization loop, aiming to exploit quantum resources (superposition, entanglement, and measurement-induced nonlinearities) while remaining compatible with near-term noisy hardware. The conceptual and algorithmic underpinnings are well documented in the monograph by Schuld and Petruccione, which frames quantum models as feature maps and variational learners trained by classical optimizers~\cite{SchuldPetruccione2021}. Complementary surveys emphasize the role of Parameterized Quantum Circuits (PQCs) as flexible hypothesis classes, where the inductive bias, that is, the model’s built-in assumptions about the structure of the target function, emerges from how classical data are encoded into quantum states and from the topology of the entangling gates used. In particular, the choice of encoding scheme and entangling pattern determines the expressivity, trainability, and generalization properties of variational quantum models~\cite{Benedetti2019,cerezo2021}.
@@ -892,87 +892,45 @@ Figure~\ref{fig:training-dynamics} compares the learning curves (cross-entropy l
 
 Reading these curves: the hybrid Q-CNN follows the same broad learning trajectory as the classical ablation within run-to-run variability, with the largest visible difference at the first epoch and a comparable plateau thereafter. The simulator checkpoint that is loaded onto Emerald in Sec.~\ref{sec:hw_validation} for the hardware fine-tuning campaign is the one obtained at the end of this run, with only the four trainable quantum weights $\boldsymbol{w}\in\mathbb{R}^{4}$ remaining unfrozen during on-device adaptation.
 
-\subsection{Architectural variants and ablations}
+\subsection{Architectural search: the C16--Q64 winner}
 \label{sec:variants}
-We studied QCNN variants that differ along three axes: (i) \emph{placement} of the quantum convolution (early vs.\ late fusion); (ii) \emph{width} (channels, i.e., repetitions per patch); and (iii) \emph{depth} (single vs.\ double quantum blocks). All models share the same preprocessing and classifier head; only the backbone topology around the quantum layer changes. The quantum layer uses rotation (angle) encoding on small patches, followed by a shallow hardware-efficient entangling block and Pauli-$Z$ measurement to produce a single-channel response per patch; channels are obtained by repeating the block with independent parameters.
 
+The systematic exploration of QCNN variants along the three design axes
+that govern the encoding pipeline --- the \emph{placement} of the
+quantum convolution (early vs.\ late fusion with respect to the
+classical convolutional trunk), the number of \emph{parallel quantum
+channels} per patch, and the \emph{depth} of the variational block ---
+was performed in the prior master's thesis of
+Filippi~\cite{Filippi2025Thesis}, carried out at Università di Siena
+under the supervision of the present author. We summarise its outcome
+here because all subsequent work in this chapter, including the
+multi-seed statistical campaign of Sec.~\ref{sec:results-stats} and the
+hardware-validation campaign of Sec.~\ref{sec:hw_validation}, builds on
+the architecture identified by that search.
 
-\subsection*{Model configurations: notation and interpretation}
-
-To systematically compare classical--quantum hybrid architectures, we hence explored a family
-of network configurations combining a classical convolutional backbone with one or more
-quantum layers.
-Each configuration label (e.g., \texttt{C6-Q-64}, \texttt{C6-2Q6}, \texttt{C6-4Q4})
-encodes the structure of the model as follows:
-
-\begin{itemize}
-    \item \textbf{C\#}: number of convolutional blocks in the classical feature extractor
-    (e.g., \texttt{C6} $\Rightarrow$ six convolutional layers).
-    \item \textbf{Q}, \textbf{2Q}, \textbf{4Q}: number of quantum circuits (QNN modules)
-    applied in parallel after the classical backbone. A single \texttt{Q} denotes a global
-    quantum encoder, while \texttt{2Q} and \texttt{4Q} denote two or four parallel quantum
-    encoders processing separate feature subsets.
-    \item \textbf{Final number (e.g., 6, 8, 64, 128)}: feature dimension or effective qubit
-    count of the quantum embedding; it reflects the number of input features (and thus
-    the number of qubits) processed by each quantum circuit.
-\end{itemize}
-
-This compact notation therefore characterizes both the degree of classical feature
-compression and the topology of the quantum front-end.
-In the \emph{Early Fusion} setup, a single quantum encoder receives the full
-feature vector from the convolutional backbone (\texttt{C6-Q-64}, \texttt{C6-Q-128}),
-whereas in the \emph{Late Fusion} setup, multiple quantum circuits operate in
-parallel on smaller feature groups (\texttt{C6-2Q6}, \texttt{C6-4Q4}, etc.).
-All configurations were trained and evaluated under identical conditions, with
-the same dataset partitions and optimizer settings.
-
-\begin{table}[H]
-\centering
-\caption{\textbf{Meaning of model labels used in the Late vs.\ Early Fusion comparison.}}
-\label{tab:model_labels}
-\begin{tabular}{lcll}
-\toprule
-\textbf{Label} & \textbf{Classical blocks} & \textbf{Quantum modules} & \textbf{Input features / qubits}\\
-\midrule
-\texttt{C6-Q-64}   & 6 & 1 (global QNN) & 64 features ($\sim$6 qubits) \\
-\texttt{C6-Q-128}  & 6 & 1 (global QNN) & 128 features ($\sim$8 qubits) \\
-\texttt{C6-2Q6}    & 6 & 2 (parallel QNNs) & 6 qubits each \\
-\texttt{C6-4Q4}    & 6 & 4 (parallel QNNs) & 4 qubits each \\
-\texttt{C6-4Q8}    & 6 & 4 (parallel QNNs) & 8 qubits each \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-The above notation provides a unified reference for the architectures compared in
-Table~\ref{tab:qcnn-variants}, where the performance metrics (accuracy, 
-validation loss, and runtime) are reported for each configuration.
-
-\paragraph*{Motivation for Early vs.\ Late Fusion comparison}
-
-In hybrid quantum--classical neural networks, the interface between classical
-and quantum processing can be organized according to two main strategies:
-\emph{Early Fusion} and \emph{Late Fusion}.
-In the Early Fusion scheme, a single quantum circuit encodes the complete feature
-vector produced by the convolutional backbone, providing a compact but potentially
-entanglement-rich representation at the cost of larger qubit counts and longer
-circuit depth.
-Conversely, in the Late Fusion scheme, several smaller quantum circuits operate
-in parallel on distinct feature subsets, reducing the per-circuit depth and
-hardware latency while preserving locality and scalability.
-This trade-off between expressive power and runtime efficiency motivates a
-systematic exploration of both regimes under comparable training conditions.
-
-We therefore benchmarked a set of architectures that vary in the number of
-quantum encoders and in the dimensionality of their classical--quantum interface,
-as detailed below.
-
-
-\paragraph{Late vs.\ early fusion.}
-Placing the quantum layer \emph{after} two classical convolutions (\texttt{C$\rightarrow$C$\rightarrow$Q}) consistently dominates applying it first (\texttt{Q$\rightarrow$C$\rightarrow$C}). The early-fusion variant (\texttt{Q6--C6}) lags by $\approx 8$ points of accuracy and exhibits higher final loss (Tab.~\ref{tab:qcnn-variants}). This aligns with the intuition that early classical filtering supplies more stable, low-variance features to the quantum kernel, improving trainability.
+Tab.~\ref{tab:qcnn-variants} reproduces the validation metrics obtained
+in~\cite{Filippi2025Thesis} on the same binary EuroSAT subset adopted
+throughout this chapter. The dominant pattern is that late fusion
+(classical $\to$ classical $\to$ quantum) consistently outperforms
+early fusion (quantum $\to$ classical $\to$ classical) by roughly
+$8$~pp of accuracy, with the best configuration being
+\texttt{C16--Q64} at validation loss $0.25$ and validation accuracy
+$91\%$. The intuition supporting late fusion is that the classical
+trunk supplies low-variance, denoised features to the quantum kernel,
+which improves trainability of the parameter-shift gradients on a
+shallow variational block; the alternate reading via the trainability
+literature is that locality-preserving encoders on already pooled
+features avoid the expressivity-induced barren-plateau regime of
+deeper, globally entangling blocks~\cite{Holmes2022PRXQ,Pesah2021PRX}.
+For the same reason, increasing the number of quantum channels (e.g.\
+from \texttt{C6--Q16} to \texttt{C16--Q64}) is preferable to stacking a
+second quantum layer in series (e.g.\ \texttt{C6--2Q6}), which yields
+only partial gains over the single-layer counterpart, consistent with
+the depth/SNR trade-offs known for PQCs~\cite{cerezo2021}.
 
 \begin{table}[h]
 \centering
-\caption{Summary of QCNN variants and validation metrics on the EuroSAT binary task. Architectures are labeled by the first and last convolutional layer and their output channels (\texttt{C} = classical, \texttt{Q} = quantum). Best result in \textbf{bold}.}
+\caption{Architectural search outcome reproduced from~\cite{Filippi2025Thesis}. Architectures are labelled by the first and last convolutional layer and their output channels (\texttt{C} = classical, \texttt{Q} = quantum). All entries from the same single-seed simulator campaign of~\cite{Filippi2025Thesis}; the present chapter takes the winner \texttt{C16--Q64} (in \textbf{bold}) as the architecture for the multi-seed statistical campaign of Sec.~\ref{sec:results-stats} and the hardware-validation campaign of Sec.~\ref{sec:hw_validation}.}
 \label{tab:qcnn-variants}
 \begin{tabular}{lcc}
 \toprule
@@ -987,11 +945,15 @@ C16--Q64 & \textbf{0.25} & \textbf{91} \\
 \end{tabular}
 \end{table}
 
-\paragraph{Width and depth.}
-Increasing quantum channels (e.g., \texttt{C16--Q64}) improves both loss and accuracy, suggesting that multiple learned filters per patch increase the expressive power without incurring depth-related pathologies. Conversely, stacking two quantum layers in series (\texttt{C6--2Q6}) offers only partial gains over a single-layer \texttt{C6--Q6}, consistent with known depth/signal–to–noise trade-offs in PQCs~\cite{cerezo2021}.
-
-\paragraph{Early-epoch dynamics.}
-Across late-fusion models we observe a pronounced \emph{first-epoch accuracy jump} (e.g., from 30\% to $\sim$85\%), followed by rapid stabilization of both loss and accuracy within $\sim$10 epochs. This early-epoch behavior is consistent with the “feature map” perspective where rotation encoding plus shallow entanglement quickly separates classes in the induced Hilbert space~\cite{Schuld2019Grad,Havlicek2019}.
+A qualitative early-epoch behaviour also documented
+in~\cite{Filippi2025Thesis} on the late-fusion variants is a
+pronounced first-epoch accuracy jump (from $\sim 30\%$ to $\sim 85\%$)
+followed by rapid stabilisation within $\sim 10$ epochs; this is
+consistent with the feature-map view of the quantum
+layer~\cite{Schuld2019Grad,Havlicek2019}, and is the original
+observation that motivated the multi-seed statistical investigation we
+develop in the next section to test whether the same epoch~$1$
+advantage survives the seed-to-seed variability.
 
 \subsection{Comparison to baselines}
 \label{sec:baselines}
