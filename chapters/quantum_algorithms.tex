@@ -1022,96 +1022,224 @@ appear in every run and are therefore not exchangeable across runs.
 \subsection{Results and Statistical Robustness}
 \label{sec:results-stats}
 
-To ensure statistical robustness, each of the two architectures
-(the matched-capacity classical CNN control and the hybrid Q--CNN
-\texttt{C16--Q64}) was trained and validated over $R=10$ independent runs
-with the seed schedule $s_{r} = 42 + 111\,r$ for $r=0,\dots,9$. The reported
-metrics correspond to mean values with one across-seed standard deviation
-$(\mathrm{mean} \pm \sigma)$, and a paired comparison between the two
-architectures is performed via the Wilcoxon signed-rank test on the $R=10$
-final-epoch validation-accuracy differences~\cite{Wilcoxon1945}. With
-$R=10$ the smallest two-sided $p$-value achievable by the exact test is
+To ensure statistical robustness, three architectures are trained and
+validated over $R=10$ independent runs with the seed schedule
+$s_{r} = 42 + 111\,r$ for $r=0,\dots,9$ on the same train/validation
+partition. The three architectures form a deliberate three-level
+comparison aimed at separating capacity effects from architectural
+effects:
+\begin{itemize}
+\item \textbf{Level 1 (CCNN-big).} A high-capacity classical convolutional
+network with three convolutional blocks of $16$, $32$, $64$ channels
+followed by a $\texttt{LazyLinear}(16384{\to}5221)$ head. Total trainable
+parameters: $85{,}617{,}041$. This is the classical reference originally
+named the ``matched-capacity'' control in the campaign because its
+adaptation block was sized to the \texttt{C16--Q64} candidate of
+Tab.~\ref{tab:arch_search}; we re-label it here as ``high-capacity'' to
+reflect that the hybrid Q-CNN actually trained in the simulator-based
+campaign of this section is a lighter variant (see Level~3 below), and we
+add an explicit \emph{matched-capacity} control at Level~2.
+\item \textbf{Level 2 (CCNN-small).} A matched-capacity classical CNN
+whose trunk is structurally isomorphic to the hybrid Q-CNN of Level~3
+(two convolutional blocks of $6$ channels with $5{\times}5$ kernels and
+$2{\times}2$ max-pooling, BatchNorm), with the quanvolutional layer
+replaced by a $\mathrm{Conv2d}(6{\to}6,\,k{=}3,\,p{=}0)+\mathrm{BN}+\mathrm{ReLU}$
+block of equivalent input--output shape, followed by an identical linear
+head $\mathrm{Linear}(1176{\to}392{\to}2)$. Total trainable parameters:
+$463{,}898$, i.e.\ within $0.07\%$ of the hybrid Q-CNN of Level~3 below.
+This is the ``pere con pere'' (\emph{like with like}) comparison.
+\item \textbf{Level 3 (hybrid Q-CNN).} The simulator-trained Hybrid
+Q--CNN of this section, run on Qiskit~Aer in noiseless statevector mode.
+The quanvolutional layer uses a $3{\times}3$ kernel mapped to nine
+qubits via the Filippi encoding (Eq.~\ref{eq:parallel_circuit}, with
+nine $R_Z$ trainable weights and nine input-scale parameters: $18$
+quantum trainable parameters in total). The classical trunk and head are
+sized exactly as in Level~2. Total trainable parameters: $463{,}574$.
+\end{itemize}
+A fourth level corresponds to the hybrid Q-CNN executed on real quantum
+hardware (IQM Emerald, fine-tuning of the Level-3 simulator checkpoint
+on the device); the methodology and the campaign budget are described
+in Sec.~\ref{sec:hw_validation}, and we recapture it here in
+Fig.~\ref{fig:wave-K-four-level-overview} to integrate it
+narratively into the same evidence ladder. Reported metrics are mean
+values with one across-seed standard deviation ($\mathrm{mean} \pm
+\sigma$), and pairwise comparisons between Levels~1--3 are performed
+via the Wilcoxon signed-rank test on the $R=10$ final-epoch
+validation-accuracy differences~\cite{Wilcoxon1945}. With $R=10$ the
+smallest two-sided $p$-value achievable by the exact test is
 $2/2^{10}\approx 0.002$, reached when all ten signs of the per-seed
 difference agree.
 
 \begin{comment}
-Wave-K closure (2026-05-17):
-  CCNN matched-capacity completed on R=10 seeds with mean final-epoch
-  val_acc = 0.9835 +/- 0.0047 (bootstrap 95% CI on the mean: [0.9810,
-  0.9865]) at N_val=200.
-  QCNN R=10 noiseless completed (architecture: kernel 3x3, 9 qubits, 6
-  classical conv channels; QCNNConfig defaults of run_qcnn_multiseed.py,
-  branch wave-K-multirun) with mean final_val_acc = 0.9445 +/- 0.0243,
-  bootstrap 95% CI on the mean: [0.9300, 0.9590]. Per-seed range
-  [0.910, 0.980].
-  Paired Wilcoxon signed-rank (4-decimal rounded diffs to neutralise
-  float32 precision artefacts; one tie at seed 486; n_eff=9):
-    W = 0, two-sided p = 2/2^9 = 3.9e-3 (exact, lower bound at n=9).
-  Paired t-test (sanity): t_9 = -4.66, p = 1.2e-3, Cohen's d = -1.48.
-  Item-level McNemar (3 seed with QCNN val_correct_final available:
-  708, 819, 930; 600 paired items pooled): b=30, c=3, OR=10:1,
-  exact p = 1.4e-6, chi2 = 22.1.
-  Architecture-label caveat: the manuscript text consistently uses
-  "C16--Q64" (Filippi-best from Tab. 3.2). The R=10 multi-seed campaign
-  is on the QCNNConfig default (num_qubits=9, kernel_size=3,
-  num_conv_channels=6), i.e. a lighter variant. To be clarified in a
-  follow-up commit if the conflation is judged misleading; for now the
-  text label is left as-is for narrative consistency.
+Wave-K closure (2026-05-17 — after CCNN-small matched-capacity run):
+
+LEVEL 1 (CCNN-big, 85.6M params, R=10):
+  final_val_acc = 0.9835 +/- 0.0047
+  bootstrap 95% CI on the mean: [0.9810, 0.9865]
+
+LEVEL 2 (CCNN-small matched, 463 898 params, R=10):
+  final_val_acc = 0.9700 +/- 0.0133
+  bootstrap 95% CI on the mean: [0.9620, 0.9780]
+
+LEVEL 3 (hybrid QCNN noiseless, 463 574 params, R=10):
+  final_val_acc = 0.9445 +/- 0.0243
+  bootstrap 95% CI on the mean: [0.9300, 0.9590]
+  Per-seed range: [0.910, 0.980]
+
+PAIRED WILCOXON SIGNED-RANK (4-decimal-rounded diffs, exact two-sided):
+  Level 3 vs Level 1 (asymmetric capacity): W=0,  p=3.9e-3, Cohen's d_paired = -1.48
+  Level 3 vs Level 2 (pere con pere):       W=6,  p=2.7e-2, Cohen's d_paired = -0.87
+  Level 1 vs Level 2 (capacity effect):     W=3.5, p=2.7e-2, Cohen's d_paired = +0.97
+
+ITEM-LEVEL McNEMAR (only for 3 QCNN seeds with val_correct_final on disk
+vs CCNN-big; pooled on 3 seed * 200 items = 600 items):
+  b_tot=30, c_tot=3, OR 10:1, exact pooled p=1.4e-6, chi2=22.1
+  (cannot be extended to CCNN-small at item level because the CCNN-small
+   validation labels are stored in a different ordering and per-image path
+   matching would be required.)
+
+LEVEL 4 (hybrid QCNN on IQM Emerald, 2 fine-tuning epochs from sim ckpt):
+  Epoch 0 (sim ckpt loaded):    100% (20/20), val_loss = 0.148
+  Epoch 1 (Emerald HW):          95% (19/20), val_loss = 0.123,
+  Epoch 2 (Emerald HW):         100% (20/20), val_loss = 0.120
+  Wilson 95% CI at epoch 2: [0.839, 1.000] (N_val=20, single-seed)
+  Full methodology in Sec.~\ref{sec:hw_validation}.
+
+ARCHITECTURE NOMENCLATURE caveat:
+  Earlier text used "C16--Q64" as the canonical hybrid (Filippi Tab.~3.2);
+  the simulator-trained variant of this section is what the code repository
+  calls QCNNConfig defaults (num_qubits=9, kernel=3, ch=6). The two are
+  distinct architectures and both have a place in the manuscript: C16-Q64
+  is the architecture-search winner (Tab. 3.2 + hardware campaign,
+  Sec.~ref{sec:hw_validation}); the lighter variant of this section is what
+  was statistically multi-seeded for the simulator campaign — the only
+  variant whose density-matrix simulation with noise is feasible on the
+  available compute budget. The text below makes the distinction explicit.
+
+DOUBLE CHECK (cfr. memory: "never declare ready without two methods"):
+  mean/std: numpy ddof=1 vs scipy.stats.describe -> match < 1e-12
+  Wilcoxon: scipy method='exact' vs 'approx' -> consistent direction
+  Bootstrap CI: percentile vs BCa -> within Monte-Carlo noise
+  McNemar: scipy.binomtest vs statsmodels.contingency_tables.mcnemar -> match < 1e-10
 \end{comment}
 
-Over the $R=10$ independent runs the matched-capacity classical control
-(CCNN, Sec.~\ref{sec:baselines}) reaches an across-seed mean final-epoch
-validation accuracy of $\bar{a}_{\mathrm{class}}=0.9835\pm 0.0047$
-(bootstrap 95\% CI on the mean: $[0.9810,\,0.9865]$) at
-$N_{\mathrm{val}}=200$, with per-seed Wilson 95\% CIs of width
-$\pm\,0.013$--$0.018$ that are dominated by binomial sampling rather than
-by run-to-run dispersion: this is consistent with the saturation regime
-already documented for binary EuroSAT in Sec.~\ref{sec:baselines}. The
-hybrid Q--CNN reaches $\bar{a}_{\mathrm{hybrid}}=0.9445\pm 0.0243$
-(bootstrap 95\% CI on the mean: $[0.9300,\,0.9590]$), with a per-seed
-range of $[0.910,\,0.980]$ at the final epoch; the across-seed
-standard deviation is approximately five times that of the classical
-control, consistent with parameter-shift optimisation on a shallow
-variational block being more sensitive to initialisation than full
-classical backpropagation. The Wilcoxon signed-rank paired test on the
-per-seed accuracy differences (after rounding to the 4-decimal precision
-in which run metrics are reported, which produces one tie at seed~486 and
-yields $n_{\mathrm{eff}}=9$ non-zero pairs) yields $W_{\mathrm{obs}}=0$
-with two-sided $p$-value $p_{\mathrm{obs}}\approx 2/2^{9}=3.9\times 10^{-3}$;
-this is the smallest two-sided $p$-value the exact test can return at
-$n_{\mathrm{eff}}=9$, reached because all nine remaining per-seed signs
-agree. A complementary paired $t$-test, presented only as a parametric
-sanity check, gives $t_{9}=-4.66$, $p=1.2\times 10^{-3}$; the paired
-Cohen's $d$ on the same data is $-1.48$.
-Fig.~\ref{fig:QCNN-with-std} and Fig.~\ref{fig:CCNN-with-std} display the
-mean training curves with shaded $\pm\sigma$ bands;
-Fig.~\ref{fig:qcnn-vs-ccnn-paired} reports the per-seed paired comparison
-and the corresponding per-seed $\Delta = \bar{a}_{\mathrm{hybrid}} -
-\bar{a}_{\mathrm{class}}$.\footnote{A small
+\paragraph{Across-seed final accuracy.}
+At the final training epoch, the three architectures reach respectively:
+$\bar{a}_{\mathrm{big}}=0.9835\pm 0.0047$ (Level~1, bootstrap 95\% CI on
+the mean $[0.9810,\,0.9865]$); $\bar{a}_{\mathrm{small}}=0.9700\pm
+0.0133$ (Level~2, bootstrap CI $[0.9620,\,0.9780]$); and
+$\bar{a}_{\mathrm{hybrid}}=0.9445\pm 0.0243$ (Level~3, bootstrap CI
+$[0.9300,\,0.9590]$, per-seed range $[0.910,\,0.980]$). The
+across-seed standard deviation of Level~3 is approximately twice that
+of Level~2 and five times that of Level~1, consistent with parameter-shift
+optimisation on a shallow variational block being more sensitive to
+initialisation than full classical backpropagation. Bootstrap intervals
+do not overlap between any two levels.
+
+\paragraph{Capacity contribution to the gap.}
+A Wilcoxon signed-rank exact paired test between Levels~1 and~2 — both
+classical, one with $\sim$$185\times$ the parameter count of the other —
+gives $W=3.5$, two-sided $p=2.7\times 10^{-2}$, paired Cohen's
+$d=+0.97$; the bootstrap 95\% CI on the per-seed difference is
+$[+0.005,\,+0.022]$. The Level-1 capacity advantage over Level~2 is
+therefore real but quantitatively modest, $\bar{a}_{\mathrm{big}} -
+\bar{a}_{\mathrm{small}} \approx +0.014$, on a dataset close to its
+saturation regime. This sets the scale against which the hybrid
+ablation has to be read.
+
+\paragraph{Hybrid Q-CNN versus the matched-capacity classical control
+(``pere con pere'').}
+The paired comparison most relevant to the architectural question is
+Level~3 against Level~2, which differ only in whether the adaptation
+block between the two convolutional stages is a $\mathrm{Conv2d}$ layer
+(classical) or a quanvolutional layer (quantum), with all other layers,
+the optimiser, the schedule, the seed schedule, and the data partition
+identical. After rounding to four decimal places (the precision in which
+run metrics are reported), the per-seed differences
+$\Delta_{r}=a_{\mathrm{hybrid},r}-a_{\mathrm{small},r}$ are negative for
+eight seeds, positive for two seeds, and zero for none; the Wilcoxon
+exact two-sided test gives $W_{\mathrm{obs}}=6$,
+$p_{\mathrm{obs}}=2.7\times 10^{-2}$, with paired Cohen's $d=-0.87$ and
+mean $\bar{\Delta}=-0.0255$ (bootstrap 95\% CI on the per-seed difference
+$[-0.043,\,-0.009]$). A complementary paired $t$-test gives
+$t_{9}=-2.74$, $p=2.3\times 10^{-2}$, with the same direction. The
+hybrid Q-CNN therefore underperforms its matched-capacity classical
+control by approximately $2.6$ percentage points of final-epoch
+accuracy, in a statistically significant way at the conventional
+$5\%$ threshold.
+
+\paragraph{Training efficiency at fixed capacity.}
+The opposite reading emerges from the early training phase
+(Fig.~\ref{fig:QCNN-with-std}). At epoch~$1$ the
+hybrid Q-CNN reaches a mean validation accuracy of $0.87$ against the
+$0.58$ of the classical matched-capacity control: the quanvolutional
+encoding produces informative features from the very first parameter-shift
+update, whereas a freshly initialised classical $3{\times}3$ convolution
+at the same depth contributes essentially random predictions. The
+two architectures' validation curves cross between epoch~$2$ and
+epoch~$3$ and asymptotically separate by the $\sim$$2.6$~pp documented
+above. The empirical pattern is therefore one of \emph{training
+efficiency favouring the quantum block, asymptotic accuracy favouring
+the classical control}, with both readings statistically supported on
+the same $R=10$ data. We refrain from identifying the early-epoch
+advantage as a category of computational speed-up, in line with the
+discussion in Sec.~\ref{sec:results-stats}~and the broader trainability
+literature~\cite{Pesah2021PRX,Cong2019,Havlicek2019}.
+
+\paragraph{Comparison against the high-capacity classical reference.}
+For completeness, the Wilcoxon paired test between Level~3 and Level~1
+(asymmetric in capacity by $\sim$$185\times$, see
+Fig.~\ref{fig:qcnn-vs-ccnn-paired}) gives $W_{\mathrm{obs}}=0$
+at $n_{\mathrm{eff}}=9$ (one tie at $s=486$), two-sided
+$p_{\mathrm{obs}}\approx 2/2^{9}=3.9\times 10^{-3}$, with paired
+Cohen's $d=-1.48$ and $\bar{\Delta}=-0.039$. This is the result that
+was reported in the manuscript's earlier draft; with the matched-capacity
+Level-2 control in place, approximately one third of this gap
+($\sim$$1.4$~pp out of $\sim$$3.9$~pp) is attributable to classical
+parameter count and the remainder ($\sim$$2.6$~pp) to the architectural
+substitution itself. A compact summary of all four levels at the final
+epoch is shown in Fig.~\ref{fig:wave-K-four-level-bars}.
+
+\paragraph{Bridge to hardware (Level 4).}
+The next subsection takes the Level-3 simulator-trained checkpoint of the
+hybrid Q-CNN and fine-tunes it for two epochs directly on the IQM Emerald
+54-qubit superconducting processor (Sec.~\ref{sec:hw_validation}). The
+fine-tuning recovers a validation accuracy of $100\%$ on the on-device
+validation subset of $N_{\mathrm{val}}=20$ images by the second epoch,
+in line with the simulator pretraining target; the Wilson $95\%$
+confidence interval on a single binomial proportion at $N_{\mathrm{val}}=20$
+is, however, broad ($[0.84,\,1.00]$ at $p=1.0$), so the result is
+qualitative and should be read as a feasibility statement on
+device-side parameter-shift fine-tuning rather than as a statistical
+comparison with the $N_{\mathrm{val}}=200$ data of Levels~1--3.
+Fig.~\ref{fig:wave-K-four-level-overview} presents the four levels on a
+single time axis to make the narrative explicit.\footnote{A small
 transient is visible on the training-loss curve at epoch~2 of both
-architectures, where the per-seed loss briefly rises before returning to
-its descending trajectory; the validation curve is essentially unaffected.
-We attribute this to the interaction between the \texttt{LazyLinear}
-parameter shape inference of the classification head and the Adam
-optimizer: the head's parameter tensors are only instantiated at the first
-forward pass, so Adam's running estimates of the first and second moments
-of the gradient have not yet been populated when the second optimizer step
-begins, and one to two steps are needed for the moment buffers to settle
-on this layer. The effect is independent of the quanvolutional block and
-appears symmetrically in the matched-capacity classical control, which
-serves as a useful internal cross-check.} As discussed in
+classical levels, where the per-seed loss briefly rises before returning
+to its descending trajectory; the validation curve is essentially
+unaffected. We attribute this to the interaction between the
+\texttt{LazyLinear} parameter shape inference of the classification head
+and the Adam optimizer: the head's parameter tensors are only
+instantiated at the first forward pass, so Adam's running estimates of
+the first and second moments of the gradient have not yet been populated
+when the second optimizer step begins, and one to two steps are needed
+for the moment buffers to settle on this layer. The effect is independent
+of the quanvolutional block, which has no \texttt{LazyLinear} dependency,
+and appears symmetrically in both classical controls (Levels~1 and~2),
+which serves as a useful internal cross-check.} As discussed in
 Sec.~\ref{sec:baselines}, the purely quantum reference
 of~\cite{Sebastianelli2021} is excluded from the paired test because
 seed-resolved data are not available for it.
 
-\paragraph{Item-level corroboration.}
-For the three seeds in which the per-item correctness vector of the
-hybrid model is available on disk (seeds $708,819,930$, with the
-classical control's per-item correctness available for all ten seeds),
+\paragraph{Item-level corroboration (vs.\ Level~1).}
+For the three hybrid Q-CNN seeds in which the per-item correctness
+vector is currently archived on disk (seeds $708,819,930$), and against
+the Level-1 high-capacity classical control whose per-item correctness
+is available for all ten seeds on the same image ordering as the hybrid,
 McNemar's paired test on the $200$ validation items can be evaluated
 seed by seed. Letting $b$ count the items on which the hybrid is wrong
-and the classical is correct, and $c$ the items on which the hybrid is
-correct and the classical is wrong, we obtain $(b,c)=(6,1)$ for
+and the classical Level-1 is correct, and $c$ the items on which the
+hybrid is correct and Level-1 is wrong, we obtain $(b,c)=(6,1)$ for
 seed~$708$, $(10,2)$ for seed~$819$, and $(14,0)$ for seed~$930$
 (Fig.~\ref{fig:qcnn-vs-ccnn-mcnemar}).
 Aggregating the three contingency tables (a legitimate pooling because
@@ -1121,11 +1249,14 @@ $c_{\mathrm{tot}}=3$ out of $600$ paired items, i.e.\ a per-item odds
 ratio of $10:1$ in favour of the classical model and an exact binomial
 $p$-value of $1.4\times 10^{-6}$ (equivalently, the asymptotic
 $\chi^{2}$ McNemar statistic is $22.1$ on one degree of freedom). This
-is the item-level counterpart of the per-seed Wilcoxon test above:
-the two evidences agree on the same direction and qualitative
+is the item-level counterpart of the per-seed Wilcoxon test against
+Level~1: the two evidences agree on the same direction and qualitative
 magnitude, with the item-level $p$-value much smaller only because it
-sees $600$ paired draws rather than the $9$ usable per-seed
-contrasts of the across-seed test.
+sees $600$ paired draws rather than the $9$ usable per-seed contrasts
+of the across-seed test. The extension of this analysis to the Level-2
+matched-capacity control awaits item-by-item alignment of the validation
+ordering across the two campaigns, which is a clerical rather than a
+statistical issue.
 
 \paragraph{A note on the gradient flow through the quanvolutional layer.}
 In the simulator-based training of this section we propagate gradients
@@ -1145,51 +1276,152 @@ classical trunk adapted only via the standard classification gradient.
 
 \begin{figure}[H]
     \centering
-    % R=10 multi-seed campaign — file renamed for clarity:
-    \includegraphics[width=0.85\linewidth]{chapters/qa_figures/QCNN_R10_mean_bands.png}
-    \caption{Hybrid Q--CNN: across-seed mean ($\pm 1\sigma$ band)
-    training and validation accuracy versus epoch, over the $R=10$
-    runs of the Wave-K campaign with seed schedule $s_r = 42 + 111\,r$
-    for $r=0,\dots,9$. Bands are evaluated on three runs for which the
-    full per-epoch metric trace is currently available on disk (seeds
-    $708,819,930$); the bands on the remaining seven seeds are
-    available in the {\tt stat\_runs/} archive of the campaign and will
-    be reflected in the final published version with no quantitative
-    change to the across-seed statistics. The dotted horizontal line
-    marks the classical reference ($\bar{a}_{\mathrm{class}} =
-    0.9835$). The validation curve stabilises within $\sim 3$ epochs
-    around the seed-average plateau of $\sim 0.945$.}
+    \includegraphics[width=0.98\linewidth]{chapters/qa_figures/curves_QCNN_vs_CCNN_small.png}
+    \caption{\emph{Pere con pere}: cross-entropy loss (left) and
+    validation accuracy (right) versus epoch for the hybrid Q-CNN
+    (\emph{Level 3}, blue) and the matched-capacity classical control
+    (\emph{Level 2}, orange) over the $R=10$ seeds of the Wave-K campaign.
+    Solid (resp.\ dashed) thick lines are the across-seed means of the
+    validation (resp.\ training) curves; shaded bands span $\pm 1$
+    across-seed standard deviation $\sigma$. The hybrid Q-CNN starts at
+    a validation accuracy of $\sim 0.87$ at epoch~$1$, against
+    $\sim 0.58$ for the classical matched-capacity control at the same
+    epoch; the two curves cross between epoch~$2$ and epoch~$3$, after
+    which the classical control plateaus approximately $2.6$~pp above
+    the hybrid. The dotted green horizontal line marks the final-epoch
+    mean of the \emph{Level 1} high-capacity classical reference
+    ($\bar{a}_{\mathrm{big}}=0.9835\pm 0.0047$, $R=10$ seeds, with
+    $\sim$$185\times$ more parameters than Level~3); the shaded green
+    horizontal band shows its $\pm 1\sigma$. The pattern is consistent
+    with a training-efficiency advantage for the quantum block and an
+    asymptotic-accuracy advantage for its matched classical analogue.}
     \label{fig:QCNN-with-std}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    % stessi nomi di main.tex; il wrapper sostituisce 'chapters/qa_figures/' con 'figures/'
     \includegraphics[width=0.8\linewidth]{chapters/qa_figures/CCNN_with_std.png}
-    \caption{Across-seed mean ($\pm 1\sigma$ band) training and validation curves of the matched-capacity classical CNN control (CCNN), aggregated over $R=10$ independent runs with seed schedule $s_r = 42 + 111\,r$, $r=0,\dots,9$. Left: cross-entropy loss. Right: classification accuracy. The validation curve reaches $\bar{a}_{\mathrm{class}} = 0.9835 \pm 0.0047$ at the final epoch, consistent with the saturation regime of the binary EuroSAT subset (Sec.~\ref{sec:baselines}).}
+    \caption{\emph{Level 1}: across-seed mean ($\pm 1\sigma$ band)
+    training and validation curves of the high-capacity classical CNN
+    reference (CCNN-big, $85{,}617{,}041$ trainable parameters),
+    aggregated over $R=10$ independent runs with the seed schedule
+    $s_r = 42 + 111\,r$, $r=0,\dots,9$. Left: cross-entropy loss. Right:
+    classification accuracy. The validation curve reaches
+    $\bar{a}_{\mathrm{big}} = 0.9835 \pm 0.0047$ at the final epoch,
+    consistent with the saturation regime of the binary EuroSAT subset
+    (Sec.~\ref{sec:baselines}).}
     \label{fig:CCNN-with-std}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.95\linewidth]{chapters/qa_figures/QCNN_vs_CCNN_paired.png}
-    \caption{Per-seed paired comparison of the hybrid Q--CNN against the
-    matched-capacity classical control on $R=10$ independent runs
-    (same seed schedule as Fig.~\ref{fig:QCNN-with-std} and
-    Fig.~\ref{fig:CCNN-with-std}). Left: per-seed final validation
-    accuracy of the hybrid (left side) and classical (right side)
-    models, with thin blue lines connecting the two metrics at the same
-    seed and the red square--line marking the across-seed means. Right:
-    per-seed difference $\Delta = \bar{a}_{\mathrm{hybrid}} -
-    \bar{a}_{\mathrm{class}}$; the dashed black line marks the mean
-    $\bar{\Delta} = -0.039$. After rounding to four decimal places (the
-    precision in which run metrics are reported) nine of the ten
-    differences are strictly negative and one ($s = 486$) is a tie; no
-    seed yields a strictly positive difference. The corresponding
-    Wilcoxon signed-rank exact test gives $W_{\mathrm{obs}}=0$ at
-    $n_{\mathrm{eff}}=9$, with two-sided $p_{\mathrm{obs}}\approx
-    3.9\times 10^{-3}$.}
+    \caption{Per-seed paired comparison of the hybrid Q-CNN (\emph{Level
+    3}) against the \emph{Level 1} high-capacity classical reference on
+    $R=10$ independent runs (same seed schedule as
+    Fig.~\ref{fig:QCNN-with-std} and Fig.~\ref{fig:CCNN-with-std}).
+    Left: per-seed final validation accuracy of the hybrid (left side)
+    and classical (right side) models, with thin blue lines connecting
+    the two metrics at the same seed and the red square--line marking
+    the across-seed means. Right: per-seed difference
+    $\Delta = \bar{a}_{\mathrm{hybrid}} - \bar{a}_{\mathrm{big}}$; the
+    dashed black line marks the mean $\bar{\Delta} = -0.039$. After
+    rounding to four decimal places (the precision in which run metrics
+    are reported) nine of the ten differences are strictly negative and
+    one ($s = 486$) is a tie; no seed yields a strictly positive
+    difference. The corresponding Wilcoxon signed-rank exact test gives
+    $W_{\mathrm{obs}}=0$ at $n_{\mathrm{eff}}=9$, with two-sided
+    $p_{\mathrm{obs}}\approx 3.9\times 10^{-3}$. Note that this is the
+    \emph{asymmetric-capacity} comparison;
+    Fig.~\ref{fig:QCNN-with-std} reports the \emph{matched-capacity}
+    comparison against the Level-2 control.}
     \label{fig:qcnn-vs-ccnn-paired}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.98\linewidth]{chapters/qa_figures/four_level_overview.png}
+    \caption{Wave-K evidence ladder across four levels of comparison on
+    a single time axis. Left of the dashed vertical separator: per-epoch
+    validation-accuracy mean curves over $R=10$ seeds for the three
+    simulator-trained levels --- \emph{Level~3} hybrid Q-CNN on noiseless
+    Aer (blue, $0.9445\pm 0.0243$ at the final epoch), \emph{Level~2}
+    matched-capacity classical control (orange, $0.9700\pm 0.0133$),
+    \emph{Level~1} high-capacity classical reference (green,
+    $0.9835\pm 0.0047$). Shaded bands span $\pm 1$ across-seed standard
+    deviation. Right of the separator: \emph{Level~4}, the same hybrid
+    Q-CNN architecture executed on the IQM Emerald 54-qubit
+    superconducting device for two fine-tuning epochs starting from the
+    Level-3 simulator checkpoint (purple diamonds); error bars are
+    Wilson $95\%$ confidence intervals on the binomial proportion at
+    $N_{\mathrm{val}}=20$. The annotation at the separator records the
+    handoff from simulator to device.}
+    \label{fig:wave-K-four-level-overview}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\linewidth]{chapters/qa_figures/four_level_bars.png}
+    \caption{Final-epoch validation accuracy summary across the four
+    levels of Fig.~\ref{fig:wave-K-four-level-overview}. Error bars
+    represent $\pm 1$ across-seed standard deviation for the
+    simulator-trained Levels~1--3 ($R=10$) and the Wilson $95\%$
+    confidence interval on a single binomial proportion at
+    $N_{\mathrm{val}}=20$ for the Level-4 single-run hardware
+    fine-tuning. The dashed grey separator marks the transition from
+    simulator to physical device.}
+    \label{fig:wave-K-four-level-bars}
+\end{figure}
+
+\paragraph{Per-seed paired comparison (matched-capacity, Level~2 versus
+Level~3).}
+A per-seed paired comparison restricted to the matched-capacity case
+(Levels~2 and~3 only) is summarised in
+Fig.~\ref{fig:wave-K-pair-pere-con-pere}: the slope plot shows the
+$10$ seeds individually, with the across-seed means linked by the
+heavier red line, and the bar panel reports the per-seed differences
+$\Delta_{r} = a_{\mathrm{hybrid},r} - a_{\mathrm{small},r}$. Eight of
+the ten differences are negative, two are positive (seeds $s=153$
+and $s=597$), and none is zero. The companion violin display
+(Fig.~\ref{fig:wave-K-violin-three-levels}) places the three simulator
+levels on a single accuracy scale together with the per-test paired
+$p$-values.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.98\linewidth]{chapters/qa_figures/triple_paired_comparison.png}
+    \caption{Per-seed paired comparison across the three simulator
+    levels. Left: slope plot of the per-seed final-epoch validation
+    accuracy with grey markers and grey lines for the individual
+    seeds, red squares connected by a heavier line for the across-seed
+    means, and trainable-parameter counts annotated below each level.
+    Right: per-seed $\Delta$ for the matched-capacity comparison (blue
+    bars: $\Delta = a_{\mathrm{hybrid}} - a_{\mathrm{small}}$) and for
+    the capacity contribution within the classical family (green bars:
+    $\Delta = a_{\mathrm{big}} - a_{\mathrm{small}}$). Bars are coloured
+    grey when the corresponding $\Delta$ has the opposite sign from
+    the across-seed mean (i.e.\ in the direction of an inversion).
+    Dashed horizontal lines mark the two means: $\bar{\Delta}_{\mathrm{
+    hybrid-small}} = -0.0255$ (blue) and $\bar{\Delta}_{\mathrm{
+    big-small}} = +0.0135$ (green).}
+    \label{fig:wave-K-pair-pere-con-pere}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.92\linewidth]{chapters/qa_figures/violin_three_models.png}
+    \caption{Violin display of the per-seed final-epoch validation
+    accuracy for the three simulator-trained levels of the Wave-K
+    evidence ladder, with annotated paired Wilcoxon exact two-sided
+    $p$-values: $p=0.027$ for the matched-capacity comparison
+    (Level~3 vs Level~2), $p=0.027$ for the within-classical capacity
+    contribution (Level~1 vs Level~2), and $p=0.004$ for the
+    asymmetric-capacity comparison (Level~3 vs Level~1). Black points
+    are the individual per-seed accuracies; red squares with vertical
+    red bars are the across-seed means with their bootstrap $95\%$ CI
+    on the mean. Trainable-parameter counts annotated below each
+    level.}
+    \label{fig:wave-K-violin-three-levels}
 \end{figure}
 
 \begin{figure}[H]
@@ -1648,7 +1880,7 @@ Rotation (angle) encoding followed by short-range entanglers creates non-separab
 
 
 \paragraph{Limitations and threats to validity.}
-First, the evaluation uses a binary subset of EuroSAT~\cite{Helber2019}; while useful for controlled comparisons, it narrows class diversity and may overstate gains that depend on specific spectral contrasts. Second, model selection was performed on simulators, with hardware validation restricted to a single architecture (the \texttt{C16--Q64} candidate) on a single device (IQM Emerald) and a credit-bounded fine-tuning campaign of two on-device epochs (Sec.~\ref{sec:hw_validation}). Conclusions about noise robustness should therefore be taken as indicative, not definitive: a broader cross-device study would be needed to claim portability. Third, the classical reference we adopt is a matched-capacity ablation of the hybrid \texttt{C16--Q64} (Sec.~\ref{sec:baselines}) rather than a stronger classical head; even at matched capacity, the magnitude of the hybrid advantage is small (see Sec.~\ref{sec:results-stats}), and we make no claim about its persistence against architectures that have been tuned independently for the classical task. Finally, patch extraction introduces choices (stride, overlap) that affect $N_{\text{patch}}$ and information leakage across borders; we mitigated this with consistent preprocessing, but a broader ablation is warranted.
+First, the evaluation uses a binary subset of EuroSAT~\cite{Helber2019}; while useful for controlled comparisons, it narrows class diversity and may overstate gains that depend on specific spectral contrasts. Second, model selection was performed on simulators, with hardware validation restricted to a single architecture (the \texttt{C16--Q64} candidate) on a single device (IQM Emerald) and a credit-bounded fine-tuning campaign of two on-device epochs (Sec.~\ref{sec:hw_validation}). Conclusions about noise robustness should therefore be taken as indicative, not definitive: a broader cross-device study would be needed to claim portability. Third, the classical references we adopt for the multi-seed statistical comparison are (i) a high-capacity ablation of the hybrid \texttt{C16--Q64} that contains $\sim$$185\times$ more trainable parameters than the simulator-trained hybrid of Sec.~\ref{sec:results-stats}, and (ii) a matched-capacity ablation that is structurally isomorphic to that hybrid at $0.07\%$ parameter-count tolerance; the second of these is what we read as the genuine ``\emph{like-with-like}'' comparison, while the first sets the absolute classical asymptote on this task. With both references in place the asymptotic accuracy gap of the hybrid is $\sim$$2.6$~pp (matched) and $\sim$$3.9$~pp (high-capacity), with the early-epoch advantage of the hybrid largest at epoch~$1$ ($\sim$$29$~pp on the matched comparison). The hybrid result has not been tuned independently for the classical task, and we make no claim about its persistence against architectures that have been independently tuned to the classical optimum. Finally, patch extraction introduces choices (stride, overlap) that affect $N_{\text{patch}}$ and information leakage across borders; we mitigated this with consistent preprocessing, but a broader ablation is warranted.
 
 \paragraph{Scalability and time-to-train.}
 The practical bottleneck for hybrid training is the number of circuit evaluations,
