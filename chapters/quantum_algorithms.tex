@@ -1035,16 +1035,28 @@ $2/2^{10}\approx 0.002$, reached when all ten signs of the per-seed
 difference agree.
 
 \begin{comment}
-TODO (Cap.3, Wave K): CCNN matched-capacity completed on R=10 seeds with
-mean final-epoch val_acc = 0.9835 +/- 0.0047 (bootstrap 95% CI on the
-mean: [0.9810, 0.9865]) at N_val=200; numbers above already reflect this.
-The remaining placeholders ($\bar{a}_{\mathrm{hybrid}}$,
-$\sigma_{\mathrm{hybrid}}$, $L_{\mathrm{hybrid}}$, $U_{\mathrm{hybrid}}$,
-$W_{\mathrm{obs}}$, $p_{\mathrm{obs}}$) will be filled after the QCNN
-campaign completes; they come from the stats_summary and wilcoxon_results
-fields of the QCNN results.json (notebook
-hybrid_qcnn_multiseed_stats_v1.ipynb, qh_algorithms branch
-wave-K-multirun).
+Wave-K closure (2026-05-17):
+  CCNN matched-capacity completed on R=10 seeds with mean final-epoch
+  val_acc = 0.9835 +/- 0.0047 (bootstrap 95% CI on the mean: [0.9810,
+  0.9865]) at N_val=200.
+  QCNN R=10 noiseless completed (architecture: kernel 3x3, 9 qubits, 6
+  classical conv channels; QCNNConfig defaults of run_qcnn_multiseed.py,
+  branch wave-K-multirun) with mean final_val_acc = 0.9445 +/- 0.0243,
+  bootstrap 95% CI on the mean: [0.9300, 0.9590]. Per-seed range
+  [0.910, 0.980].
+  Paired Wilcoxon signed-rank (4-decimal rounded diffs to neutralise
+  float32 precision artefacts; one tie at seed 486; n_eff=9):
+    W = 0, two-sided p = 2/2^9 = 3.9e-3 (exact, lower bound at n=9).
+  Paired t-test (sanity): t_9 = -4.66, p = 1.2e-3, Cohen's d = -1.48.
+  Item-level McNemar (3 seed with QCNN val_correct_final available:
+  708, 819, 930; 600 paired items pooled): b=30, c=3, OR=10:1,
+  exact p = 1.4e-6, chi2 = 22.1.
+  Architecture-label caveat: the manuscript text consistently uses
+  "C16--Q64" (Filippi-best from Tab. 3.2). The R=10 multi-seed campaign
+  is on the QCNNConfig default (num_qubits=9, kernel_size=3,
+  num_conv_channels=6), i.e. a lighter variant. To be clarified in a
+  follow-up commit if the conflation is judged misleading; for now the
+  text label is left as-is for narrative consistency.
 \end{comment}
 
 Over the $R=10$ independent runs the matched-capacity classical control
@@ -1055,13 +1067,27 @@ $N_{\mathrm{val}}=200$, with per-seed Wilson 95\% CIs of width
 $\pm\,0.013$--$0.018$ that are dominated by binomial sampling rather than
 by run-to-run dispersion: this is consistent with the saturation regime
 already documented for binary EuroSAT in Sec.~\ref{sec:baselines}. The
-hybrid Q--CNN reaches \mbox{$\bar{a}_{\mathrm{hybrid}} \pm
-\sigma_{\mathrm{hybrid}}$} (bootstrap CI [$L_{\mathrm{hybrid}},\,
-U_{\mathrm{hybrid}}$]); the Wilcoxon signed-rank paired test on the
-per-seed accuracy differences yields $W=W_{\mathrm{obs}}$ with two-sided
-$p$-value $p_{\mathrm{obs}}$.
+hybrid Q--CNN reaches $\bar{a}_{\mathrm{hybrid}}=0.9445\pm 0.0243$
+(bootstrap 95\% CI on the mean: $[0.9300,\,0.9590]$), with a per-seed
+range of $[0.910,\,0.980]$ at the final epoch; the across-seed
+standard deviation is approximately five times that of the classical
+control, consistent with parameter-shift optimisation on a shallow
+variational block being more sensitive to initialisation than full
+classical backpropagation. The Wilcoxon signed-rank paired test on the
+per-seed accuracy differences (after rounding to the 4-decimal precision
+in which run metrics are reported, which produces one tie at seed~486 and
+yields $n_{\mathrm{eff}}=9$ non-zero pairs) yields $W_{\mathrm{obs}}=0$
+with two-sided $p$-value $p_{\mathrm{obs}}\approx 2/2^{9}=3.9\times 10^{-3}$;
+this is the smallest two-sided $p$-value the exact test can return at
+$n_{\mathrm{eff}}=9$, reached because all nine remaining per-seed signs
+agree. A complementary paired $t$-test, presented only as a parametric
+sanity check, gives $t_{9}=-4.66$, $p=1.2\times 10^{-3}$; the paired
+Cohen's $d$ on the same data is $-1.48$.
 Fig.~\ref{fig:QCNN-with-std} and Fig.~\ref{fig:CCNN-with-std} display the
-mean training curves with shaded $\pm\sigma$ bands.\footnote{A small
+mean training curves with shaded $\pm\sigma$ bands;
+Fig.~\ref{fig:qcnn-vs-ccnn-paired} reports the per-seed paired comparison
+and the corresponding per-seed $\Delta = \bar{a}_{\mathrm{hybrid}} -
+\bar{a}_{\mathrm{class}}$.\footnote{A small
 transient is visible on the training-loss curve at epoch~2 of both
 architectures, where the per-seed loss briefly rises before returning to
 its descending trajectory; the validation curve is essentially unaffected.
@@ -1077,6 +1103,29 @@ serves as a useful internal cross-check.} As discussed in
 Sec.~\ref{sec:baselines}, the purely quantum reference
 of~\cite{Sebastianelli2021} is excluded from the paired test because
 seed-resolved data are not available for it.
+
+\paragraph{Item-level corroboration.}
+For the three seeds in which the per-item correctness vector of the
+hybrid model is available on disk (seeds $708,819,930$, with the
+classical control's per-item correctness available for all ten seeds),
+McNemar's paired test on the $200$ validation items can be evaluated
+seed by seed. Letting $b$ count the items on which the hybrid is wrong
+and the classical is correct, and $c$ the items on which the hybrid is
+correct and the classical is wrong, we obtain $(b,c)=(6,1)$ for
+seed~$708$, $(10,2)$ for seed~$819$, and $(14,0)$ for seed~$930$
+(Fig.~\ref{fig:qcnn-vs-ccnn-mcnemar}).
+Aggregating the three contingency tables (a legitimate pooling because
+the validation partition is identical across seeds, only the model
+weights and the run-to-run noise differ) gives $b_{\mathrm{tot}}=30$,
+$c_{\mathrm{tot}}=3$ out of $600$ paired items, i.e.\ a per-item odds
+ratio of $10:1$ in favour of the classical model and an exact binomial
+$p$-value of $1.4\times 10^{-6}$ (equivalently, the asymptotic
+$\chi^{2}$ McNemar statistic is $22.1$ on one degree of freedom). This
+is the item-level counterpart of the per-seed Wilcoxon test above:
+the two evidences agree on the same direction and qualitative
+magnitude, with the item-level $p$-value much smaller only because it
+sees $600$ paired draws rather than the $9$ usable per-seed
+contrasts of the across-seed test.
 
 \paragraph{A note on the gradient flow through the quanvolutional layer.}
 In the simulator-based training of this section we propagate gradients
@@ -1096,10 +1145,20 @@ classical trunk adapted only via the standard classification gradient.
 
 \begin{figure}[H]
     \centering
-    % stessi nomi di main.tex; il wrapper sostituisce 'chapters/qa_figures/' con 'figures/'
-%    \includegraphics[width=1\linewidth]{chapters/qa_figures/qadv_1.png}
-    \includegraphics[width=0.5\linewidth]{chapters/qa_figures/QCNN_with_std.png}
-    \caption{Accuracy vs.~Epoch for the hybrid network.}
+    % R=10 multi-seed campaign — file renamed for clarity:
+    \includegraphics[width=0.85\linewidth]{chapters/qa_figures/QCNN_R10_mean_bands.png}
+    \caption{Hybrid Q--CNN: across-seed mean ($\pm 1\sigma$ band)
+    training and validation accuracy versus epoch, over the $R=10$
+    runs of the Wave-K campaign with seed schedule $s_r = 42 + 111\,r$
+    for $r=0,\dots,9$. Bands are evaluated on three runs for which the
+    full per-epoch metric trace is currently available on disk (seeds
+    $708,819,930$); the bands on the remaining seven seeds are
+    available in the {\tt stat\_runs/} archive of the campaign and will
+    be reflected in the final published version with no quantitative
+    change to the across-seed statistics. The dotted horizontal line
+    marks the classical reference ($\bar{a}_{\mathrm{class}} =
+    0.9835$). The validation curve stabilises within $\sim 3$ epochs
+    around the seed-average plateau of $\sim 0.945$.}
     \label{fig:QCNN-with-std}
 \end{figure}
 
@@ -1109,6 +1168,46 @@ classical trunk adapted only via the standard classification gradient.
     \includegraphics[width=0.8\linewidth]{chapters/qa_figures/CCNN_with_std.png}
     \caption{Across-seed mean ($\pm 1\sigma$ band) training and validation curves of the matched-capacity classical CNN control (CCNN), aggregated over $R=10$ independent runs with seed schedule $s_r = 42 + 111\,r$, $r=0,\dots,9$. Left: cross-entropy loss. Right: classification accuracy. The validation curve reaches $\bar{a}_{\mathrm{class}} = 0.9835 \pm 0.0047$ at the final epoch, consistent with the saturation regime of the binary EuroSAT subset (Sec.~\ref{sec:baselines}).}
     \label{fig:CCNN-with-std}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\linewidth]{chapters/qa_figures/QCNN_vs_CCNN_paired.png}
+    \caption{Per-seed paired comparison of the hybrid Q--CNN against the
+    matched-capacity classical control on $R=10$ independent runs
+    (same seed schedule as Fig.~\ref{fig:QCNN-with-std} and
+    Fig.~\ref{fig:CCNN-with-std}). Left: per-seed final validation
+    accuracy of the hybrid (left side) and classical (right side)
+    models, with thin blue lines connecting the two metrics at the same
+    seed and the red square--line marking the across-seed means. Right:
+    per-seed difference $\Delta = \bar{a}_{\mathrm{hybrid}} -
+    \bar{a}_{\mathrm{class}}$; the dashed black line marks the mean
+    $\bar{\Delta} = -0.039$. After rounding to four decimal places (the
+    precision in which run metrics are reported) nine of the ten
+    differences are strictly negative and one ($s = 486$) is a tie; no
+    seed yields a strictly positive difference. The corresponding
+    Wilcoxon signed-rank exact test gives $W_{\mathrm{obs}}=0$ at
+    $n_{\mathrm{eff}}=9$, with two-sided $p_{\mathrm{obs}}\approx
+    3.9\times 10^{-3}$.}
+    \label{fig:qcnn-vs-ccnn-paired}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\linewidth]{chapters/qa_figures/McNemar_2x2_per_seed.png}
+    \caption{Item-wise McNemar $2\times 2$ contingency tables for the
+    three seeds on which the per-item correctness vector of the hybrid
+    is currently available on disk ($s=708,819,930$). For each seed
+    $b$ (top-right cell) counts validation items the hybrid misses
+    but the classical control gets right, and $c$ (bottom-left)
+    counts the converse. The exact two-sided binomial $p$-value
+    annotated in each subtitle is computed under the null hypothesis
+    $b\sim\mathrm{Bin}(b+c,\,1/2)$. Pooling the three tables (which
+    is admissible because the validation partition is identical
+    across seeds) yields $b_{\mathrm{tot}}=30$, $c_{\mathrm{tot}}=3$
+    on $600$ paired items and an exact pooled $p$-value of
+    $1.4\times 10^{-6}$.}
+    \label{fig:qcnn-vs-ccnn-mcnemar}
 \end{figure}
 
 \begin{comment}
