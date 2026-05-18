@@ -109,15 +109,15 @@
 }
 
 \makeatletter
-% contatore in lettere maiuscole
+% counter in capital letters
 \renewcommand\thepart{\Alph{part}}
 \renewcommand\partname{Part}
-% ridefinizione di \@part con [#1]#2 come nella classe standard
+% redefinition of \@part with [#1]#2 as in the standard class
 \def\@part[#1]#2{%
   \ifnum \c@secnumdepth > -2\relax
     \refstepcounter{part}%
     \markboth{}{}%
-    % titolo nel testo
+    % title in the body
     {\centering
       \Huge\bfseries
       \partname~\thepart\\[1ex]
@@ -134,13 +134,13 @@
 \makeatletter
 \newcommand{\partnopage}[2][]{%
   \ifnum \c@secnumdepth > -2\relax
-    % aumenta il contatore PART esattamente come \@part
+    % increment the PART counter exactly as \@part does
     \refstepcounter{part}%
-    % inserisce l'intestazione vuota come nel tuo comando
+    % insert the empty header as in your command
     \markboth{}{}%
-    % voce nel TOC: Part A + eventuale titolo corto
+    % TOC entry: Part A plus optional short title
 %    \addcontentsline{toc}{part}{\partname~\thepart\hspace{1em}#1}%
-    % titolo visibile
+    % visible title
     {\centering
       \Huge\bfseries
       \partname~\thepart\\[1ex]
