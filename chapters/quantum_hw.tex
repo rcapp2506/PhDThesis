@@ -2555,7 +2555,7 @@ The dominant contributions are quasiparticle tunneling (31.5\%) and TLS defects 
     \centering
     \includegraphics[width=\textwidth]{chapters/qh_figures/T1_measurement_simulation.png}
     \caption{\textbf{Numerical $T_1$ energy relaxation measurement simulations.} 
-    Three panels show master equation simulations of qubit population decay following excitation to state $|1\rangle$ at $t=0$ for different $T_1$ values: (left) $T_1 = 50$~ns, (center) $T_1 = 100$~ns, (right) $T_1 = 200$~ns. Each simulation includes realistic measurement noise (blue dots) to emulate experimental data. The excited state population $P(|1\rangle)$ (blue) and ground state population $P(|0\rangle)$ (red) evolve complementarily, with theoretical fits (solid lines) showing exponential decay $P(|1\rangle) = \exp(-t/T_1)$. Black dashed lines indicate fitted $T_1$ values from noisy data: 49.6~ns, 99.6~ns, and 200.5~ns, respectively, demonstrating excellent agreement with input parameters. The $1/e$ point where $P(|1\rangle) = 1/e \approx 0.368$ (green dot and horizontal line) marks the characteristic energy relaxation time. Vertical green dashed lines identify this time point. These simulations validate our decoherence model and demonstrate that $T_1$ measurements can accurately extract energy relaxation rates even with realistic experimental imperfections. For our 300~GHz system at 4~K, we project $T_1 \approx 20$~$\mu$s based on combined contributions from Purcell decay, dielectric loss, quasiparticle tunneling, and TLS defects.}
+    Three panels show master equation simulations of qubit population decay following excitation to state $|1\rangle$ at $t=0$ for different $T_1$ values: (left) $T_1 = 50$~ns, (center) $T_1 = 100$~ns, (right) $T_1 = 200$~ns. Each simulation includes realistic measurement noise (blue dots) to emulate experimental data. The excited state population $P(|1\rangle)$ (blue) and ground state population $P(|0\rangle)$ (red) evolve complementarily, with theoretical fits (solid lines) showing exponential decay $P(|1\rangle) = \exp(-t/T_1)$. Black dashed lines indicate fitted $T_1$ values from noisy data: 49.6~ns, 99.6~ns, and 200.5~ns, respectively, demonstrating excellent agreement with input parameters. The $1/e$ point where $P(|1\rangle) = 1/e \approx 0.368$ (green dot and horizontal line) marks the characteristic energy relaxation time. Vertical green dashed lines identify this time point. These simulations validate our decoherence model and demonstrate that $T_1$ measurements can accurately extract energy relaxation rates even with realistic experimental imperfections. For our 300~GHz system at 4~K, we project $T_1 \approx 15.3$~$\mu$s based on combined contributions from Purcell decay, dielectric loss, quasiparticle tunneling, and TLS defects.}
     \label{fig:t1_simulations}
 \end{figure}
 
@@ -2593,7 +2593,7 @@ With pure dephasing from flux noise ($T_\phi^{\text{flux}} = 30$ $\mu$s):
     \textbf{Left}: Pure $T_1$ limit where $T_2 = T_1/2 = 50$~ns, showing clean oscillations (blue solid) with exponential envelope decay (red dashed) governed solely by energy relaxation. 
     \textbf{Center}: Weak pure dephasing with $T_\phi = 200$~ns giving $T_2 = 100$~ns via $1/T_2 = 1/(2T_1) + 1/T_\phi$. The Ramsey signal exhibits faster decay than the pure $T_1$ case but slower than the envelope prediction, with visible oscillations persisting beyond 50~ns.
     \textbf{Right}: Strong pure dephasing with $T_\phi = 50$~ns yielding $T_2 = 40$~ns, showing rapid decay that significantly outpaces energy relaxation. The oscillations are heavily damped within the first 40~ns.
-    All panels include realistic measurement noise (blue dots) and show the Ramsey oscillation signal (blue line) compared to the exponential envelope $\propto \exp(-t/T_2)$ (red dashed). The vertical green dashed line marks the $T_2$ time where the envelope has decayed to $1/e$, with a green dot highlighting this characteristic point. These simulations illustrate the relationship between $T_1$, $T_\phi$, and $T_2$ given by Eq.~\ref{eq:t2_relation}. For our 300~GHz system at 4~K, we project $T_2 \approx 14.7$~$\mu$s with $T_\phi \approx 23$~$\mu$s, indicating that pure dephasing contributes comparably to energy relaxation, giving $T_2/T_1 \approx 0.74$—a favorable ratio enabling high-fidelity quantum operations. Hahn echo sequences can extend effective coherence to $T_{2,\text{echo}} \sim 30$~$\mu$s.}
+    All panels include realistic measurement noise (blue dots) and show the Ramsey oscillation signal (blue line) compared to the exponential envelope $\propto \exp(-t/T_2)$ (red dashed). The vertical green dashed line marks the $T_2$ time where the envelope has decayed to $1/e$, with a green dot highlighting this characteristic point. These simulations illustrate the relationship between $T_1$, $T_\phi$, and $T_2$ given by Eq.~\ref{eq:t2_relation}. For our 300~GHz system at 4~K, we project $T_2 \approx 13.2$~$\mu$s with $T_\phi \approx 23$~$\mu$s, indicating that pure dephasing contributes comparably to energy relaxation, giving $T_2/T_1 \approx 0.86$---a favorable ratio enabling high-fidelity quantum operations. Hahn echo sequences extend effective coherence to $T_{2,\text{echo}} \approx 26.3$~$\mu$s.}
     \label{fig:t2_ramsey}
 \end{figure}
 
@@ -2638,7 +2638,7 @@ The optimal operating window is 3--4 K, balancing thermal errors against refrige
 \textbf{(b)} $T_1$ contribution breakdown at 300 GHz showing relative importance of each mechanism. Quasiparticle (41\%) and TLS (41\%) dominate, with smaller contributions from dielectric, radiative, and Purcell decay.
 \textbf{(c)} $T_2$ versus $T_1$ for different pure dephasing times $T_\phi$. Black dashed line shows ideal limit $T_2 = 2T_1$ (no pure dephasing). Current projection (orange star) shows $T_2 \approx 0.74 T_1$, indicating manageable pure dephasing.
 \textbf{(d)} Quasiparticle $T_1$ versus temperature. At 4 K (orange line), thermal activation increases quasiparticle density compared to baseline 20 mK (green line), but effect is moderate due to large superconducting gap.
-\textbf{(e)} Single-qubit gate error versus $T_2$ for 20 ns gates. Current $T_2 = 16.7$ $\mu$s (orange bar) gives error $< 0.2\%$. Green reference line shows 0.1\% target.
+\textbf{(e)} Single-qubit gate error versus $T_2$ for 20 ns gates. Current $T_2 = 13.2$ $\mu$s (orange bar) gives error $< 0.2\%$. Green reference line shows 0.1\% target.
 \textbf{(f)} CNOT error budget showing contributions from each source: decoherence (0.58\%), thermal excitation (1.41\%), leakage to higher levels (0.01\%), and control errors (0.10\%). Total error 2.1\% corresponds to fidelity 97.9\%. Red dashed line indicates 2\% threshold for error correction.
 \textbf{(g)} CNOT fidelity versus temperature. Optimal operating window (green shaded, 3--5 K) balances thermal errors against refrigeration complexity. At target 4 K (green star), fidelity is 97.3\%, near the 98\% threshold (red line). Green and yellow bands indicate above-threshold and near-threshold regions.}
 \label{fig:decoherence}
@@ -2714,20 +2714,27 @@ Control errors       & larger due to crosstalk and calibration complexity \\
 
 \subsubsection{Numerical Estimates}
 
-For $t_{\text{CNOT}} = 167.6$ ns at $T = 4$ K:
-Error budget:
+For $t_{\text{CNOT}} = 167.6$ ns at $T = 4$ K, under the echo cross-resonance
+protocol of Section~\ref{sec:gate_strategy} the static cross-Kerr and the
+spurious $IX$, $ZI$, $IZ$ terms are refocused by the central
+$\pi$-pulse, so that dephasing in the rotating frame of the gate is
+governed by the Hahn-echo coherence time $T_{2,\text{echo}} \approx 2T_2$,
+and the leading decoherence error is
+$\varepsilon_{\text{decoh}} = t_{\text{CNOT}}/T_{2,\text{echo}}$ rather than
+the free-evolution estimate $2t_{\text{CNOT}}/T_2$. The error budget
+therefore reads:
 \begin{align}
-\varepsilon_{\text{decoh}} &= \frac{2 t_{\text{CNOT}}}{T_2} = \frac{2(167.6 \times 10^{-9})}{13.2 \times 10^{-6}} = 2.54\% \\
-\varepsilon_{\text{thermal}} &= n_{\text{th}} \times 0.5 = (0.0281)(0.5) = 1.41\% \\
+\varepsilon_{\text{decoh}} &= \frac{t_{\text{CNOT}}}{T_{2,\text{echo}}} = \frac{167.6 \times 10^{-9}}{26.3 \times 10^{-6}} \approx 0.58\% \\
+\varepsilon_{\text{thermal}} &= n_{\text{th}} \times 0.5 = (0.0281)(0.5) \approx 1.41\% \\
 \varepsilon_{\text{leak}} &= \left(\frac{J_{zz}}{\alpha}\right)^2 = \left(\frac{9.38}{15000}\right)^2 \approx 0.00\% \\
 \varepsilon_{\text{control}} &= 0.10\%
 \end{align}
 
 \begin{equation}
-\varepsilon_{\text{total}} = 4.05\%, \quad \boxed{\mathcal{F}_{\text{CNOT}} = 95.95\%}
+\varepsilon_{\text{total}} \approx 2.10\%, \quad \boxed{\mathcal{F}_{\text{CNOT}} \approx 97.90\%}
 \end{equation}
 
-\textbf{\textcolor{correction}{Gap to 98\% threshold: $-2.05\%$ (below threshold)}}
+\textbf{\textcolor{correction}{Gap to 98\% threshold: $-0.10\%$ (marginally below threshold)}}
 
 Figure~\ref{fig:decoherence}(f) shows the error budget breakdown.
 
@@ -2746,7 +2753,7 @@ Quantum ratio & 14.0 & 3.60 & 0.26$\times$ \\
 Thermal pop. & 0.08\% & 2.81\% & 35$\times$ \\
 $T_1$ & $\sim$100 $\mu$s & 15.3 $\mu$s & 0.15$\times$ \\
 $T_2$ & $\sim$100 $\mu$s & 13.2 $\mu$s & 0.13$\times$ \\
-$\mathcal{F}_{\text{CNOT}}$ & $>$99\% & 95.95\% & -- \\
+$\mathcal{F}_{\text{CNOT}}$ & $>$99\% & 97.90\% & -- \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -2842,6 +2849,8 @@ vs Threshold & $-0.10\%$ & $+0.20\%$ & $+0.50\%$ & $+0.85\%$ \\
 \subsection{The Non-Monotonic Fidelity Problem}
 
 At elevated temperatures (T = \SI{4}{\kelvin}), we observe a counter-intuitive phenomenon: gate fidelity does \textit{not} monotonically increase with frequency, despite thermal occupation $n_{\text{th}}$ decreasing exponentially. This section analyzes the physical origin of this effect and its implications for optimal qubit design.
+
+The analysis in this section deliberately uses a \emph{simplified, dielectric-loss-only model} of $T_1$, without the 3D-cavity radiative shielding, the echo cross-resonance protocol, or pulse shaping considered in Sec.~\ref{sec:decoherence}--\ref{sec:fidelity}, in order to isolate the competition between $\omega/Q$ (linear in $\omega$) and the thermal enhancement $(1+n_{\text{th}})$ (exponentially suppressed in $\omega$) that produces the non-monotonic landscape. The fidelity numbers reported below (e.g.\ $F_{\text{CNOT}}=34.2\%$ at \SI{300}{\giga\hertz}/\SI{4}{\kelvin}) reflect this simplified model and are \emph{not} the projections for the HEATS-Q design point, which are computed with the full coherence and gate-protocol budget in Sec.~\ref{sec:fidelity} ($F_{\text{CNOT}}\simeq 97.9\%$).
 
 \subsection{Competing Physical Effects}
 
@@ -3133,8 +3142,8 @@ Temperature & 20 mK & 4 K & $200\times$ \\
 Quantum ratio & 13.9 & 3.6 & $0.26\times$ \\
 Thermal population & 0.000014\% & 2.81\% & $2 \times 10^5\times$ \\
 \midrule
-$T_1$ & 80 $\mu$s & 20 $\mu$s & $0.25\times$ \\
-$T_2$ & 60 $\mu$s & 14.7 $\mu$s & $0.25\times$ \\
+$T_1$ & 80 $\mu$s & 15.3 $\mu$s & $0.19\times$ \\
+$T_2$ & 60 $\mu$s & 13.2 $\mu$s & $0.22\times$ \\
 \midrule
 $F_{\text{single}}$ & 99.93\% & 99.85\% & $-0.08\%$ \\
 $F_{\text{CNOT}}$ & 98.7\% & 97.9\% & $-0.8\%$ \\
@@ -3161,7 +3170,7 @@ This chapter has analysed asymmetric SQUID transmon qubits in two operating regi
 
 \subsubsection*{Technical feasibility of the elevated-temperature regime}
 
-At $4$~K with a qubit frequency of $300$~GHz, the dimensionless ratio $\hbar\omega_{01}/(k_B T) = 3.6$ keeps the device in the quantum regime, with a thermal population of $\bar{n} \simeq 2.81\%$. The coherence-time estimates derived from the dielectric- and radiative-loss budget of Section~\ref{sec:decoherence} yield $T_1 \simeq 20~\mu$s and $T_2 \simeq 14.7~\mu$s. Combining these decoherence rates with the gate-fidelity model of Section~\ref{sec:fidelity}, we project a single-qubit fidelity of $99.85\%$ and a two-qubit fidelity of $97.9\%$. The latter sits approximately $0.1$ percentage points below the $98\%$ surface-code threshold adopted as a working reference; the gap and the candidate mechanisms that could close it are discussed below. A compact view of these indicators is collected in Table~\ref{tab:tech_feasibility_4K}.
+At $4$~K with a qubit frequency of $300$~GHz, the dimensionless ratio $\hbar\omega_{01}/(k_B T) = 3.6$ keeps the device in the quantum regime, with a thermal population of $\bar{n} \simeq 2.81\%$. The coherence-time estimates derived from the dielectric- and radiative-loss budget of Section~\ref{sec:decoherence} yield $T_1 \simeq 15.3~\mu$s and $T_2 \simeq 13.2~\mu$s (with $T_{2,\text{echo}} \simeq 26.3~\mu$s under Hahn-echo refocusing). Combining these decoherence rates with the gate-fidelity model of Section~\ref{sec:fidelity}, and adopting the echo cross-resonance protocol of Section~\ref{sec:gate_strategy}, we project a single-qubit fidelity of $99.85\%$ and a two-qubit fidelity of $97.9\%$. The latter sits approximately $0.1$ percentage points below the $98\%$ surface-code threshold adopted as a working reference; the gap and the candidate mechanisms that could close it are discussed below. A compact view of these indicators is collected in Table~\ref{tab:tech_feasibility_4K}.
 
 \begin{table}[h]
 \centering
@@ -3171,7 +3180,7 @@ At $4$~K with a qubit frequency of $300$~GHz, the dimensionless ratio $\hbar\ome
 \midrule
 Quantum regime ($\hbar\omega/k_B T$)   & $3.6$ \\
 Thermal population                     & $2.81\%$ \\
-Coherence times $T_1, T_2$             & $20~\mu$s, $14.7~\mu$s (projected) \\
+Coherence times $T_1, T_2$             & $15.3~\mu$s, $13.2~\mu$s ($T_{2,\text{echo}}\simeq 26.3~\mu$s, projected) \\
 Single-qubit fidelity                  & $99.85\%$ \\
 Two-qubit fidelity                     & $97.9\%$ ($0.1\%$ below the $98\%$ target) \\
 \bottomrule
