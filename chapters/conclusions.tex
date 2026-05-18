@@ -57,10 +57,18 @@ exact). The credit-bounded fine-tuning campaign on the IQM Emerald
 gradients are usable on noisy quantum hardware in the small-parameter
 regime: two on-device epochs recover the full simulator validation
 accuracy, on a credit-bounded budget tracked by an explicitly
-calibrated cost model. Whether the early-epoch training-efficiency
-gain constitutes a durable, transferable advantage or is an artefact
-of the specific architecture and dataset is a question that will
-require broader benchmarking to settle.
+calibrated cost model. A complementary paired multi-seed study at
+$R=10$ seeds, on a reduced 4-qubit version of the architecture under
+a calibrated IBM Heron r2 noise model, further indicates that the
+hybrid pipeline is noise-resilient in the studied regime: the
+classification accuracy under realistic gate-level noise is
+statistically indistinguishable from the noiseless reference
+(paired Wilcoxon $p=0.062$), with only a transient perturbation on
+the loss visible in the first three training epochs. Whether the
+early-epoch training-efficiency gain constitutes a durable,
+transferable advantage or is an artefact of the specific
+architecture and dataset is a question that will require broader
+benchmarking to settle.
 
 The master-equation model of a Rydberg-atom avalanche detector
 (Chapter~\ref{ch:quantum_sensing}) predicts that single-photon
