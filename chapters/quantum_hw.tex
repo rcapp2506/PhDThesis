@@ -2447,35 +2447,37 @@ the parameter set of Tab.~\ref{tab:heatsQ_baseline_params}.
 
 \subsubsection{Quasiparticle Tunneling (Independent of $\omega$)}
 
-Thermally excited quasiparticles in the superconductor can tunnel through junctions, causing relaxation:
+Thermally excited quasiparticles in the superconductor can tunnel
+through the junctions, contributing to relaxation. Their normalised
+density follows~\cite{Catelani2011QP}
 \begin{equation}
-\frac{1}{T_{1,\text{qp}}} = \Gamma_0 \cdot n_{\text{qp}}(T)
-\end{equation}
-
-The quasiparticle density follows:
-\begin{equation}
-n_{\text{qp}}(T) = \sqrt{\frac{2\pi\kB T}{\Delta_{\text{sc}}}} \exp\left(-\frac{\Delta_{\text{sc}}}{\kB T}\right)
+x_{\text{qp}}(T) \;\equiv\; \frac{n_{\text{qp}}}{n_{\text{cp}}}
+   \;\simeq\; \sqrt{\frac{2\pi\kB T}{\Delta_{\text{sc}}}}
+     \exp\left(-\frac{\Delta_{\text{sc}}}{\kB T}\right) \,,
 \label{eq:nqp}
 \end{equation}
-where $\Delta_{\text{sc}} = 180$ $\mu eV$ $= 43.5$ GHz is the superconducting gap of aluminum.
-
-At $T = 4$ K:
+normalised to the Cooper-pair density $n_{\text{cp}} = 2 N(0)
+\Delta_{\text{sc}}$, where $\Delta_{\text{sc}} = \Delta_{\rm NbN}\simeq
+2.8$~meV is the superconducting gap of the NbN electrodes of the
+junctions (the aluminum of the bondwiring, with $T_c \approx 1.2$~K,
+is normal at $4$~K and does not enter the formula). At $T = 4$~K,
+$\Delta_{\text{sc}}/\kB T \approx 8$ and
+$x_{\text{qp}}^{\,\text{th}} \simeq 2.7\times 10^{-4}$.
+Combined with the quasiparticle-tunneling rate
+$1/T_1^{\text{qp}} = (\omega_{01}/\pi)\,x_{\text{qp}}\,
+\sqrt{2\Delta_{\text{sc}}/\hbar\omega_{01}}$~\cite{Catelani2011QP},
+for $\omega_{01}/2\pi = 5$~GHz this yields
 \begin{equation}
-\frac{\Delta_{\text{sc}}}{\kB T} = \frac{43.5 \text{ GHz}}{83.3 \text{ GHz}} = 0.52 
+T_1^{\text{qp,\,intrinsic}} \;\simeq\; \boxed{20~\text{ns}} \,.
 \end{equation}
 
-\begin{equation}
-n_{qp}(4\text{ K}) = \boxed{2.06}
-\end{equation}
-
-With typical $\Gamma_0 \sim 10^4$ Hz
-\begin{equation}
-T_1^{\text{qp}} = \frac{1}{\Gamma_0 n_{qp}} \approx \boxed{49 \text{ }\mu\text{s}}
-\end{equation}
-
-%With typical $\Gamma_0 \sim 10^4$ Hz, we estimate $T_{1,\text{qp}} \sim 50-100$ $\mu$s.
-
-\textbf{Key Insight:} Quasiparticle tunneling is \textit{independent of frequency}. This is an \textbf{advantage} at 300 GHz—we get the same $T_{1,\text{qp}}$ as baseline systems, while other mechanisms scale unfavorably.
+\textbf{Key Insight:} The intrinsic quasiparticle-limited coherence at
+$4$~K is roughly three orders of magnitude shorter than the operational
+target set by the algorithms of Chapter~3. Reducing $x_{\text{qp}}$
+below its thermal-equilibrium value is therefore a defining requirement
+of the elevated-temperature design rather than an optional optimisation,
+and the dedicated engineering intervention that delivers it is the
+subject of the next paragraph.
 
 \paragraph{Engineering pathway to the operational target.}
 We adopt $T_1^{\text{qp}}\simeq 49\,\mu\text{s}$ as the operational
