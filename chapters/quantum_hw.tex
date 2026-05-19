@@ -3366,12 +3366,19 @@ at sub-THz frequencies in 4~K cavities is, to our knowledge, an open question
 and is identified here as a key prerequisite.
 
 \paragraph{P3: Junction superconducting gap above $\hbar\omega_q$.}
-Quasi-particle dynamics, the dominant non-radiative decoherence channel for
-high-frequency qubits at $T\!\gtrsim\!1$~K, is exponentially suppressed when
+Direct pair-breaking by the qubit photon is energetically forbidden when
 $\hbar\omega_q < 2\Delta_{\text{gap}}$. The NbN/AlN/NbN
 junctions of Refs.~\cite{nakamura2011epitaxialNbN, Delahaye2015} have
-$2\Delta_{\text{gap}}/h \approx 720$~GHz, well above $\omega_q = 300$~GHz.
-This places the NbN junction technology at the centre of the HEATS-Q design.
+$2\Delta_{\text{gap}}/h \approx 720$~GHz, well above $\omega_q = 300$~GHz,
+so this channel is closed at the operating frequency.  The
+complementary contribution from the thermally-populated quasiparticle
+density---which is \emph{not} suppressed by the
+$\hbar\omega_q / 2\Delta_{\text{gap}}$ ratio and constitutes the dominant
+non-radiative channel at $T\gtrsim 1$~K---is addressed in
+Sec.~\ref{sec:decoherence}, where trap engineering is identified as the
+route compatible with the operational $T_1^{\text{qp}}$ target.
+This places the NbN junction technology, together with the trap-engineering
+strategy outlined there, at the centre of the HEATS-Q design.
 
 \paragraph{P4: Stretched-CR detuning regime.}
 Following \S\ref{subsec:dq_optimization}, the optimal qubit--qubit detuning
