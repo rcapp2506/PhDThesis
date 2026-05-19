@@ -2477,6 +2477,28 @@ T_1^{\text{qp}} = \frac{1}{\Gamma_0 n_{qp}} \approx \boxed{49 \text{ }\mu\text{s
 
 \textbf{Key Insight:} Quasiparticle tunneling is \textit{independent of frequency}. This is an \textbf{advantage} at 300 GHz—we get the same $T_{1,\text{qp}}$ as baseline systems, while other mechanisms scale unfavorably.
 
+\paragraph{Engineering pathway to the operational target.}
+We adopt $T_1^{\text{qp}}\simeq 49\,\mu\text{s}$ as the operational
+coherence-time target for the elevated-temperature qubit, compatible with
+the gate fidelities required for the algorithms in Chapter~3. Reaching this
+value at $T=4\,\text{K}$ requires reducing $x_{\text{qp}}$ below its
+thermal-equilibrium value. Two engineering knobs are available:
+gap-asymmetric junctions, which exponentially suppress the uphill
+tunneling channel via $\exp[-(\Delta_1-\Delta_2)/\kB T]$ in the
+non-equilibrium regime~\cite{Marchegiani2022}, and normal-metal traps on
+both electrodes, which lower $x_{\text{qp}}$ in the steady state of the
+underlying kinetic balance~\cite{Riwar2016}. A target-driven analysis of
+the kinetic equation indicates that $T_1^{\text{qp}}\simeq 49\,\mu\text{s}$
+is consistent with bilateral traps providing $s\sim 10^{7}\,\text{s}^{-1}$
+on symmetric NbN/AlN/NbN junctions, a regime approximately one order of
+magnitude beyond the trap rates demonstrated in aluminum-based
+devices~\cite{Riwar2016}. Combining gap engineering with trap engineering
+does not relax this requirement at 4\,K because of the larger thermal
+quasiparticle population on the low-gap electrode. The realisation of
+trap-engineered NbN qubits at this performance level remains an open
+experimental question, and constitutes a natural extension of the work
+presented here.
+
 \subsubsection{Radiative Loss ($\propto \omega^2$)}
 
 The qubit acts as an antenna, radiating electromagnetic energy. The loss rate scales as:
