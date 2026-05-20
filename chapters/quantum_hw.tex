@@ -1398,26 +1398,7 @@ at $5.8$~GHz and $20$~mK we have $\hbar\omega/(k_B T) = 14.0$ and $n_{\text{th}}
 \label{tab:300ghz_thermal}
 \end{table}
 
-\begin{innovationbox}
-\textbf{Key Innovation:}
-
-namely $n_{\text{th}} = 2.8\%$ at $4$~K (manageable) and $n_{\text{th}} \simeq 10\%$ at $6$~K (acceptable with active error correction). For comparison, operating at $5.8$~GHz and $4$~K would give an unphysical $n_{\text{th}} = 1388\%$, confirming that the high-frequency redesign is necessary.
-\end{innovationbox}
-
-\begin{table}[h]
-\centering
-\begin{tabular}{@{}lcccc@{}}
-\toprule
-\textbf{Configuration} & \textbf{Frequency} & \textbf{Temperature} & \textbf{$n_{\text{th}}$} & \textbf{Status} \\
-\midrule
-Baseline & 5.8~GHz & 20~mK & $1.4 \times 10^{-5}$ & \checkmark Proven \\
-Baseline at 4~K & 5.8~GHz & 4~K & 1388\% & $\times$ Impossible \\
-\textbf{Innovation} & \textbf{300~GHz} & \textbf{4~K} & \textbf{2.8\%} & \textbf{Novel} \\
-\textbf{Innovation} & \textbf{300~GHz} & \textbf{6~K} & \textbf{10\%} & \textbf{Challenging} \\
-\bottomrule
-\end{tabular}
-\caption{Baseline vs innovative approach}
-\end{table}
+The 4~K entry of Tab.~\ref{tab:300ghz_thermal}, $n_{\text{th}} = 2.81\%$, is manageable and accessible with active reset at the start of each circuit; the 6~K entry, $n_{\text{th}}\simeq 10\%$, becomes acceptable only if active error correction is available to absorb the residual population. Above 8~K the thermal population enters the marginal range and the present analysis treats those temperatures as outside the design envelope. The same Bose-Einstein form, applied at $\omega/2\pi = 5.8$~GHz and $T = 4$~K, returns a value $\hbar\omega/(k_BT)\simeq 0.07$ that lies outside its regime of validity, which is in itself the quantitative justification for the high-frequency redesign: the conventional 5--6~GHz transmon cannot operate at 4~K because at that temperature the qubit is no longer a thermally isolated two-level system.
 
 \begin{figure}[htbp]
     \centering
