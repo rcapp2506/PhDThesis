@@ -179,7 +179,7 @@ state mixing, scaling linearly to $\mathcal{A} \approx 7.1$ at $N = 17$, while a
 }
 
 
-\section{Introduction}
+\section{Quantum sensing for axion dark-matter searches}
 Quantum sensing exploits the non-classical properties of quantum systems---superposition, entanglement, and squeezing---to measure physical quantities with precision beyond the standard quantum limit (SQL). Compared with classical sensors, which rely on deterministic or statistical averaging over large ensembles, quantum sensors operate at or near the level of individual quantum systems, achieving higher sensitivity, bandwidth, and spatial resolution. This field has matured substantially in recent years, spanning solid-state defects, superconducting circuits, trapped ions, and atomic vapors~\cite{Degen2017, Ezratty2024}.
 
 In this chapter, we introduce the theoretical background of quantum sensing, formalise the key limits of precision dictated by quantum estimation theory, and present a practical classification of sensor platforms. We then focus on a specific implementation: a single-photon detector based on facilitation-driven Rydberg-atom avalanche amplification, read out through state-selective field ionisation (SSFI). Numerical simulations demonstrate how a small array of cold Rydberg atoms, prepared in the facilitation regime described in Sec.~\ref{sec:axion_physical_principles}, can amplify a single microwave or terahertz photon absorption event into a macroscopic, spatially correlated excitation pattern that the SSFI stage detects with high efficiency. Electromagnetically induced transparency (EIT), more commonly associated with Rydberg-based field sensing, plays only an indirect role here: it appears in the taxonomy of Sec.~\ref{sec:theoretical_framework} as the canonical readout mechanism of Rydberg \emph{electrometers}, with which we benchmark the present scheme in Sec.~\ref{sec:axion_benchmarking}, but it is not part of the detection chain studied in this chapter.
@@ -194,7 +194,7 @@ Rydberg-based sensing in general is an established field~\cite{saffman2010quantu
 
 The model also yields quantitative targets that an experimental implementation would have to meet to be useful for haloscope readout: single-photon sensitivity at the $\mathcal{A}>3$ level, dark-count suppression by approximately two orders of magnitude on moving from $4$~K to sub-Kelvin temperatures, and an avalanche timescale $T_a \approx 9$--$12.5~\mu$s that is essentially flat across the field range considered. The proposed operating temperature, $T = 4$~K, is two orders of magnitude warmer than the transmon-based microwave-photon counters of Ref.~\cite{Dixit2025} and than the original CARRACK proposal; whether this thermal margin can be turned into a practical advantage depends on details of the experimental implementation that lie outside the scope of the present analysis.
 
-\section{Theoretical Framework}
+\section{Quantum parameter estimation and quantum sensing limits}
 \label{sec:theoretical_framework}
 \subsection*{Quantum Parameter Estimation}
 Quantum parameter estimation provides the statistical backbone of quantum sensing. A physical parameter $\varphi$ (such as phase, frequency, or field strength) is encoded into a quantum state $\rho_\varphi$ through a unitary or dissipative process. Measurements extract information about $\varphi$ with a precision bounded by the quantum Cramér--Rao bound (QCRB):
@@ -346,7 +346,7 @@ In this chapter, we present a comprehensive theoretical investigation of Rydberg
 
 The chapter is organised as follows: Section~\ref{sec:axion_physical_principles} develops the physical principles underlying the detection scheme, including Rydberg atom properties, the avalanche amplification mechanism, and magnetic field effects. Section~\ref{sec:axion_theoretical_framework} presents the theoretical framework, including the full Hamiltonian and time evolution. Section~\ref{sec:axion_simulation_results} presents detailed simulation results demonstrating detector performance across varying magnetic fields and temperatures. Section~\ref{sec:axion_benchmarking} provides a comprehensive benchmarking against existing detector technologies. Section~\ref{sec:axion_discussion} discusses practical considerations, limitations, and future prospects. Section~\ref{sec:axion_conclusions} summarises our findings.
 
-\section{Physical Principles}
+\section{Rydberg atoms in external magnetic fields}
 \label{sec:axion_physical_principles}
 
 \subsection*{Rydberg Atoms in Strong Magnetic Fields}
@@ -809,7 +809,7 @@ Rydberg atoms offer exceptional tunability: by changing the principal quantum nu
 It is important to note that the Rydberg avalanche detector is at an earlier stage of technological development (Technology Readiness Level, TRL 3--4: proof-of-concept) compared to mature superconducting technologies (TRL 7--9: deployed systems). The simulations presented here provide theoretical validation, but experimental demonstration of single-photon detection in strong magnetic fields has not yet been performed. This represents both a challenge and an opportunity: significant development work is required, but the potential performance advantages justify the effort.
 
 %==============================================================================
-\section{Discussion}
+\section{Experimental implementation considerations}
 \label{sec:axion_discussion}
 
 
@@ -954,7 +954,7 @@ where $E_{\mathrm{ion}}$ is the ionisation energy and $E_n \propto n^{-2}$. By c
 
 This tunability enables coverage of the QCD axion mass range (1--1000 $\mu$eV) with a single detector platform, a significant advantage over fixed-frequency superconducting detectors.
 
-\section{Limitations}
+\section{Detection-fidelity caveats and modelling assumptions}
 
 Several limitations of the current approach merit discussion:
 
