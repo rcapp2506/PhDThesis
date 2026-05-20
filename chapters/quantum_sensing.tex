@@ -184,35 +184,15 @@ Quantum sensing exploits the non-classical properties of quantum systems---super
 
 In this chapter, we introduce the theoretical background of quantum sensing, formalise the key limits of precision dictated by quantum estimation theory, and present a practical classification of sensor platforms. We then focus on a specific implementation: a single-photon detector based on facilitation-driven Rydberg-atom avalanche amplification, read out through state-selective field ionisation (SSFI). Numerical simulations demonstrate how a small array of cold Rydberg atoms, prepared in the facilitation regime described in Sec.~\ref{sec:axion_physical_principles}, can amplify a single microwave or terahertz photon absorption event into a macroscopic, spatially correlated excitation pattern that the SSFI stage detects with high efficiency. Electromagnetically induced transparency (EIT), more commonly associated with Rydberg-based field sensing, plays only an indirect role here: it appears in the taxonomy of Sec.~\ref{sec:theoretical_framework} as the canonical readout mechanism of Rydberg \emph{electrometers}, with which we benchmark the present scheme in Sec.~\ref{sec:axion_benchmarking}, but it is not part of the detection chain studied in this chapter.
 
-\subsection*{Scope and Methodology}
+\subsection*{Scope of the present work}
 
-Our contribution is \textbf{computational modelling} of the detector's performance characteristics:
-\begin{itemize}
-    \item \textbf{Theoretical framework}: Master equation formulation of Rydberg population dynamics under magnetic field tuning and facilitation conditions
-    \item \textbf{Numerical simulations}: Python-based integration of Lindblad master equations to predict spatiotemporal avalanche evolution
-    \item \textbf{Performance metric extraction}: Amplification factor, dark count rate, detection time, and facilitation accuracy derived from simulation outputs
-\end{itemize}
+The contribution is computational: a master-equation model of the Rydberg population dynamics under magnetic-field tuning and facilitation conditions, integrated numerically in Python to track the spatiotemporal evolution of the avalanche, and post-processed to extract the performance metrics of interest --- amplification factor, dark-count rate, detection time, and facilitation accuracy --- as functions of the operating parameters. No experimental data are reported; the model is instead intended to provide predictive performance bounds, a systematic characterisation of the magnetic-field dependence of detector observables, and design rules for the trade-off between sensitivity and noise that will be relevant to any subsequent experimental implementation.
 
-This work \textbf{does not present experimental data}; instead, it provides:
-\begin{enumerate}
-    \item Predictive performance bounds for guiding experimental implementations
-    \item Systematic analysis of magnetic field effects on detector metrics
-    \item Design rules for optimising sensitivity-noise trade-offs
-\end{enumerate}
+\subsection*{Relation to prior work}
 
-\subsection*{Novelty and Contribution}
+Rydberg-based sensing in general is an established field~\cite{saffman2010quantum, mohapatra2007coherent, ravets2014coherent}, and Rydberg-atom-cavity haloscope readouts have been proposed and analysed in linear-response geometries~\cite{Yamamoto2001,Tada1999,Graham2024}. The present work differs from those proposals along four axes. The detection mechanism replaces the linear single-atom response of CARRACK and Graham~\emph{et al.} with a coherent multi-atom avalanche in the facilitation regime, yielding an amplification factor $\mathcal{A}\!\sim\!5$ on an array of $N \sim 11$ atoms; we are not aware of a prior analysis of this regime in the specific context of axion-haloscope readout. The avalanche additionally produces a V-shaped excitation pattern across the atomic chain whose spatial signature provides an internal discriminator against single-atom background events; this is a category of background rejection that single-mode readouts cannot, by construction, provide. The detector performance is characterised across 0--5~T external magnetic fields, with the Zeeman-induced detuning compensated through laser auto-detuning, so that the detector and the conversion cavity can in principle share the same magnetic environment; to our knowledge a systematic simulation study of this dependence has not previously been reported. Finally, an analysis of the cavity backaction on the atomic array (Sec.~\ref{sec:backaction}) identifies a non-monotonic dependence of the single-photon detection efficiency $\eta_{\rm eff}(N)$ on the array size in the dispersive regime, and shows that the resonant configuration removes the optimum, which we read as evidence that the resonant configuration is the more natural choice for high-$\eta$ detection.
 
-While Rydberg-based sensing has been extensively studied~\cite{saffman2010quantum, mohapatra2007coherent, ravets2014coherent} and Rydberg-atom-cavity haloscope readouts have been proposed in linear-response geometries~\cite{Yamamoto2001,Tada1999,Graham2024}, our specific contribution lies in:
-\begin{itemize}
-    \item \textbf{Multi-atom avalanche amplification}: First analysis of avalanche detection in the facilitation regime, with $\mathcal{A}\!\sim\!5$, applied to axion-haloscope readout. The scheme replaces the linear single-atom response of CARRACK and Graham 2024 with a coherent quantum amplifier.
-    \item \textbf{Spatially correlated detection signature}: The V-shaped avalanche pattern in the atomic chain provides an internal background discriminator that no other axion-detector technology offers (see Sec.~\ref{sec:axion_benchmarking}).
-    \item \textbf{Magnetic-field characterisation on the detector itself}: First systematic simulation study of detector performance across 0--5~T, with active Zeeman compensation through laser auto-detuning---a hardware/algorithm co-design that allows detector and conversion cavity to be integrated in the same magnetic field.
-    \item \textbf{Cavity-backaction analysis with optimal ensemble size}: Identification of the non-monotonic dependence of single-photon detection efficiency $\eta_{\rm eff}(N)$ on the array size in the dispersive regime, and demonstration that the resonant configuration removes the optimum and is therefore the only viable architecture for high-$\eta$ detection (Sec.~\ref{sec:backaction}).
-    \item \textbf{Quantitative performance metrics}: Single-photon sensitivity thresholds ($\mathcal{A} > 3$), dark count suppression ($\sim 100\times$ at sub-Kelvin), avalanche timescale $T_a \approx 9$--$12.5~\mu$s across the field range.
-    \item \textbf{Operating point at $T = 4$~K}: Two orders of magnitude warmer than CARRACK and transmon-based microwave-photon counters~\cite{Dixit2025}, with corresponding reduction in cryogenic infrastructure.
-\end{itemize}
-
-These simulation results establish theoretical benchmarks against which future experimental implementations can be evaluated.
+The model also yields quantitative targets that an experimental implementation would have to meet to be useful for haloscope readout: single-photon sensitivity at the $\mathcal{A}>3$ level, dark-count suppression by approximately two orders of magnitude on moving from $4$~K to sub-Kelvin temperatures, and an avalanche timescale $T_a \approx 9$--$12.5~\mu$s that is essentially flat across the field range considered. The proposed operating temperature, $T = 4$~K, is two orders of magnitude warmer than the transmon-based microwave-photon counters of Ref.~\cite{Dixit2025} and than the original CARRACK proposal; whether this thermal margin can be turned into a practical advantage depends on details of the experimental implementation that lie outside the scope of the present analysis.
 
 \section{Theoretical Framework}
 \label{sec:theoretical_framework}
@@ -1020,45 +1000,21 @@ Quantum sensors increasingly form part of hybrid systems, combining quantum fron
 \section{Conclusions}
 \label{sec:axion_conclusions}
 
-We have presented a comprehensive theoretical investigation of Rydberg avalanche amplification as a novel approach to single-photon detection for axion dark matter searches. Through detailed quantum simulations, we have demonstrated that this scheme achieves the rare combination of single-photon sensitivity ($\sim 10^{-22}$ W), low background noise ($< 0.01$ Hz at 4 K), and compatibility with strong magnetic fields (0--7 T) required by haloscope experiments.
+We have presented a theoretical investigation of Rydberg avalanche amplification as a candidate single-photon detector for axion-haloscope readout. The numerical simulations of this chapter indicate that the scheme combines single-photon sensitivity ($\sim 10^{-22}$~W), low background ($< 0.01$~Hz at 4~K), and compatibility with strong magnetic fields (0--7~T), three requirements that have so far been difficult to satisfy simultaneously in a single haloscope-compatible detector.
 
-\subsection*{Key Findings}
+\subsection*{Summary of findings}
 
-\begin{enumerate}
-    \item \textbf{Robust amplification in magnetic fields, and linear scaling with $N$}: The avalanche mechanism maintains amplification factor $\mathcal{A} \approx 5.3$ at $N=11$ atoms across magnetic fields from 0 to 5~T, despite interaction suppression from state mixing. Direct simulation at $N = 11, 13, 15, 17$ establishes a linear scaling $\mathcal{A}(N) = 2.31 + 0.286\,N$ that holds uniformly across the entire field range, with the four $B$ values overlapping to within $1\%$ at every $N$. Automatic compensation of Zeeman shifts through laser auto-detuning preserves the facilitation condition exactly.
+The amplification factor at $N=11$ atoms is $\mathcal{A} \approx 5.3$, and remains essentially constant as the external magnetic field is scanned from $0$ to $5$~T, with the four sampled field values overlapping to within $1\%$ at every $N$ in the range examined. Direct simulation at $N = 11, 13, 15, 17$ establishes a linear scaling $\mathcal{A}(N) = 2.31 + 0.286\,N$ that holds uniformly across the same field range; the underlying mechanism is the laser auto-detuning, which absorbs the Zeeman shift of the driven transition and preserves the facilitation condition. The thermal background, exponentially suppressed in $\Delta E/k_BT$, falls below $0.01$~Hz at $T = 4$~K and below $10^{-4}$~Hz at $T = 300$~mK; these figures sit in the range demonstrated for the leading superconducting single-photon technologies operated at sub-Kelvin temperatures, and the present analysis suggests that they remain accessible at the $4$~K operating point examined here.
 
-    \item \textbf{Ultra-low thermal background}: Exponential suppression of thermal excitations yields dark count rates below 0.01 Hz at 4 K, decreasing to $< 10^{-4}$ Hz at 300 mK. This performance rivals or exceeds superconducting technologies while operating at higher temperatures.
+The avalanche timescale is $T_a \sim 10~\mu$s, approximately an order of magnitude shorter than the typical Rydberg-state radiative lifetime at $n\sim 70$ ($\sim 100~\mu$s, Ref.~\cite{Beterov2009}), so the coherent regime modelled in this chapter is the relevant operating regime in practice. A full Lindblad treatment of pure dephasing has not been performed here and is left to follow-up work; systematic studies of comparable facilitation schemes~\cite{Festa2022} report that the amplification mechanism is not fragile to moderate dephasing on the timescale of a single avalanche event. The avalanche additionally produces a V-shaped spatial signature in the excitation density that provides an internal discriminator against background events, as discussed in Sec.~\ref{sec:axion_benchmarking}. State-selective field ionisation, the standard detection technique for cold Rydberg atoms~\cite{Gallagher2005, Saffman2016}, has demonstrated end-to-end efficiencies $\eta_{\rm det} \approx 40$--$70\%$~\cite{Ryabtsev2007, Andersen2013}, sufficient to deliver a single-shot detection probability of $99.3\%$ at $N=17$ in our simulations; loss imaging at $\eta_{\rm det} \geq 95\%$~\cite{Tao2024, Manetsch2025} reaches $P_{\rm detect} = 99.83\%$ at $N=15$ and would satisfy the formal $3\sigma$ threshold. The choice between the two readouts is an experimental design parameter; the avalanche physics analysed in this chapter is independent of either.
 
-    \item \textbf{Unique parameter space}: The Rydberg detector is the only technology that simultaneously satisfies all requirements for axion detection: single-photon sensitivity, strong magnetic field compatibility, low background, and practical operating temperatures.
-
-    \item \textbf{Broad tunability}: By adjusting the principal quantum number, the detector can cover the axion mass range from $\sim 1$ $\mu$eV to $\sim 1$ meV (GHz to THz frequencies) without hardware changes.
-
-    \item \textbf{Spatiotemporal correlations}: The ballistic avalanche expansion creates characteristic V-shaped patterns in the excitation density, providing a signature to distinguish true events from random background and enabling potential further background suppression through machine learning algorithms.
-    \item \textbf{Decoherence robustness:} The avalanche timescale $T_a \sim 10\,\mu$s is shorter than the typical Rydberg-state radiative lifetime ($\sim 100\,\mu$s for $n \sim 70$~\cite{Beterov2009}) by an order of magnitude, suggesting that the coherent regime modelled here is the relevant operating regime in practice. A full Lindblad treatment of pure dephasing has not been performed within the present work and is left to future analyses; systematic studies of comparable facilitation schemes~\cite{Festa2022} report robust amplification at moderate dephasing rates, suggesting the mechanism is not fragile to decoherence on the timescale of an avalanche event.
-    \item \textbf{Detection compatibility}: State-selective field ionisation, the standard detection technique for cold Rydberg atoms \cite{Gallagher2005, Saffman2016}, achieves end-to-end efficiencies of $\eta_{\rm det} \approx 40$--70\% \cite{Ryabtsev2007, Andersen2013} and provides a single-shot detection probability of $99.3\%$ at $N=17$. For applications that demand the formal $3\sigma$ threshold, loss imaging with $\eta_{\rm det} \geq 95\%$ \cite{Tao2024, Manetsch2025} delivers $P_{\rm detect} = 99.83\%$ at $N=15$ via direct simulation. The choice between readouts is an experimental design parameter; the underlying avalanche physics is independent of either readout.
-\end{enumerate}
+Operationally, the principal quantum number $n$ provides a tuning knob: varying $n$ shifts the resonant frequency, so a single experimental platform can in principle address axion masses across the range from approximately $1~\mu$eV to $1$~meV (GHz to THz frequencies) without redesigning the hardware. The combined parameter space --- single-photon sensitivity, operation in multi-tesla magnetic fields, low thermal background, and $4$~K operating temperature --- addresses several of the constraints that have made photon counting in the haloscope context difficult to satisfy with a single detector; whether this combination translates into experimentally useful sensitivity will depend on details of the integration with a conversion cavity that are outside the scope of this chapter.
 
 \subsection*{Outlook}
 
-The results presented here establish the theoretical foundation for Rydberg avalanche detection of photons from axion conversion. The next critical step is experimental validation, which would require:
+The model developed here is a starting point, not an experimental result. Several steps would be needed before the predictions of this chapter could be tested against a working detector. Integrating a cold-Rydberg platform with a cryogenic microwave cavity is the first of these, both because it determines whether the optical access required for trapping and readout is compatible with the cavity geometry, and because cavity losses and photon-injection coupling enter the detection efficiency directly. A demonstration of the avalanche amplification in the presence of magnetic fields up to $5$--$7$~T would then test the central prediction of the present analysis. Characterisation of dark count rates under realistic experimental conditions, measurement of photon absorption efficiency, and the development of single-atom imaging techniques compatible with cryogenic and high-field environments are the natural follow-ups; none of them is a small undertaking on its own, and the predictions of this chapter would have to be revisited as data become available.
 
-\begin{itemize}
-    \item Integration of a cold Rydberg atom platform with a cryogenic microwave cavity
-    \item Demonstration of avalanche amplification in the presence of magnetic fields up to 5--7 T
-    \item Characterisation of dark count rates under realistic experimental conditions
-    \item Measurement of photon absorption efficiency and optimisation of cavity-atom coupling
-    \item Development of single-atom imaging techniques compatible with cryogenic and high-field environments
-\end{itemize}
-
-Beyond axion searches, the detection scheme studied here may find applications in:
-\begin{itemize}
-    \item Quantum communication in the microwave regime
-    \item Ultra-sensitive RF sensing for radar and radio astronomy
-    \item Searches for other beyond-Standard-Model particles (dark photons, chameleons)
-    \item Tests of fundamental physics in cavity QED
-\end{itemize}
-
-If successfully implemented, Rydberg avalanche detectors could extend the parameter-space coverage of axion-haloscope experiments into regions of $(m_a, g_{a\gamma\gamma})$ that current photon-counting technologies do not access. The combination of single-photon sensitivity and operation under multi-tesla magnetic fields, in particular, addresses two requirements that have so far been difficult to satisfy simultaneously in a single detector platform.
+Beyond the axion-haloscope context, the detection scheme analysed here may also be relevant to microwave-regime quantum communication, sensitive RF sensing for radar and radio astronomy, searches for other weakly coupled particles such as dark photons or chameleons, and tests of fundamental physics in cavity-QED settings. These applications share the requirement of single-photon sensitivity in regimes where the standard superconducting detectors do not operate naturally; whether the scheme of this chapter is competitive in any of them is a question that the present work does not address.
 
 \section*{Acknowledgments}
 
