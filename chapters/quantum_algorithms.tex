@@ -288,7 +288,7 @@ Fourth, the noise sensitivity of the hybrid pipeline is characterised through a 
 }
 
 
-\section{Introduction}
+\section{Hybrid quantum--classical convolutional networks}
 Quantum computing has entered the Noisy Intermediate-Scale Quantum (NISQ) era, with devices
 comprising tens to hundreds of noisy qubits~\cite{Preskill2018}. In parallel, deep learning
 has become ubiquitous across domains, including satellite-based remote sensing~\cite{Goodfellow2016,Helber2019}.
@@ -300,7 +300,7 @@ with quantum kernels for local feature extraction~\cite{Cong2019}. Prior work ha
 architectures for remote sensing classification~\cite{Sebastianelli2021}, yet the specific role and
 design of quantum convolutional layers remain under-explored. The present chapter builds on the quanvolutional ansatz design of the prior thesis work of Filippi~\cite{Filippi2025Thesis}\footnote{M.Sc.\ thesis in Physics at the University of Pisa, co-supervised by the present author together with Oliver Morsch.} (Eq.~\ref{eq:parallel_circuit}, Fig.~\ref{fig:qconv}, Fig.~\ref{fig:qcnn_ansatz}), and extends it along four dimensions of our own: (i) a multi-seed statistical campaign with explicit matched-capacity classical controls and paired non-parametric significance testing (Sec.~\ref{sec:results-stats}); (ii) a runtime-aware cost model that links circuit-level scheduling to credit-bounded training on cloud-accessed superconducting hardware (Sec.~\ref{sec:runtime-metric}); (iii) the first end-to-end transfer of the trained hybrid Q-CNN onto a $\geq 50$-qubit superconducting device, with parameter-shift fine-tuning on the IQM Emerald processor (Sec.~\ref{sec:hw_validation}); and (iv) a paired multi-seed characterisation of noise sensitivity on a reduced 4-qubit version of the architecture, run under a calibrated IBM Heron r2 noise model, which extends the noise-related claims of (iii) beyond the two-epoch cloud-credit budget (Sec.~\ref{sec:noise_resilience}). The chapter develops the QCNN layer formally, benchmarks multiple architectures on EuroSAT~\cite{Helber2019}, compares the chosen candidate with a classical CNN baseline~\cite{LeCun1998} and a published hybrid network~\cite{Sebastianelli2021}, and closes the loop on physical hardware. Where a figure or an equation is adapted from~\cite{Filippi2025Thesis}, the caption flags the provenance explicitly; everything else is original to this work.
 
-\section{Background}
+\section{Classical CNNs and quantum machine learning}
 Hybrid quantum--classical learning integrates short-depth quantum computations\ into a larger classical optimization loop, aiming to exploit quantum resources (superposition, entanglement, and measurement-induced nonlinearities) while remaining compatible with near-term noisy hardware. The conceptual and algorithmic underpinnings are well documented in the monograph by Schuld and Petruccione, which frames quantum models as feature maps and variational learners trained by classical optimizers~\cite{SchuldPetruccione2021}. Complementary surveys emphasize the role of Parameterized Quantum Circuits (PQCs) as flexible hypothesis classes, where the inductive bias, that is, the model’s built-in assumptions about the structure of the target function, emerges from how classical data are encoded into quantum states and from the topology of the entangling gates used. In particular, the choice of encoding scheme and entangling pattern determines the expressivity, trainability, and generalization properties of variational quantum models~\cite{Benedetti2019,cerezo2021}.
 
 \paragraph{Data encoding as a feature map.}
@@ -427,7 +427,7 @@ impacting sample efficiency and training dynamics~\cite{Schuld2019PRA,SchuldPetr
 Consequently, QCNN design favors shallow, locality–preserving ans\"atze with encoders aligned to image patches,
 which we operationalize in the Methods and Experiments sections.
 
-\section{Methods}
+\section{QCNN architecture and training protocol}
 
 Our quantum convolutional layer maps small image patches to expectation values via a PQC composed of:
 (i) angle (rotation) encoding of pixel intensities; (ii) a hardware-efficient entangling ansatz~\cite{Kandala2017};
@@ -820,7 +820,7 @@ Three operational habits keep the cost model trustworthy in practice. The wall-t
 
 
 %========================
-\section{Results}
+\section{Multi-seed campaign and hardware validation}
 \label{sec:results}
 
 \subsection*{The EuroSAT dataset}
@@ -1961,7 +1961,7 @@ Three caveats are in order. First, the experiment uses a $2$-class subset of Eur
 \subsection{Takeaways}
 On the binary EuroSAT subset, late fusion with moderately wide quantum channels gives a stable design point across the configurations tested, with a visible margin over the purely classical ablation at the first epoch that does not, however, persist once both architectures have reached the convergence plateau. Beyond the simulator results, the candidate has been transferred to physical hardware: the credit-bounded fine-tuning campaign on IQM Emerald (Sec.~\ref{sec:hw_validation}) recovers the simulator's $100\%$ validation accuracy in two on-device epochs, despite per-block readout biases consistent with the device calibration. This indicates that parameter-shift fine-tuning of the trainable quantum weights remains usable at the modest scale of the present ansatz ($n_w=4$); the result is not, by itself, evidence of a behaviour that would extrapolate to deeper variational ansätze. The complementary paired multi-seed study under a calibrated IBM Heron r2 noise model (Sec.~\ref{sec:noise_resilience}) extends this picture beyond the on-device budget: the classification accuracy of the hybrid pipeline is statistically indistinguishable from the noiseless reference (paired Wilcoxon $p=0.062$ on $R=10$ seeds), with only a transient perturbation on the loss visible in the first three training epochs and fully absorbed by epoch~5. Future work will extend the evaluation to multi-class EuroSAT and other remote-sensing benchmarks, and explore noise-aware training (gradient-aware shot allocation, advanced error mitigation, deeper variational ansätze) where barren-plateau and noise-induced gradient suppression effects~\cite{McClean2018,Holmes2022PRXQ,Wang2021NoiseInducedBP} are expected to play a larger role.
 
-\section{Discussion}
+\section{Interpretation and limitations}
 \label{sec:discussion}
 On the binary EuroSAT subset and within the model family explored here, inserting a shallow, locality-preserving quantum layer into a CNN pipeline produces (i) a visible margin at epoch~$1$ of the simulated training trajectory and (ii) validation losses that are comparable to, and not systematically larger than, those of the classical ablation at convergence. We read these observations as compatible with the view that patch-wise quantum embeddings provide an inductive bias that is complementary to classical convolutions~\cite{Havlicek2019,Schuld2019PRA,Cong2019}, without further inferring a category of speed-up. In particular, \emph{late fusion} with moderately wide quantum channels appears to yield the most favourable trade-off between accuracy and variance among the configurations tested, while merely increasing circuit depth does not — a behaviour that is consistent with the relation between expressibility and gradient magnitude reported in the trainability literature~\cite{Holmes2022PRXQ,cerezo2021}.
 
