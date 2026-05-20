@@ -3239,20 +3239,27 @@ In summary, the chapter has developed a model of an asymmetric SQUID transmon ba
 The cross-resonance protocol of \S\ref{sec:gate_strategy} reduces the
 two-qubit gate fidelity question to a clear set of materials and engineering
 requirements. We identify here, with quantitative targets, the six
-prerequisites for reaching $F_{\text{avg}} \ge 99\%$ on the innovation
-elevated-temperature operating point ($\omega_q\!\sim\!300$~GHz, $T = 4$~K).
+prerequisites for reaching $F_{\text{avg}} \ge 99\%$ on the elevated-temperature
+operating point ($\omega_q\!\sim\!300$~GHz, $T = 4$~K).
 
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=\textwidth]{chapters/qh_figures/cross_resonance_sweetspot_map_4K.png}
-    \caption{Achievable cross-resonance gate fidelity at $T=4$~K as a function
-    of qubit frequency $\omega_q$ and coherence time $T_1$, with $\Delta_q$
-    independently optimized at each point. The bold solid contour at
-    $F_{\text{avg}}=99\%$ defines the boundary of the operational sweet spot.
+    \caption{Cross-resonance gate at $T = 4$~K, with the qubit--qubit detuning
+    $\Delta_q$ independently optimized at each point.
+    \textbf{(Left)} Achievable average gate fidelity $F_{CR}$ as a function of
+    coherence time $T_1$ and qubit frequency $\omega_q$. The solid contour at
+    $F_{CR} = 99\%$ defines the boundary of the operational sweet spot.
     The blue star marks the operating point of this work
-    ($T_1\!=\!50~\mu$s, $\omega_q = 300$~GHz). The gate time, optimized over
-    $\Delta_q$, is approximately constant ($\sim\!200$~ns) over the parameter
-    range shown (right panel).}
+    ($T_1 = 50~\mu$s, $\omega_q = 300$~GHz), which sits between the $99.5\%$ and
+    $99.9\%$ contours.
+    \textbf{(Right)} Optimal gate time $t_{\rm gate}^{\rm opt}$ as a function
+    of $\omega_q$. The optimum over $\Delta_q$ is $T_1$-independent by
+    construction (the gate time is set by $\Omega_{ZX}$, which does not depend
+    on $T_1$), so the dependence is one-dimensional. The gate time grows
+    approximately linearly with $\omega_q$, from $\sim\!68$~ns at $250$~GHz to
+    $\sim\!130$~ns at $500$~GHz; at the operating point it is $\sim\!79$~ns,
+    safely within the fast-gate region ($t_{\rm gate} < 100$~ns).}
     \label{fig:sweetspot_4K}
 \end{figure}
 
