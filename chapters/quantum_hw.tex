@@ -525,6 +525,7 @@ For a SQUID with junction energies $E_{J1}$ and $E_{J2}$, the effective flux-dep
 \begin{equation}
 E_{J}(\Phi) = \sqrt{E_{\Sigma}^2 \cos^2\!\left(\pi \frac{\Phi}{\Phi_0}\right) +
 E_{\Delta}^2 \sin^2\!\left(\pi \frac{\Phi}{\Phi_0}\right)} ,
+\label{eq:EJ_flux}
 \end{equation}
 where $E_{\Sigma} = E_{J1}+E_{J2}$, $E_{\Delta}=E_{J1}-E_{J2}$, and $\Phi_0$ is the flux quantum.  
 This reduces to the symmetric SQUID result for $E_{J1}=E_{J2}$ ($E_\Delta = 0$), while for finite asymmetry it ensures a non-zero minimum Josephson energy at $\Phi=\Phi_0/2$. In the Symmetric case $E_\Delta = 0$, the usual SQUID modulation is recovered.
@@ -1759,7 +1760,7 @@ $E_4$ & $+4.974$ & $\omega_{34} = 1.066$ \\
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.95\textwidth]{chapters/qh_figures/asymmetric_squid_spectrum.png}
-\caption{Asymmetric Squid energy vs flux.}
+\caption{Asymmetric-SQUID transmon spectrum as a function of external flux $\Phi/\Phi_0$, computed with the parameters of Tab.~\ref{tab:squid_design_params}. \textbf{(a)} The first five eigenenergies $E_0,\ldots,E_4$ of the transmon Hamiltonian, Eq.~\eqref{eq:transmon_ham}. The vertical red dashed line marks the lower sweet spot at $\Phi=\Phi_0/2$, where the asymmetric design retains a finite Josephson energy and the qubit remains operational. \textbf{(b)} The two lowest transition frequencies $\omega_{01}$ and $\omega_{12}$. Both reach their minimum at the sweet spot ($\omega_{01}=1.972$~GHz, $\omega_{12}=1.610$~GHz), with the gap between them defining the anharmonicity. \textbf{(c)} The anharmonicity $\alpha=\omega_{12}-\omega_{01}$ as a function of flux. The reference value $\alpha\approx -E_C$ valid deep in the transmon regime is shown as the grey dotted line; at the sweet spot $\alpha\simeq -362$~MHz, larger in magnitude than $-E_C$ because $E_J/E_C$ is moderate (not deep transmon) at that bias point. \textbf{(d)} The effective Josephson energy $E_J(\Phi)$ from Eq.~\eqref{eq:EJ_flux}, oscillating between $E_\Sigma$ at $\Phi=0$ and $|E_\Delta|$ at $\Phi=\Phi_0/2$ (the lower sweet spot of the asymmetric design).}
 \label{fig:squid_spectrum}
 \end{figure}
 
@@ -1771,7 +1772,7 @@ The anharmonicity is:
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.95\textwidth]{chapters/qh_figures/anharmonicity_explanation.png}
-\caption{Asymmetric Squid anharmonicity.}
+\caption{Origin and role of transmon anharmonicity. \textbf{(a)} Energy levels of a harmonic oscillator ($\alpha=0$): all spacings equal, hence no spectral isolation of the computational subspace. \textbf{(b)} Energy levels of an anharmonic oscillator with negative $\alpha$ (transmon-like): spacings decrease with $n$, the $|0\rangle\leftrightarrow|1\rangle$ transition is the highest and is spectrally distinguishable from the others. \textbf{(c)} Transition frequencies $\omega_{n,n+1}$ vs.\ $n$ for the two cases of panels (a) and (b). \textbf{(d)} Real transmon spectrum at $E_J/E_C=135$ (the design value of Tab.~\ref{tab:squid_design_params}): the five lowest levels with the actual transition frequencies (GHz). \textbf{(e)} Anharmonicity $\alpha$ versus $E_J/E_C$, with the design point marked. \textbf{(f)} Spectral lineshapes of the $|0\rangle\leftrightarrow|1\rangle$ and $|1\rangle\leftrightarrow|2\rangle$ transitions, separated by $|\alpha|=216$~MHz, illustrating why selective addressing of the qubit transition requires $|\alpha|$ above the drive bandwidth.}
 \label{fig:squis_anharmon}
 \end{figure}
 
