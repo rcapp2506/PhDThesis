@@ -266,19 +266,80 @@ Existing detector technologies struggle to satisfy all these requirements simult
 
 This technological gap motivates the exploration of alternative detection schemes that can satisfy the complete parameter space required by axion searches.
 
-\subsection*{Rydberg Atoms as Quantum Sensors}
+\subsection*{Preliminaries: Rydberg states, dipole-dipole interactions, blockade and facilitation}
+\label{sec:rydberg_preliminaries}
 
-Rydberg atoms---atoms with one or more electrons excited to very high principal quantum numbers ($n \gg 1$)---have emerged as powerful platforms for quantum sensing~\cite{saffman2010quantum,Adams2020}. Their unique properties include:
+The ingredients on which the detection scheme of this chapter relies are
+collected here, in the form most directly useful for the rest of the
+chapter. A reader familiar with Rydberg-atom physics can skip to
+Sec.~\ref{sec:axion_physical_principles}; for the others, the four
+points below define the vocabulary that is then used without further
+introduction.
 
-\begin{itemize}
-    \item \textbf{Giant dipole moments}: Transition dipole moments scale as $d \sim n^2$, enabling strong coupling to electromagnetic fields
-    \item \textbf{Long-range interactions}: Van der Waals interactions with strength $C_6 \sim n^{11}$ allow for collective effects
-    \item \textbf{Tunable energy splittings}: Level spacings $\propto n^{-2}$ provide access to frequencies from GHz to THz
-    \item \textbf{Calculability}: Hydrogen-like structure enables precise theoretical predictions and intrinsic calibration
-    \item \textbf{Environmental decoupling}: Low thermal excitation rates even at elevated temperatures
-\end{itemize}
+\paragraph{Rydberg states.}
+An alkali atom in which the valence electron is excited to a state of
+high principal quantum number $n$ is called a \emph{Rydberg state}. In
+the regime relevant here ($n \sim 60$--$80$) the outer electron is
+weakly bound (binding energy of a few meV, scaling as $n^{-2}$), the
+orbit is large (radius scaling as $n^{2}$), and the transition dipole
+moment to a neighbouring Rydberg state is correspondingly large
+(scaling as $n^{2}$). Two consequences matter for the present work.
+First, the dipole-allowed transition frequencies between adjacent
+Rydberg manifolds fall in the GHz--THz band, the same range as the
+photons produced by axion-to-photon conversion in a haloscope cavity;
+adjusting $n$ tunes the transition frequency across that band without
+hardware changes. Second, the natural lifetime of Rydberg states is
+long enough --- of order $100~\mu$s at $n \sim 70$~\cite{Beterov2009}
+--- that coherent dynamics on the few-microsecond timescale of the
+avalanche analysed in this chapter can be treated, to leading order,
+without including spontaneous decay.
 
-A recent theoretical proposal predicts that Rydberg systems can detect terahertz photons through avalanche amplification~\cite{Nill2024}. In this mechanism, a single Rydberg excitation triggers a cascade of further excitations via dipole-dipole interactions, amplifying the initial signal into a macroscopic number of excited atoms that can be detected through standard readout techniques. The amplification proceeds in a controllable, deterministic manner when the system is prepared in the \textit{facilitation regime}, where Rydberg interactions shift neighboring atoms into resonance with the driving laser.
+\paragraph{Dipole-dipole and van der Waals interactions.}
+Two Rydberg atoms at distance $r$ interact electromagnetically through
+their respective dipoles. In the far-detuned limit relevant to the
+present work, the interaction reduces to a van der Waals form,
+$V(r) = C_6/r^{6}$, with a coefficient that grows with the principal
+quantum number as $C_6 \propto n^{11}$~\cite{saffman2010quantum}. At
+$n \sim 70$ and inter-atomic distances of a few micrometres, $C_6/r^{6}$
+reaches the MHz--GHz range, comparable to or larger than the Rabi
+frequency of the driving laser. The interaction is therefore strong
+enough to shift one atom's Rydberg level out of resonance with the
+laser drive when one of its neighbours is already excited; this
+state-conditional shift is the building block of the two regimes
+described next.
+
+\paragraph{Blockade and facilitation.}
+Two opposite operating regimes can be selected by tuning the laser
+detuning $\Delta_\ell$ relative to the bare Rydberg transition. In the
+\emph{Rydberg blockade}~\cite{saffman2010quantum}, the laser is tuned
+on resonance with an isolated atom ($\Delta_\ell = 0$); a single excited
+atom then shifts its neighbours \emph{out} of resonance by $V(r)$, so
+that no further excitations can occur within a blockade radius
+$R_b = (C_6/\hbar\Omega)^{1/6}$, where $\Omega$ is the laser Rabi
+frequency. The blockade is the textbook mechanism for Rydberg quantum
+gates and atomic ensemble qubits, and is the most widely studied
+regime~\cite{saffman2010quantum, ravets2014coherent}. In the
+\emph{facilitation} regime, the laser is instead deliberately detuned
+by $\Delta_\ell = V(r_{\rm fac})$, where $r_{\rm fac}$ is the
+distance at which the interaction-induced shift exactly compensates
+the detuning, bringing a previously off-resonant atom \emph{into}
+resonance whenever a neighbour at distance $r_{\rm fac}$ becomes
+excited. The two regimes are mechanistically opposite: blockade
+suppresses further excitations, facilitation triggers them.
+
+\paragraph{Avalanche detection and the role of facilitation.}
+The avalanche detector studied in this chapter operates in the
+facilitation regime~\cite{Nill2024,Festa2022}. A single Rydberg
+excitation, seeded either by absorption of the cavity photon to be
+detected or by a thermal fluctuation, propagates as a cascade: each
+newly excited atom places the next-nearest off-resonant atom into the
+facilitation distance and triggers its excitation, and so on, until
+the chain is exhausted or the available laser power is depleted. The
+end state is a macroscopic, spatially correlated excitation pattern
+that can be read out by standard Rydberg detection techniques. The
+analysis that follows is concerned with how this cascade behaves under
+the conditions imposed by haloscope operation --- magnetic fields up
+to several tesla, finite temperature, and finite ensemble size.
 
 \subsection*{Scope and Organisation}
 In this chapter, we present a comprehensive theoretical investigation of Rydberg avalanche amplification as a single-photon detection scheme for axion dark matter searches. We extend the avalanche mechanism to the regime of strong magnetic fields and demonstrate that the detector maintains single-photon sensitivity across the parameter space required by haloscope experiments.
