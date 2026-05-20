@@ -313,7 +313,7 @@
   Substantive changes:
     * G6 (Fig. 2.3 mK clarity): added introductory paragraph before
       Fig. fig:thermal_comprehensive explaining that the mK band is the
-      validation regime, the HEATS-Q operating points at 4--10 K are the
+      validation regime, the elevated-temperature operating points at 4--10 K are the
       target, and the sweet-spot frequency 1.972 GHz is fixed by the
       asymmetric-SQUID flux-insensitive condition (not by thermal
       optimisation).
@@ -516,8 +516,6 @@ These constraints motivate exploring alternative operating regimes, provided tha
 % ========================= 2. GOALS AND EXPECTED OUTCOME ========
 \section{The NbN-based elevated temperature transmon qubit project}
 \label{sec:nbn_project_overview}
-
-We refer to this project as \textbf{HEATS-Q} (\textbf{H}igh-temperature \textbf{E}levated \textbf{A}symmetric-SQUID \textbf{T}ransmon \textbf{S}uperconducting \textbf{Q}ubit), and we use the acronym throughout the rest of this chapter.
 
 The system under study is based on a capacitively coupled transmon-like qubit, implemented as an asymmetric dc SQUID to enable in-situ frequency tunability via magnetic flux bias. 
 The asymmetry prevents the Josephson energy from vanishing exactly at half a flux quantum, thereby stabilizing the qubit frequency against flux noise at the so-called \emph{sweet spot}~\cite{Koch2007Transmon, nakamura2011epitaxialNbN}.
@@ -763,7 +761,7 @@ Qubit 2 frequency $\omega_{q2}/2\pi$    & $\SI{5.2}{GHz}$ \\
 Qubit--cavity couplings $g_1/2\pi=g_2/2\pi$ & $\SI{80}{MHz}$ \\
 \bottomrule
 \end{tabular}
-\caption{Baseline-mK HEATS-Q nominal parameters.}
+\caption{Baseline-mK nominal parameters of the asymmetric-SQUID transmon.}
 \label{tab:heatsQ_baseline_params}
 \end{table}
 
@@ -909,7 +907,7 @@ Innovation 300~GHz ($\Delta_q\!=\!600$~MHz, $\alpha\!=\!-1000$~MHz) & $-9.4$ & $
 \bottomrule
 \end{tabularx}
 \caption{Transverse exchange coupling $J$ and longitudinal cross-Kerr
-$\zeta_{zz}$ for the redesigned HEATS-Q system parameters
+$\zeta_{zz}$ for the redesigned system parameters
 (\S\ref{sec:system_params}). The dominance of $J$ over $\zeta_{zz}$ informs
 the choice of gate protocol.}
 \label{tab:J_vs_zetazz}
@@ -945,7 +943,7 @@ two-qubit operation.
     longitudinal cross-Kerr $|\zeta_{zz}|$, with $t_{\mathrm{CZ}} = \pi/(2|\zeta_{zz}|)$
     and decoherence-limited dynamics. The vertical dotted lines mark the actual
     $\zeta_{zz}$ extracted from Eq.~\eqref{eq:zeta_zz_correct} for the two
-    HEATS-Q operating points. Both fall well below the surface-code threshold,
+    elevated-temperature operating points. Both fall well below the surface-code threshold,
     motivating the alternative gate strategy of \S\ref{sec:gate_strategy}.}
     \label{fig:CZ_unfeasible}
 \end{figure}
@@ -993,7 +991,7 @@ $\zeta_{zz}$ obtained from the four-level Magesan-Krantz expression
 makes the free-evolution CZ unfeasible within the available coherence
 budget (Fig.~\ref{fig:CZ_unfeasible}).
 
-The HEATS-Q two-qubit gate has therefore been redirected to an
+The two-qubit gate has therefore been redirected to an
 \emph{echo cross-resonance} protocol at the redesigned operating point
 $\Delta_q = 280$~MHz between qubits, with
 $t_{\mathrm{CNOT}} \sim 250$~ns and $F_{\mathrm{avg}} \gtrsim 99\%$
@@ -1145,7 +1143,7 @@ Innovation 300~GHz  & 600~MHz & 1~GHz   & 180~MHz & 7.0~MHz & 220~ns
 \bottomrule
 \end{tabular}
 \caption{Cross-resonance parameters and predicted gate times for the two
-HEATS-Q configurations. Drive amplitudes are chosen at the leakage-safe
+elevated-temperature configurations. Drive amplitudes are chosen at the leakage-safe
 threshold $\Omega = \min(|\alpha|/3,\Delta_q/3)$.}
 \label{tab:gate_params}
 \end{table}
@@ -1174,7 +1172,7 @@ Figure~\ref{fig:lindblad_validation}.
     \centering
     \includegraphics[width=0.85\textwidth]{chapters/qh_figures/echo_CR_lindblad_validation.png}
     \caption{Master-equation simulation of the cross-resonance gate fidelity
-    for the innovation HEATS-Q point ($\omega_q\!\sim\!300$~GHz, $T=4$~K).
+    at the elevated-temperature operating point ($\omega_q\!\sim\!300$~GHz, $T=4$~K).
     Bare CR (red) is limited by spurious Hamiltonian terms to
     $F_{\text{avg}}\simeq 83\%$. Echo CR (blue) cancels the antisymmetric
     contributions, yielding $F_{\text{avg}}\simeq 91\%$ for an
@@ -1194,7 +1192,7 @@ terms and pulse engineering to the predicted gate fidelity. The progression
 from the analytic estimate to the fully engineered protocol mirrors the
 experimental development of CR gates in
 laboratory~\cite{Sheldon2016, Sheldon2016},
-and constitutes a quantitatively explicit roadmap for the HEATS-Q
+and constitutes a quantitatively explicit roadmap for the elevated-temperature design
 implementation.
 
 \begin{table}[htbp]
@@ -1211,7 +1209,7 @@ Echo-CR + Gaussian shaping + DRAG calibration  & $\gtrsim 99\%$ & state-of-the-a
 \bottomrule
 \end{tabularx}
 \caption{Gate fidelity at four levels of approximation for the innovation
-HEATS-Q point ($\omega_q\!=\!300$~GHz, $T\!=\!4$~K, $T_1\!=\!25~\mu$s,
+redesigned operating point ($\omega_q\!=\!300$~GHz, $T\!=\!4$~K, $T_1\!=\!25~\mu$s,
 $T_2\!=\!12~\mu$s, $\bar{n}_{\text{th}}\!=\!0.028$). The values illustrate
 that achieving $F_{\text{avg}}>99\%$ does not require any new physics
 beyond the pulse-engineering toolkit demonstrated in current
@@ -1356,7 +1354,7 @@ Table~\ref{tab:dilution_vs_pulsetube}.
 \small
 \begin{tabularx}{\linewidth}{@{}l L L@{}}
 \toprule
-\textbf{Aspect} & \textbf{Dilution refrigerator} & \textbf{Pulse-tube cooler (HEATS-Q)} \\
+\textbf{Aspect} & \textbf{Dilution refrigerator} & \textbf{Pulse-tube cooler at 4 K} \\
 \midrule
 Cooling cost      & \$500\,k--\$2\,M                       & \$50\,k--\$100\,k ($10\times$ cheaper) \\
 Cool-down time    & days                                  & hours \\
@@ -1366,7 +1364,7 @@ Integration       & cannot co-locate classical electronics & co-located with cry
 \bottomrule
 \end{tabularx}
 \caption{Operational comparison between dilution-refrigerator and pulse-tube
-cooling for superconducting-qubit platforms. The HEATS-Q innovation targets
+cooling for superconducting-qubit platforms. The elevated-temperature design targets
 the right-hand column.}
 \label{tab:dilution_vs_pulsetube}
 \end{table}
@@ -1674,7 +1672,7 @@ which must be partitioned between the intrinsic junction capacitance
 $C_{J,\text{tot}}$, any deliberate shunt capacitor $C_{\text{sh}}$,
 and unavoidable stray capacitance $C_{\text{stray}}$ to substrate and ground.
 Standard mK transmons have $C_{\Sigma}\sim 50$--$100$~fF, almost entirely
-dominated by a deliberately patterned $C_{\text{sh}}$; HEATS-Q at 300~GHz
+dominated by a deliberately patterned $C_{\text{sh}}$; the elevated-temperature design at 300~GHz
 inverts this picture and leaves no room for an external shunt.
 
 This has direct consequences for the array geometry.
@@ -1715,7 +1713,7 @@ sub-nm tunnel barriers, small individual junctions
 (Sec.~\ref{sec:dielectric_loss_300ghz}) in which $C_{\text{stray}}$ to
 the substrate is suppressed by orders of magnitude relative to a planar 2D
 geometry. The hardware programme outlined here adopts all three measures
-simultaneously; absent any one of them, the 300~GHz HEATS-Q operating point
+simultaneously; absent any one of them, the 300~GHz operating point
 would not be reachable.
 
 \subsubsection{Array Advantages}
@@ -1940,31 +1938,31 @@ Temperature (mK) & $\bar{n}(T)$ \\
 
  For comparison, state-of-the-art Al-based transmons typically operate at $T \sim \SI{20}{mK}$ where $\bar{n} < 10^{-6}$ for $\omega_{01} \sim \SI{5}{GHz}$.
 
-To fully characterize the elevated-temperature operating regime, we analyze the thermal population landscape across a wide parameter space. Figure~\ref{fig:thermal_comprehensive} presents a comprehensive six-panel analysis. The figure deliberately spans the full temperature range from millikelvin to several kelvin to serve two complementary purposes: (i) it benchmarks the thermal-population model in the standard mK regime, where established transmon experiments provide a stringent reference, and (ii) it identifies the (frequency, temperature) corridor in which the HEATS-Q design retains sub-percent thermal excitation. The mK band shaded in panel (a) and the white dashed box of panel (c) therefore mark the \emph{validation} regime, not the target operating regime; the HEATS-Q design points overlaid at $T\in[4,10]\,\text{K}$ identify the actual operating choice. The qubit frequency $\omega_{01}/2\pi = 1.972\,\text{GHz}$ used throughout the figure is itself fixed by the asymmetric-SQUID flux-insensitive sweet spot of the chosen $E_J/E_C$ and asymmetry $d$ (analysed in the flux-tunability subsection that follows), not by a separate thermal optimisation; the figure therefore quantifies how robustly that sweet spot survives the move from mK to 4--10\,K. The analysis reveals several key insights:
+To fully characterize the elevated-temperature operating regime, we analyze the thermal population landscape across a wide parameter space. Figure~\ref{fig:thermal_comprehensive} presents a comprehensive six-panel analysis. The figure deliberately spans the full temperature range from millikelvin to several kelvin to serve two complementary purposes: (i) it benchmarks the thermal-population model in the standard mK regime, where established transmon experiments provide a stringent reference, and (ii) it identifies the (frequency, temperature) corridor in which the elevated-temperature design retains sub-percent thermal excitation. The mK band shaded in panel (a) and the white dashed box of panel (c) therefore mark the \emph{validation} regime, not the target operating regime; the elevated-temperature design points overlaid at $T\in[4,10]\,\text{K}$ identify the actual operating choice. The qubit frequency $\omega_{01}/2\pi = 1.972\,\text{GHz}$ used throughout the figure is itself fixed by the asymmetric-SQUID flux-insensitive sweet spot of the chosen $E_J/E_C$ and asymmetry $d$ (analysed in the flux-tunability subsection that follows), not by a separate thermal optimisation; the figure therefore quantifies how robustly that sweet spot survives the move from mK to 4--10\,K. The analysis reveals several key insights:
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.95\textwidth]{chapters/qh_figures/SET1_comprehensive_analysis_GHz_mK.png}
-\caption{Comprehensive thermal population analysis for elevated-temperature operation. \textbf{(a)} Thermal population versus temperature for different qubit frequencies, showing the HEATS-Q operating range (\SIrange{10}{20} {mK} shaded). \textbf{(b)} Thermal population versus qubit frequency for different temperatures, with the HEATS-Q sweet spot marked at \SI{1.972}{GHz}. \textbf{(c)} Two-dimensional thermal population landscape showing contours of constant thermal excitation; the white dashed box indicates the HEATS-Q operating region. \textbf{(d)} Energy ratio $\hbar\omega_{01}/(k_B T)$ versus temperature, with thresholds for good ($>10$), marginal ($>5$), and poor ($>1$) operation. \textbf{(e)} Performance comparison table showing thermal populations and energy ratios for traditional transmons versus HEATS-Q at various temperatures. \textbf{(f)} Required minimum qubit frequency to maintain specified thermal population thresholds as a function of operating temperature, with HEATS-Q design points overlaid.}
+\caption{Comprehensive thermal population analysis for elevated-temperature operation. \textbf{(a)} Thermal population versus temperature for different qubit frequencies, showing the elevated-temperature operating range (\SIrange{10}{20} {mK} shaded). \textbf{(b)} Thermal population versus qubit frequency for different temperatures, with the elevated-temperature sweet spot marked at \SI{1.972}{GHz}. \textbf{(c)} Two-dimensional thermal population landscape showing contours of constant thermal excitation; the white dashed box indicates the elevated-temperature operating region. \textbf{(d)} Energy ratio $\hbar\omega_{01}/(k_B T)$ versus temperature, with thresholds for good ($>10$), marginal ($>5$), and poor ($>1$) operation. \textbf{(e)} Performance comparison table showing thermal populations and energy ratios for traditional transmons versus the elevated-temperature design at various temperatures. \textbf{(f)} Required minimum qubit frequency to maintain specified thermal population thresholds as a function of operating temperature, with the elevated-temperature design points overlaid.}
 \label{fig:thermal_comprehensive}
 \end{figure}
 
-\paragraph{Temperature Dependence.} Panel (a) demonstrates that for a fixed qubit frequency, thermal population increases exponentially with temperature. The HEATS-Q design operating at $\omega_{01} = \SI{1.972}{GHz}$ maintains thermal excitation below $0.01\%$ across the entire 4--10 K range, well within the acceptable threshold for high-fidelity quantum operations.
+\paragraph{Temperature Dependence.} Panel (a) demonstrates that for a fixed qubit frequency, thermal population increases exponentially with temperature. The elevated-temperature design operating at $\omega_{01} = \SI{1.972}{GHz}$ maintains thermal excitation below $0.01\%$ across the entire 4--10 K range, well within the acceptable threshold for high-fidelity quantum operations.
 
-\paragraph{Frequency Requirements.} Panel (b) shows that higher qubit frequencies dramatically reduce thermal populations at a given temperature. However, as discussed in \textbf{Part C}, frequencies above \SI{40}{GHz} present significant control challenges. The HEATS-Q sweet-spot frequency of \SI{1.972}{GHz} represents an optimal balance between thermal suppression and experimental accessibility.
+\paragraph{Frequency Requirements.} Panel (b) shows that higher qubit frequencies dramatically reduce thermal populations at a given temperature. However, as discussed in \textbf{Part C}, frequencies above \SI{40}{GHz} present significant control challenges. The elevated-temperature sweet-spot frequency of \SI{1.972}{GHz} represents an optimal balance between thermal suppression and experimental accessibility.
 
-\paragraph{Design Space Mapping.} The contour plot in panel (c) provides a global view of the thermal landscape. The logarithmic color scale reveals that the HEATS-Q operating region (white dashed rectangle) lies comfortably within a low-thermal-population zone (blue region, $\bar{n} < 0.01$). This provides significant design margin and tolerance to parameter variations.
+\paragraph{Design Space Mapping.} The contour plot in panel (c) provides a global view of the thermal landscape. The logarithmic color scale reveals that the elevated-temperature operating region (white dashed rectangle) lies comfortably within a low-thermal-population zone (blue region, $\bar{n} < 0.01$). This provides significant design margin and tolerance to parameter variations.
 
-\paragraph{Energy Ratio Criterion.} Panel (d) plots the dimensionless energy ratio $\hbar\omega_{01}/(k_B T)$, which must be $\gg 1$ for quantum behavior to dominate over thermal fluctuations. At the HEATS-Q sweet spot, this ratio exceeds nine even at \SI{10}{mK}, satisfying the criterion for reliable qubit operation. For comparison, traditional transmons at \SI{20}{mK} achieve ratios of $\sim 10^4$, but this extreme suppression is unnecessary for fault-tolerant quantum computing with modern error correction codes.
+\paragraph{Energy Ratio Criterion.} Panel (d) plots the dimensionless energy ratio $\hbar\omega_{01}/(k_B T)$, which must be $\gg 1$ for quantum behavior to dominate over thermal fluctuations. At the elevated-temperature sweet spot, this ratio exceeds nine even at \SI{10}{mK}, satisfying the criterion for reliable qubit operation. For comparison, traditional transmons at \SI{20}{mK} achieve ratios of $\sim 10^4$, but this extreme suppression is unnecessary for fault-tolerant quantum computing with modern error correction codes.
 
-\paragraph{Performance Benchmarking.} The comparison table in panel e) quantitatively demonstrates that HEATS-Q thermal populations remain orders of magnitude below typical gate error rates (0.1--1\%). While traditional Al-based transmons achieve negligible thermal excitation at \SI{20}{mK}, the infrastructural cost of dilution refrigeration makes scaled deployment challenging. According to our estimation, the HEATS-Q approach sacrifices four orders of magnitude in thermal suppression but gains a 70--80\% reduction in cryogenic system cost and complexity.
+\paragraph{Performance Benchmarking.} The comparison table in panel e) quantitatively demonstrates that the elevated-temperature thermal populations remain orders of magnitude below typical gate error rates (0.1--1\%). While traditional Al-based transmons achieve negligible thermal excitation at \SI{20}{mK}, the infrastructural cost of dilution refrigeration makes scaled deployment challenging. According to our estimation, the elevated-temperature approach sacrifices four orders of magnitude in thermal suppression but gains a 70--80\% reduction in cryogenic system cost and complexity.
 
-\paragraph{Design Constraints.} Panel (f) maps the relationship between operating temperature and minimum required qubit frequency for various thermal population thresholds. The HEATS-Q operating points (blue circles) lie well above the 1\% threshold curve, indicating robust operation at standard conditions, with margin for parameter drift and environmental fluctuations. 
+\paragraph{Design Constraints.} Panel (f) maps the relationship between operating temperature and minimum required qubit frequency for various thermal population thresholds. The elevated-temperature operating points (blue circles) lie well above the 1\% threshold curve, indicating robust operation at standard conditions, with margin for parameter drift and environmental fluctuations. 
 
 \paragraph{Operating-regime summary.}
 Figure~\ref{fig:thermal_heatsq} consolidates the conclusions of the
 six-panel analysis above into a single design-oriented view. The left
-panel shows that, at the HEATS-Q sweet-spot frequency
+panel shows that, at the elevated-temperature sweet-spot frequency
 $\omega_{01}/2\pi = \SI{1.972}{GHz}$, thermal population stays below the
 2\% ``excellent'' threshold for $T \lesssim \SI{16}{mK}$ — well within
 the standard mK band of state-of-the-art transmon experiments — and
@@ -1974,8 +1972,8 @@ not the target operating regime, and the fact that all five mK
 operating points fall in the green/light-blue zones provides direct
 empirical anchoring for the modelling assumptions used later in the
 chapter at $T \in [4,10]\,\text{K}$. The right panel makes the trade-off
-that defines the HEATS-Q architecture explicit: relative to a traditional
-Al/AlO$_x$ transmon at \SI{20}{mK}, the HEATS-Q design accepts up to
+that defines the elevated-temperature architecture explicit: relative to a traditional
+Al/AlO$_x$ transmon at \SI{20}{mK}, the elevated-temperature design accepts up to
 four orders of magnitude higher thermal population in exchange for an
 operating temperature that is two orders of magnitude warmer. The 2\,\%
 threshold (red dashed line) marks the upper limit at which the
@@ -1986,7 +1984,7 @@ become the limiting decoherence channel.
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.95\textwidth]{chapters/qh_figures/SET1_operating_regime_GHz_mK.png}
-\caption{HEATS-Q operating regime analysis. \textbf{Left:} Zoomed view of thermal population as a function of temperature for qubit frequencies near the HEATS-Q sweet spot (\SI{1.972}{GHz}, red dashed line). The shaded regions indicate performance zones: green ($< 2\%$, excellent), light-blue (2--5\%, good), and yellow (5--10\%, acceptable). Operating points at 10, 12, 14, 16, and \SI{20}{mK} are marked with values. \textbf{Right:} Bar chart comparing thermal population (solid bars) and normalized energy ratio (hatched bars) between traditional Al/AlO$_x$ transmons at \SI{20}{mK} and HEATS-Q at this range of temperatures. The red dashed line marks the 2\% thermal population threshold.}
+\caption{Elevated-temperature operating regime analysis. \textbf{Left:} Zoomed view of thermal population as a function of temperature for qubit frequencies near the elevated-temperature sweet spot (\SI{1.972}{GHz}, red dashed line). The shaded regions indicate performance zones: green ($< 2\%$, excellent), light-blue (2--5\%, good), and yellow (5--10\%, acceptable). Operating points at 10, 12, 14, 16, and \SI{20}{mK} are marked with values. \textbf{Right:} Bar chart comparing thermal population (solid bars) and normalized energy ratio (hatched bars) between traditional Al/AlO$_x$ transmons at \SI{20}{mK} and the elevated-temperature design at this range of temperatures. The red dashed line marks the 2\% thermal population threshold.}
 \label{fig:thermal_heatsq}
 \end{figure}
 
@@ -2081,7 +2079,7 @@ The renormalized frequencies are:
 \tilde{\omega}_{q,i} &= \omega_{q,i} + \chi_i
 \end{align}
 
-\subsubsection{Numerical Values for HEATS-Q (redesigned operating point)}
+\subsubsection{Numerical values at the redesigned operating point}
 
 Adopting the redesigned operating point $\Delta_q/2\pi = 280$~MHz
 ($\omega_{q,1}/2\pi = 5.640$~GHz, $\omega_{q,2}/2\pi = 5.360$~GHz; see
@@ -2327,7 +2325,7 @@ at least a factor-of-three uncertainty band: $\tan\delta_{\text{sapphire}}
 \in [10^{-7},\,3\times 10^{-7}]$ at $4\,\text{K}$ and $300\,\text{GHz}$
 would map onto $T_{1,\text{diel}}\in[\,18,\,53\,]\,\mu$s with $p=0.1$.
 A dedicated cryogenic sub-THz characterisation of the candidate substrates
-is therefore an explicit prerequisite to a hardware demonstration of HEATS-Q.
+is therefore an explicit prerequisite to a hardware demonstration of the elevated-temperature design.
 
 \paragraph{Numerical Calculation.}
 For a sapphire substrate with $\tan\delta = 10^{-7}$ (typical for high-quality crystalline c-axis sapphire at 4~K~\cite{place2021,Romanenko2020}), the dielectric decay rate at 300~GHz is:
@@ -2668,7 +2666,7 @@ $5$~K & $7.52\%$ & $95.8\%$ & below threshold \\
 \bottomrule
 \end{tabular}
 \caption{Temperature dependence of the thermal population and predicted CNOT
-fidelity for the innovation HEATS-Q point ($\omega_q\sim 300$~GHz). Above $\sim 4$~K
+fidelity at the elevated-temperature operating point ($\omega_q\sim 300$~GHz). Above $\sim 4$~K
 the thermal-induced error rate exceeds the surface-code threshold.}
 \label{tab:thermal_population_vs_T}
 \end{table}
@@ -2895,7 +2893,7 @@ vs Threshold & $-0.10\%$ & $+0.20\%$ & $+0.50\%$ & $+0.85\%$ \\
 
 At elevated temperatures (T = \SI{4}{\kelvin}), we observe a counter-intuitive phenomenon: gate fidelity does \textit{not} monotonically increase with frequency, despite thermal occupation $n_{\text{th}}$ decreasing exponentially. This section analyzes the physical origin of this effect and its implications for optimal qubit design.
 
-The analysis in this section deliberately uses a \emph{simplified, dielectric-loss-only model} of $T_1$, without the 3D-cavity radiative shielding, the echo cross-resonance protocol, or pulse shaping considered in Sec.~\ref{sec:decoherence}--\ref{sec:fidelity}, in order to isolate the competition between $\omega/Q$ (linear in $\omega$) and the thermal enhancement $(1+n_{\text{th}})$ (exponentially suppressed in $\omega$) that produces the non-monotonic landscape. The fidelity numbers reported below (e.g.\ $F_{\text{CNOT}}=34.2\%$ at \SI{300}{\giga\hertz}/\SI{4}{\kelvin}) reflect this simplified model and are \emph{not} the projections for the HEATS-Q design point, which are computed with the full coherence and gate-protocol budget in Sec.~\ref{sec:fidelity} ($F_{\text{CNOT}}\simeq 97.9\%$).
+The analysis in this section deliberately uses a \emph{simplified, dielectric-loss-only model} of $T_1$, without the 3D-cavity radiative shielding, the echo cross-resonance protocol, or pulse shaping considered in Sec.~\ref{sec:decoherence}--\ref{sec:fidelity}, in order to isolate the competition between $\omega/Q$ (linear in $\omega$) and the thermal enhancement $(1+n_{\text{th}})$ (exponentially suppressed in $\omega$) that produces the non-monotonic landscape. The fidelity numbers reported below (e.g.\ $F_{\text{CNOT}}=34.2\%$ at \SI{300}{\giga\hertz}/\SI{4}{\kelvin}) reflect this simplified model and are \emph{not} the projections for the elevated-temperature design point, which are computed with the full coherence and gate-protocol budget in Sec.~\ref{sec:fidelity} ($F_{\text{CNOT}}\simeq 97.9\%$).
 
 \subsection{Competing Physical Effects}
 
@@ -3323,7 +3321,7 @@ The cross-resonance protocol of \S\ref{sec:gate_strategy} reduces the
 two-qubit gate fidelity question to a clear set of materials and engineering
 requirements. We identify here, with quantitative targets, the six
 prerequisites for reaching $F_{\text{avg}} \ge 99\%$ on the innovation
-HEATS-Q operating point ($\omega_q\!\sim\!300$~GHz, $T = 4$~K).
+elevated-temperature operating point ($\omega_q\!\sim\!300$~GHz, $T = 4$~K).
 
 \begin{figure}[htbp]
     \centering
@@ -3375,7 +3373,7 @@ non-radiative channel at $T\gtrsim 1$~K---is addressed in
 Sec.~\ref{sec:decoherence}, where trap engineering is identified as the
 route compatible with the operational $T_1^{\text{qp}}$ target.
 This places the NbN junction technology, together with the trap-engineering
-strategy outlined there, at the centre of the HEATS-Q design.
+strategy outlined there, at the centre of the elevated-temperature design.
 
 \paragraph{P4: Stretched-CR detuning regime.}
 Following \S\ref{subsec:dq_optimization}, the optimal qubit--qubit detuning
@@ -3408,7 +3406,7 @@ key open experimental question, in addition to P2.
 
 \medskip
 
-In summary, the high-temperature operation of HEATS-Q is shown to be feasible
+In summary, the high-temperature operation of the present design is shown to be feasible
 within a sweet spot whose boundary is defined by quantitatively explicit and
 independently testable engineering targets (P1--P6). Two prerequisites (P2 and
 P6) require dedicated experimental validation at sub-THz frequencies, while
