@@ -2572,7 +2572,7 @@ T_{2,\text{echo}} \sim 2T_2 \approx 30 \text{ $\mu$s}
 
 \subsection{Temperature Dependence}
 
-Figure~\ref{fig:decoherence}(g) shows CNOT fidelity versus temperature. Key observations:
+Figure~\ref{fig:decoherence}(e) shows CNOT fidelity versus temperature. Key observations:
 \begin{table}[h]
 \centering
 \begin{tabular}{@{}cccl@{}}
@@ -2596,14 +2596,12 @@ The optimal operating window is 3--4 K, balancing thermal errors against refrige
 \begin{figure}[p]
 \centering
 \includegraphics[width=0.95\textwidth]{chapters/qh_figures/CORRECTED_fig3_decoherence_fidelity.png}
-\caption{\textbf{Comprehensive Decoherence Analysis.}
-\textbf{(a)} $T_1$ versus frequency for different loss mechanisms. Dielectric loss (red) scales as $1/\omega$. Radiative loss (dashed dark red) scales as $1/\omega^2$ when unshielded—catastrophic at 300 GHz! With 3D cavity providing 60 dB electromagnetic shielding (cyan), radiative loss is manageable. Quasiparticle tunneling (green) is frequency-independent—a key advantage at 300 GHz. Operating points: baseline 5.8 GHz/20mK (green circle) and innovation 300 GHz/4K (orange star).
-\textbf{(b)} $T_1$ contribution breakdown at 300 GHz showing relative importance of each mechanism. Quasiparticle (41\%) and TLS (41\%) dominate, with smaller contributions from dielectric, radiative, and Purcell decay.
-\textbf{(c)} $T_2$ versus $T_1$ for different pure dephasing times $T_\phi$. Black dashed line shows ideal limit $T_2 = 2T_1$ (no pure dephasing). Current projection (orange star) shows $T_2 \approx 0.74 T_1$, indicating manageable pure dephasing.
-\textbf{(d)} Quasiparticle $T_1$ versus temperature. At 4 K (orange line), thermal activation increases quasiparticle density compared to baseline 20 mK (green line), but effect is moderate due to large superconducting gap.
-\textbf{(e)} Single-qubit gate error versus $T_2$ for 20 ns gates. Current $T_2 = 13.2$ $\mu$s (orange bar) gives error $< 0.2\%$. Green reference line shows 0.1\% target.
-\textbf{(f)} CNOT error budget showing contributions from each source: decoherence (0.58\%), thermal excitation (1.41\%), leakage to higher levels (0.01\%), and control errors (0.10\%). Total error 2.1\% corresponds to fidelity 97.9\%. Red dashed line indicates 2\% threshold for error correction.
-\textbf{(g)} CNOT fidelity versus temperature. Optimal operating window (green shaded, 3--5 K) balances thermal errors against refrigeration complexity. At target 4 K (green star), fidelity is 97.3\%, near the 98\% threshold (red line). Green and yellow bands indicate above-threshold and near-threshold regions.}
+\caption{\textbf{Comprehensive decoherence analysis.}
+\textbf{(a)} $T_1$ versus frequency for the different loss mechanisms considered. Dielectric loss (red, solid) scales as $1/\omega$. Radiative loss is catastrophic at $300$~GHz when unshielded (dark red, dashed) but is brought back into the manageable range by a 3D cavity providing $\sim 60$~dB of electromagnetic shielding (cyan). Quasiparticle tunneling (green) is frequency-independent in the regime considered here, which is the key advantage at $300$~GHz. The two operating points overlaid are the baseline ($5.8$~GHz, $20$~mK, green circle) and the elevated-temperature point ($300$~GHz, $4$~K, orange star).
+\textbf{(b)} $T_1$ contribution breakdown at the elevated-temperature operating point ($300$~GHz, $4$~K), expressed as relative contribution to $1/T_1$. Quasiparticle ($31.6\%$) and TLS ($30.7\%$) are the two dominant channels; dielectric ($28.9\%$), radiative ($4.1\%$) and Purcell ($4.8\%$) play smaller roles. The total $T_1 = 15.3~\mu$s reported in the box is the sum over channels at $4$~K.
+\textbf{(c)} Single-qubit and CNOT gate fidelity bars at the elevated-temperature point. The single-qubit gate ($20$~ns) reaches $F = 99.81\%$, comfortably above the $98\%$ fault-tolerance threshold (red dashed line). The CNOT gate ($168$~ns) reaches $F = 95.95\%$, below the threshold, which is the central engineering challenge addressed by the prerequisites P1--P6 in Sec.~\ref{sec:fidelity}.
+\textbf{(d)} CNOT error budget at the elevated-temperature operating point, with the four contributions decomposed: decoherence ($2.54\%$), thermal excitation ($1.41\%$), single-qubit control ($0.10\%$), and leakage to higher levels ($0.00\%$). Their sum, $4.05\%$, gives the total CNOT error and matches the $1 - F = 4.05\%$ from panel~(c). The red dashed line marks the $2\%$ target for surface-code fault tolerance.
+\textbf{(e)} CNOT fidelity versus operating temperature. At the design point of $4$~K (green star), the projected fidelity is $\simeq 96\%$, against the $98\%$ surface-code threshold (red dashed line). The yellow band marks the operational window in which the fidelity is close to threshold, the green band marks the above-threshold region; the figure makes explicit that the cryogenic working point and the threshold meet only with the additional gains from the technological prerequisites of Sec.~\ref{sec:fidelity}.}
 \label{fig:decoherence}
 \end{figure}
 
@@ -2699,7 +2697,7 @@ therefore reads:
 
 \textbf{\textcolor{correction}{Gap to 98\% threshold: $-0.10\%$ (marginally below threshold)}}
 
-Figure~\ref{fig:decoherence}(f) shows the error budget breakdown.
+Figure~\ref{fig:decoherence}(d) shows the error budget breakdown.
 
 \subsubsection{Comparison with State-of-the-Art}
 
