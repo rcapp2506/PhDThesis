@@ -1962,6 +1962,7 @@ Three caveats are in order. First, the experiment uses a $2$-class subset of Eur
 On the binary EuroSAT subset, late fusion with moderately wide quantum channels gives a stable design point across the configurations tested, with a visible margin over the purely classical ablation at the first epoch that does not, however, persist once both architectures have reached the convergence plateau. Beyond the simulator results, the candidate has been transferred to physical hardware: the credit-bounded fine-tuning campaign on IQM Emerald (Sec.~\ref{sec:hw_validation}) recovers the simulator's $100\%$ validation accuracy in two on-device epochs, despite per-block readout biases consistent with the device calibration. This indicates that parameter-shift fine-tuning of the trainable quantum weights remains usable at the modest scale of the present ansatz ($n_w=4$); the result is not, by itself, evidence of a behaviour that would extrapolate to deeper variational ansätze. The complementary paired multi-seed study under a calibrated IBM Heron r2 noise model (Sec.~\ref{sec:noise_resilience}) extends this picture beyond the on-device budget: the classification accuracy of the hybrid pipeline is statistically indistinguishable from the noiseless reference (paired Wilcoxon $p=0.062$ on $R=10$ seeds), with only a transient perturbation on the loss visible in the first three training epochs and fully absorbed by epoch~5. Future work will extend the evaluation to multi-class EuroSAT and other remote-sensing benchmarks, and explore noise-aware training (gradient-aware shot allocation, advanced error mitigation, deeper variational ansätze) where barren-plateau and noise-induced gradient suppression effects~\cite{McClean2018,Holmes2022PRXQ,Wang2021NoiseInducedBP} are expected to play a larger role.
 
 \section{Discussion}
+\label{sec:discussion}
 On the binary EuroSAT subset and within the model family explored here, inserting a shallow, locality-preserving quantum layer into a CNN pipeline produces (i) a visible margin at epoch~$1$ of the simulated training trajectory and (ii) validation losses that are comparable to, and not systematically larger than, those of the classical ablation at convergence. We read these observations as compatible with the view that patch-wise quantum embeddings provide an inductive bias that is complementary to classical convolutions~\cite{Havlicek2019,Schuld2019PRA,Cong2019}, without further inferring a category of speed-up. In particular, \emph{late fusion} with moderately wide quantum channels appears to yield the most favourable trade-off between accuracy and variance among the configurations tested, while merely increasing circuit depth does not — a behaviour that is consistent with the relation between expressibility and gradient magnitude reported in the trainability literature~\cite{Holmes2022PRXQ,cerezo2021}.
 
 \paragraph{Statistical robustness.}
@@ -2002,41 +2003,9 @@ Limitations remain in encoding expressivity and in the scaling of gradient estim
 
 \section{Conclusions and Outlook}
 
-This work presented a unified framework for analyzing hybrid quantum--classical
-convolutional neural networks under realistic timing constraints.
-By integrating calibrated device properties from Qiskit's \emph{BackendV2/Target}
-interface into the model evaluation loop, we established a direct link between
-circuit-level metrics (duration-weighted depth, qubit-time, scheduled duration)
-and system-level performance indicators such as batch time and training latency.
-This runtime-aware formulation enables quantitative prediction of wall-time cost
-before hardware execution, providing a principled way to balance accuracy and scalability.
+This chapter has developed a hybrid quantum--classical convolutional neural network for binary satellite-image classification on a subset of EuroSAT, characterised it against matched and high-capacity classical controls at $R=10$ independent seeds, and validated the chosen architecture on the IQM Emerald 54-qubit superconducting processor within a fixed credit budget. A runtime-aware cost model was calibrated against $195$ production jobs on the same device, and a complementary multi-seed study under a calibrated IBM Heron r2 noise model addressed the noise sensitivity of the pipeline beyond the on-device two-epoch budget.
 
-Our experiments on the EuroSAT dataset show that Late Fusion architectures,
-where multiple shallow quantum circuits process disjoint feature subsets, achieve
-a more favorable runtime--accuracy trade-off than Early Fusion models based on
-single, deeper encoders.  
-These findings support the notion that architectural modularity --- in both
-classical and quantum components --- is key to scalable hybrid learning.
-A paired multi-seed analysis under a calibrated IBM Heron r2 noise model further indicates that the classification accuracy of the hybrid pipeline is robust to gate-level noise of contemporary superconducting devices in the studied binary-task regime, with only a transient perturbation on the loss visible in the first three training epochs; this is consistent with the picture in which a sufficiently expressive classical post-processing head absorbs the small, uncorrelated noise contribution of the quantum layer, and suggests that variational hybrid models in this class are a more natural target for current NISQ-class hardware than coherent quantum algorithms whose correctness depends on phase precision.
+Three findings stand out. The hybrid architecture exhibits a $\sim 29$~pp training-efficiency advantage at the first epoch against the structurally isomorphic matched-capacity classical control, alongside a $\sim 2.6$~pp asymptotic-accuracy deficit at convergence on the same comparison ($p=2.7\times 10^{-2}$, paired Wilcoxon exact). Two on-device fine-tuning epochs on IQM Emerald recover the simulator's full validation accuracy under parameter-shift gradients, on a $1284$-credit campaign tracked by an explicitly calibrated cost model. Under the IBM Heron r2 noise model the final classification accuracy is statistically indistinguishable from the noiseless reference (paired Wilcoxon $p=0.062$), with only a transient perturbation on the loss visible in the first three training epochs and fully absorbed by epoch~5.
 
-Beyond the specific QCNN architecture considered here, the proposed methodology
-extends naturally to other variational and differentiable quantum models.
-Its abstraction layer allows timing and resource estimations to be expressed as
-functions of circuit depth, parameter count, and measurement grouping, thus
-generalizing across devices and problem domains.
-Such a formulation can guide the design of hybrid algorithms that are
-hardware-conscious by construction.
-
-Future developments will focus on three complementary directions:
-(i) validating the runtime model on real quantum hardware (IQM, IBM),
-incorporating queue and initialization overheads;
-(ii) exploring automated runtime-aware co-design, where circuit topology and encoding are optimized jointly for expressivity and latency;
-and (iii) extending benchmarking to multi-class and multi-spectral datasets
-to test scaling behavior beyond the binary EuroSAT subset.
-
-In summary, runtime-aware metrics provide a missing layer between algorithmic
-innovation and hardware capability.
-By treating time and resource consumption as measurable quantities rather than
-secondary constraints, they enable a more grounded path toward deployable
-quantum--classical learning systems.
+The scope of these findings is restricted: a binary task, a single architecture family, two devices, and a credit-bounded on-device budget. Whether the early-epoch training-efficiency advantage persists against independently tuned classical baselines, whether the on-device parameter-shift adaptation extrapolates to deeper variational ansätze where barren-plateau effects become relevant, and whether the noise resilience observed here survives multi-class settings or non-uniform error profiles are open questions that the present work does not settle. The directions identified in Sec.~\ref{sec:discussion} --- multi-class benchmarks, shot scheduling, learned entangling patterns, larger-scale hardware studies --- are the natural follow-ups; each of them would tighten one of the limitations stated above without, on its own, resolving them all.
 
