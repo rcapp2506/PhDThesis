@@ -3297,36 +3297,11 @@ In the baseline regime (qubit frequency $5$--$6$~GHz, $T \in [10,20]$~mK), asymm
 
 At $300$~GHz with $T \in [4,10]$~K the same architecture maintains thermal populations in the $3$--$10\%$ range and yields projected single- and two-qubit fidelities above the surface-code threshold considered in Sec.~\ref{sec:fidelity}, modulo the residual gap of $\sim 0.1$ percentage points discussed above. The configuration thus defines a design point at which the simulation framework predicts viable transmon operation outside the dilution-refrigerator regime. Whether the same regime can be reached experimentally is a question that the present work formulates quantitatively but does not, by itself, answer.
 
-%\subsubsection{Final Considerations}
+\subsubsection*{Materials and integration context}
 
-State-of-the-art superconducting qubits use Al/AlO$_x$/Al junctions operated at $10$–$20$~mK in dilution refrigerators~\cite{krantz2019}, achieving coherence times exceeding 300~$\mu$s. In contrast, our approach employs epitaxial NbN/AlN/NbN junctions on sapphire~\cite{nakamura2011epitaxialNbN, kim2021}, which have demonstrated $T_1 \approx 16~\mu$s and $T_c \approx 16$~K at conventional operating temperatures, and we project these to enable coherent operation at $4$–$10$~K in compact cryocoolers.  
-This opens the path to direct co-integration with cryo-CMOS electronics~\cite{Acharya2022, VanWinckel2022, Underwood2024}, drastically reducing cryogenic infrastructure cost ($70$–$80\%$ savings), cooldown time, and system footprint. 
+State-of-the-art superconducting qubits based on Al/AlO$_x$/Al junctions operated at $10$--$20$~mK in dilution refrigerators have reached coherence times exceeding $300~\mu$s~\cite{krantz2019, place2021}, the present benchmark against which any elevated-temperature design will be assessed. The architecture analysed here adopts epitaxial NbN/AlN/NbN junctions on sapphire~\cite{nakamura2011epitaxialNbN, kim2021}, which have been demonstrated at conventional cryogenic temperatures with $T_1 \approx 16~\mu$s and $T_c \approx 16$~K; the present modelling extends those materials to a $4$--$10$~K operating window, where compact cryocoolers replace the dilution refrigerator. Whether the lower thermal budget at this stage of the cryogenic stack can be exploited to co-integrate the control electronics in the cryo-CMOS technology developed for sub-Kelvin work~\cite{Acharya2022, VanWinckel2022, Underwood2024} is a separate engineering question; here we note only that the elevated-temperature operating point is compatible with such an integration in principle, and we do not attempt a quantitative resource accounting.
 
-\textbf{What is new vs.\ prior art.}  
-We demonstrate Kelvin-scale coherent qubits with engineered junction asymmetry for tunability and flux-noise suppression.  
-Operation at $\sim$10~K maintains transmon anharmonicity ($|\alpha|/2\pi\sim 0.1$–$0.3$~GHz) and dispersive readout ($\chi/\kappa\gg1$), matching circuit-QED requirements.
-
-\textbf{Why now.}  
-Advances in high-$T_c$ nitride epitaxy, robust microwave control hardware, and commercial cryocoolers enable practical operation above 4~K. The possibility of seamless cryo-CMOS integration motivates a transition beyond dilution refrigerators.
-
-\textbf{Competitive advantage.}  
-\begin{table}[h]
-\centering
-\begin{tabularx}{\linewidth}{@{}l L@{}}
-\toprule
-\textbf{Dimension} & \textbf{Competitive advantage of HEATS-Q} \\
-\midrule
-Cost / infrastructure & removal of dilution refrigerators cuts capex/opex by $70$--$80\%$ \\
-Integration           & short control chains reduce attenuation, latency, and wiring complexity \\
-Throughput            & cool-down in hours (vs.\ days) accelerates fab--test iterations \\
-Scalability           & 2D layouts remain compatible with surface-code error correction~\cite{Barends2014,arute2019quantum} \\
-\bottomrule
-\end{tabularx}
-\caption{Competitive-advantage dimensions of the HEATS-Q architecture.}
-\label{tab:competitive_advantage}
-\end{table}
-
-All-nitride epitaxial junctions and tantalum-based films~\cite{place2021,kim2021} extend coherence to the millisecond range. NbN technology enables operation above liquid-helium temperature, easing cryogenic integration while preserving strong nonlinearity. Coupling with Rydberg-based receivers may enable hybrid quantum sensing–computing architectures. We presented a design framework for a 4-K asymmetric SQUID transmon using NbN/AlN/NbN junctions, discussed losses and decoherence, and outlined EM and readout strategies. The approach bridges superconducting hardware and quantum sensing, supporting the integration of these technologies within scalable hybrid quantum systems.
+In summary, the chapter has developed a model of an asymmetric SQUID transmon based on NbN/AlN/NbN junctions, characterised its baseline behaviour at $10$--$20$~mK against established transmon performance, and used the same modelling framework to examine an elevated-temperature operating point at $300$~GHz and $4$~K. The projections at the elevated-temperature operating point sit close to the gate-fidelity range required by the algorithms of Chapter~\ref{ch:quantum_algorithms}; whether they survive a fabrication and measurement campaign is the open experimental question on which the practical interest of the design depends.
 
 % =============================================================================
 % [G7 PATCH P5] — Section appended for revision G7 (May 2026)
