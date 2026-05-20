@@ -456,6 +456,28 @@ where $d \equiv (E_{J1}-E_{J2})/(E_{J1}+E_{J2})$ is the junction asymmetry. Repl
 
 In a \emph{symmetric} SQUID ($d=0$), $E_J^{\rm eff}(\Phi)$ varies between a maximum at $\Phi=0$ and exactly zero at $\Phi=\Phi_0/2$: the qubit has a frequency-maximum sweet spot at zero flux, where the first-order sensitivity to flux noise vanishes ($\partial \omega_{01}/\partial\Phi = 0$), but the second sweet spot, at $\Phi=\Phi_0/2$, lies where the qubit frequency itself collapses to zero and is therefore not operational. In an \emph{asymmetric} SQUID ($d \neq 0$), the cancellation at $\Phi=\Phi_0/2$ is incomplete: $E_J^{\rm eff}(\Phi_0/2) = (E_{J1}+E_{J2}) |d|$ remains finite, and the qubit retains a non-zero frequency at this second flux-insensitive point. The asymmetric design therefore offers \emph{two} operational sweet spots per flux period, both first-order insensitive to flux noise, with the lower one accessible at a frequency that can be chosen by engineering the asymmetry $d$~\cite{Hutchings2017}. This second sweet spot is the design lever that the rest of the chapter relies on, especially in the elevated-temperature regime where pushing the upper sweet spot to several hundred GHz, while retaining a controllable lower sweet spot at flux $\Phi_0/2$, is the central architectural idea.
 
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\linewidth]{chapters/qh_figures/fig_qubit_squid_didactic.pdf}
+  \caption{Two ingredients of the asymmetric-SQUID transmon. (a) The
+    harmonic LC oscillator (left) has equally spaced levels and cannot
+    be addressed selectively as a two-level system; the cosine potential
+    of the transmon (right), arising from the Josephson energy, produces
+    an anharmonic spectrum in which the transitions $\omega_{10}$ and
+    $\omega_{21}$ differ by $\alpha \approx -E_C$, enough to confine
+    microwave drives at $\omega_{10}$ to the lower two levels. The
+    anharmonicity is exaggerated for clarity. (b) The asymmetric SQUID
+    replaces the single Josephson junction of the transmon with two
+    junctions of different energies $E_{J1} \neq E_{J2}$ in parallel,
+    threaded by an external magnetic flux $\Phi_{\rm ext}$. The
+    effective Josephson energy $E_J^{\rm eff}(\Phi)$ depends on the
+    flux through the interferometric expression shown above the loop;
+    the asymmetry parameter $d$ controls how much of the upper-sweet-spot
+    Josephson energy survives at $\Phi = \Phi_0/2$, where the qubit
+    therefore retains a finite, flux-insensitive frequency.}
+  \label{fig:hw_preliminaries_didactic}
+\end{figure}
+
 \subsubsection*{Circuit quantum electrodynamics (cQED)}
 
 \emph{Circuit quantum electrodynamics} (cQED) is the framework in which a superconducting qubit is coupled to a microwave electromagnetic resonator fabricated on the same chip~\cite{blais2021circuit}. The construction is the on-chip analogue of \emph{cavity QED} (CQED), the older atomic-physics framework in which natural atoms are coupled to optical or microwave cavities; following the convention adopted in the recent literature, we use the lower-case `c' (cQED) for the circuit version and reserve the upper-case `C' (CQED) for the cavity version, since the two regimes -- one with engineered, lithographically defined ``atoms'' and a transmission-line resonator, the other with natural atoms and a high-finesse cavity -- share the same Jaynes--Cummings Hamiltonian but differ substantially in coupling strengths and operating frequencies.
