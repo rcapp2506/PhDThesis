@@ -1166,8 +1166,8 @@ Lindblad of echo-CR (square drive)             & $91\%$         & residual highe
 Echo-CR + Gaussian shaping + DRAG calibration  & $\gtrsim 99\%$ & state-of-the-art experimental~\cite{Sheldon2016} \\
 \bottomrule
 \end{tabularx}
-\caption{Gate fidelity at four levels of approximation for the innovation
-redesigned operating point ($\omega_q\!=\!300$~GHz, $T\!=\!4$~K, $T_1\!=\!25~\mu$s,
+\caption{Gate fidelity at four levels of approximation for the elevated-temperature
+operating point ($\omega_q\!=\!300$~GHz, $T\!=\!4$~K, $T_1\!=\!25~\mu$s,
 $T_2\!=\!12~\mu$s, $\bar{n}_{\text{th}}\!=\!0.028$). The values illustrate
 that achieving $F_{\text{avg}}>99\%$ does not require any new physics
 beyond the pulse-engineering toolkit demonstrated in current
@@ -1521,7 +1521,7 @@ Detuning & 0.7--1.3~GHz & 10--20~GHz \\
 Operating temperature & 10--20~mK & 4--10~K \\
 \bottomrule
 \end{tabular}
-\caption{Baseline vs 300~GHz system parameters}
+\caption{System parameters of the baseline and the elevated-temperature ($300$~GHz, $4$~K) configurations: cavity frequency, qubit--cavity coupling strength, qubit--cavity detuning range, and operating temperature. Detuning ranges scale with the qubit frequency in each regime so that the dispersive condition is maintained.}
 \end{table}
 
 \subsubsection{Junction Geometry: Area and Diameter Calculation }
@@ -1869,7 +1869,7 @@ Temperature (mK) & $\bar{n}(T)$ \\
 20 & $5.23 \times 10^{-3}$   \\
 \hline
 \end{tabular}
-\caption{Thermal population at various temperatures.}
+\caption{Thermal occupation $\bar{n}_{\text{th}} = [\exp(\hbar\omega_{01}/k_B T) - 1]^{-1}$ of the qubit excited state at the asymmetric-SQUID flux-insensitive sweet spot ($\omega_{01}/2\pi = 1.972$~GHz), tabulated across the mK validation range. Values in the $10^{-5}$--$10^{-3}$ range confirm that the sweet-spot frequency keeps the device in the quantum regime throughout the standard cryogenic working band.}
 \label{tab:thermal}
 \end{table}
 
@@ -2493,7 +2493,7 @@ T_1^{\text{Purcell}} = \boxed{320 \text{ }\mu\text{s}}
 
 \begin{table}[H]
 \centering
-\caption{Corrected $T_1$ Breakdown}
+\caption{Breakdown of the five $T_1$ contributions at the elevated-temperature operating point ($300$~GHz, $4$~K), with the relative weight of each channel in the total decay rate $1/T_1^{\text{total}}$. The quasiparticle contribution assumes the trap-engineered configuration discussed in Sec.~\ref{sec:decoherence}.}
 \begin{tabular}{@{}lcc@{}}
 \toprule
 Mechanism & $T_1$ ($\mu$s) & Contribution \\
@@ -2704,7 +2704,7 @@ Figure~\ref{fig:decoherence}(d) shows the error budget breakdown.
 
 \begin{table}[H]
 \centering
-\caption{Comparison with Conventional Qubits}
+\caption{Comparison of figures of merit between the baseline mK configuration (5.8~GHz, 20~mK) and the elevated-temperature configuration (300~GHz, 4~K). The ratio column quantifies the trade-offs accepted by the elevated-temperature design: a $\sim\!50\times$ higher operating frequency and $\sim\!200\times$ higher temperature in exchange for projected coherence times an order of magnitude shorter, with a CNOT fidelity gap of $\sim\!1$ percentage point relative to the millikelvin reference.}
 \begin{tabular}{@{}lccc@{}}
 \toprule
 Parameter & 5.8 GHz / 20 mK & 300 GHz / 4 K & Ratio \\
@@ -3032,7 +3032,7 @@ The high operating frequency necessitates Josephson junctions of small physical 
 
 Advanced lithography techniques form the foundation of the mitigation strategy. E-beam lithography provides the necessary 10~nm resolution, implemented through the Dolan bridge shadow evaporation technique. Multiple test fabrication runs allow for process optimization and yield improvement. Achieving the required high current density demands thin oxide barriers of approximately 1~nm thickness, fabricated through precisely controlled oxidation with in-situ monitoring or atomic layer deposition (ALD) for enhanced uniformity.
 
-An innovative approach to improve both yield and uniformity involves implementing junction arrays, where an $N \times N$ array of smaller junctions (for example, a $4 \times 4$ array of 250~nm junctions) provides the same total critical current while reducing individual junction size requirements. Additionally, the asymmetric SQUID architecture provides intrinsic flux tunability, allowing $\pm 5\%$ frequency tuning to compensate for fabrication variations. This multi-pronged approach yields a success probability of 70--80\% when implemented in a specialized fabrication facility. Figure~\ref{fig:challenges}(b) compares different substrate options, while Figure~\ref{fig:system_parameters}(c) illustrates the junction sizing considerations.
+An alternative approach to improve both yield and uniformity involves implementing junction arrays, where an $N \times N$ array of smaller junctions (for example, a $4 \times 4$ array of 250~nm junctions) provides the same total critical current while reducing individual junction size requirements. Additionally, the asymmetric SQUID architecture provides intrinsic flux tunability, allowing $\pm 5\%$ frequency tuning to compensate for fabrication variations. This multi-pronged approach yields a success probability of 70--80\% when implemented in a specialized fabrication facility. Figure~\ref{fig:challenges}(b) compares different substrate options, while Figure~\ref{fig:system_parameters}(c) illustrates the junction sizing considerations.
 
 \paragraph{Current Density Engineering and Facility Requirements}
 
@@ -3081,7 +3081,7 @@ Modern pulse-tube coolers, such as the Cryomech PT420, provide 1~W of cooling po
 \centering
 \includegraphics[width=0.95\textwidth]{chapters/qh_figures/fig4_technical_challenges.png}
 \caption{\textbf{Technical Challenges and Mitigation Strategies.}
-\textbf{(a)} Loss mechanism scaling comparison between baseline (5.8 GHz, green) and innovation (300 GHz, various colors). Dielectric loss (red) increases 52×. Radiative loss (dark red) increases catastrophically by 2675× if unshielded. Quasiparticle loss (green) remains constant—key advantage. Log scale emphasizes dramatic scaling differences. The inset box highlights the critical challenge and the mitigation approach.
+\textbf{(a)} Loss mechanism scaling comparison between baseline (5.8 GHz, green) and elevated-temperature design (300 GHz, various colors). Dielectric loss (red) increases 52×. Radiative loss (dark red) increases catastrophically by 2675× if unshielded. Quasiparticle loss (green) remains constant—key advantage. Log scale emphasizes dramatic scaling differences. The inset box highlights the critical challenge and the mitigation approach.
 \textbf{(b)} Substrate comparison at 300 GHz. Standard silicon (red) gives unacceptably short $T_1 \sim 10$ $\mu$s. High-resistivity silicon (orange) and sapphire (green) provide $T_1 > 100 \mu$s. Target (dark green) shows achievable performance with optimized materials and design. The red dashed line indicates a 30 $\mu$s minimum requirement. The green shaded region shows the acceptable range. The inset box recommends sapphire or high-$\rho$ Si.
 \textbf{(c)} Improvement pathways to reach 98\% CNOT threshold. Current system (orange, 97.9\%) falls 0.1\% short. Individual improvements (green shades): better substrates (+0.3\%), lower temperature to 3.5 K (+0.3\%), and optimized control pulses (+0.05\%). Combined approach (dark green) achieves 99.1\%, comfortably exceeding threshold (red dashed line). The green shaded region indicates above-threshold performance. Each bar represents the fidelity value and its improvement over the baseline.}
 \label{fig:challenges}
@@ -3089,15 +3089,15 @@ Modern pulse-tube coolers, such as the Cryomech PT420, provide 1~W of cooling po
 
 \subsection{Comparison Summary}
 
-Table~\ref{tab:baseline_comparison} compares baseline and innovation systems.
+Table~\ref{tab:baseline_comparison} compares the baseline and elevated-temperature configurations.
 
 \begin{table}[h]
 \centering
-\caption{Comparison of baseline and innovation systems}
+\caption{Comparison of the baseline and elevated-temperature configurations}
 \label{tab:baseline_comparison}
 \begin{tabular}{@{}lccl@{}}
 \toprule
-Parameter & Baseline & Innovation & Change \\
+Parameter & Baseline & Elevated-T & Change \\
 \midrule
 Frequency & 5.8 GHz & 300 GHz & $52\times$ \\
 Temperature & 20 mK & 4 K & $200\times$ \\
@@ -3117,7 +3117,7 @@ Cooldown time & 5 days & 4 hours & $0.033\times$ \\
 \end{tabular}
 \end{table}
 
-The innovation accepts a small ($< 1\%$) reduction in two-qubit fidelity in exchange for the resource-related advantages discussed in Sec.~\ref{sec:summary_of_findings}: a $70$--$80\%$ reduction in cryogenic-stack cost, hour-scale rather than day-scale cool-down, and a footprint compatible with co-located cryo-CMOS control electronics.
+The elevated-temperature design accepts a small ($< 1\%$) reduction in two-qubit fidelity in exchange for the resource-related advantages discussed in Sec.~\ref{sec:summary_of_findings}: a $70$--$80\%$ reduction in cryogenic-stack cost, hour-scale rather than day-scale cool-down, and a footprint compatible with co-located cryo-CMOS control electronics.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -3147,7 +3147,7 @@ Single-qubit fidelity                  & $99.85\%$ \\
 Two-qubit fidelity                     & $97.9\%$ ($0.1\%$ below the $98\%$ target) \\
 \bottomrule
 \end{tabular}
-\caption{Technical-feasibility indicators at the innovation operating point ($300$~GHz, $4$~K). Coherence times are projections from the loss budget of Sec.~\ref{sec:decoherence}; gate fidelities are computed in Sec.~\ref{sec:fidelity}.}
+\caption{Technical-feasibility indicators at the elevated-temperature operating point ($300$~GHz, $4$~K). Coherence times are projections from the loss budget of Sec.~\ref{sec:decoherence}; gate fidelities are computed in Sec.~\ref{sec:fidelity}.}
 \label{tab:tech_feasibility_4K}
 \end{table}
 
