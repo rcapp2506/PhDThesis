@@ -817,12 +817,7 @@ Experimental realisation of the Rydberg avalanche detector for axion searches wo
 
 \subsubsection{Atomic Platform}
 
-Cold Rubidium or Cesium atoms trapped in an optical lattice or tweezer array provide the required control and isolation. State-of-the-art atom trapping experiments routinely achieve:
-\begin{itemize}
-    \item Lattice spacings $a \sim 1$--7 $\mu$m (tunable via optical wavelength)
-    \item Atom numbers $N \sim 10$--100 with near-unity filling fraction
-    \item Trapping lifetimes $> 1$ s (sufficient for multiple detection cycles)
-\end{itemize}
+Cold Rubidium or Cesium atoms trapped in an optical lattice or tweezer array provide the required control and isolation. State-of-the-art atom trapping experiments routinely achieve lattice spacings $a \sim 1$--$7~\mu$m (tunable via optical wavelength), atom numbers $N \sim 10$--$100$ with near-unity filling fraction, and trapping lifetimes longer than $1$~s, sufficient for multiple detection cycles.
 
 The atomic ensemble is positioned at an antinode of the microwave cavity mode, so that the same high-$Q$ cavity that resonantly enhances the axion-to-photon conversion (Sec.~\ref{sec:axion_theoretical_framework}) also delivers the converted photon to the atoms with maximal probability of absorption. This dual role---conversion and absorption combined in a single cavity, rather than separated into two cavities linked by a transmission line as in CARRACK~\cite{Yamamoto2001,Tada1999} and Graham~\emph{et al.}~\cite{Graham2024}---is the engineering signature of the present architecture.
 
@@ -854,13 +849,7 @@ Direct fluorescence imaging of Rydberg states is fundamentally limited by their 
 
 \subsubsection{Cavity Integration}
 
-The Rydberg detector must be integrated into a high-$Q$ microwave cavity immersed in a strong magnetic field. Key requirements include:
-\begin{itemize}
-    \item Optical access for laser cooling, trapping, and imaging
-    \item Vacuum environment ($< 10^{-10}$ mbar) for long atom lifetimes
-    \item Thermal anchoring to 4 K stage while maintaining optical and microwave isolation
-    \item Mode matching between cavity and atomic transition ($\pm 10$ MHz)
-\end{itemize}
+The Rydberg detector must be integrated into a high-$Q$ microwave cavity immersed in a strong magnetic field. Key requirements include optical access for laser cooling, trapping, and imaging; a vacuum environment ($< 10^{-10}$~mbar) for long atom lifetimes; thermal anchoring to the $4$~K stage while maintaining optical and microwave isolation; and mode matching between cavity and atomic transition to within $\pm 10$~MHz.
 
 Recent work on hybrid quantum systems~\cite{Hogan2012,Hermann2014} demonstrates the feasibility of integrating cold atom platforms with superconducting cavities, providing a roadmap for the required engineering.
 
@@ -904,12 +893,7 @@ This backaction analysis closes the loop on a concern that naturally arises for 
 
 \subsubsection*{Cryogenic Operation}
 
-While the detector operates at 4 K, the surrounding cavity and magnet may require lower temperatures for optimal performance. A staged cooling architecture is envisioned:
-\begin{itemize}
-    \item 4 K stage: Atomic platform (pulse-tube cooler)
-    \item 1 K stage: Cavity (optional, $^4$He pot)
-    \item 300 mK stage: Cavity and HEMT amplifiers ($^3$He refrigerator)
-\end{itemize}
+While the detector operates at $4$~K, the surrounding cavity and magnet may require lower temperatures for optimal performance. A staged cooling architecture is envisioned: the atomic platform at the $4$~K pulse-tube stage, the cavity at an optional $1$~K $^4$He pot stage, and the cavity together with the HEMT amplifiers at a $300$~mK $^3$He stage.
 
 This approach balances detector performance (lower $T$ reduces dark counts) with system complexity.
 
@@ -924,12 +908,7 @@ The exact quantum simulation scales exponentially as $\mathcal{O}(2^N)$ in memor
 
 \subsubsection{Decoherence}
 
-Real systems experience decoherence from:
-\begin{itemize}
-    \item Spontaneous emission: $\Gamma_{\mathrm{sp}} \sim 1/(n^3)$ (microseconds for $n \sim 70$)
-    \item Dephasing: due to laser phase noise and trap intensity fluctuations
-    \item Collisions: suppressed at low density and temperature
-\end{itemize}
+Real systems experience decoherence from three main mechanisms: spontaneous emission with rate $\Gamma_{\mathrm{sp}} \sim 1/n^3$ (microseconds for $n \sim 70$), dephasing due to laser phase noise and trap intensity fluctuations, and collisional decoherence, suppressed at low density and temperature.
 
 Our simulations assume coherent evolution over timescales $T_a \sim 10$ $\mu$s, which is achievable given typical Rydberg lifetimes $> 100$ $\mu$s. Inclusion of decoherence effects would reduce the amplification factor but not eliminate it entirely; systematic studies~\cite{Festa2022} suggest that avalanche amplification is robust to moderate decoherence rates.
 
