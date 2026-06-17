@@ -919,7 +919,7 @@ Emerald quantum processor. The split between a simulator-based
 pre-training phase and an on-device fine-tuning phase is forced by the
 economics of cloud-accessed superconducting QPUs. A full $R=10$ multi-seed,
 ten-epoch training campaign on Emerald at the production
-$N_{\mathrm{train}}=160$ scale of the simulator would consume on the
+$N_{\mathrm{train}}=200$ scale of the simulator would consume on the
 order of $\sim 10^{5}$ credits (Sec.~\ref{subsec:cost_model}), against
 the $2{,}000$-credit budget allocated to this campaign; the production
 runs on Emerald therefore freeze the classical trunk at its
@@ -1050,9 +1050,10 @@ an equivalent classical convolution), and the hybrid Q-CNN itself
 (Level~3, $\sim 4.64\times 10^{5}$ trainable parameters) — is trained
 from scratch over $R=10$ independent runs that differ only in the
 random seed used to initialise the weights and to shuffle the
-mini-batches; the train/validation split is held fixed across runs at
-$80/20$ on a 100-image-per-class subset of EuroSAT (Forest vs.\
-AnnualCrop), yielding $N_{\mathrm{train}}=160$ and $N_{\mathrm{val}}=200$
+mini-batches; the train/validation partition is held fixed across runs: the EuroSAT
+classes Forest and AnnualCrop are split $80/20$ into disjoint training and
+validation directories, from each of which a fixed subset of $100$ images
+per class is drawn, giving $N_{\mathrm{train}}=200$ and $N_{\mathrm{val}}=200$
 items shared across all seeds. The purely quantum reference of
 Sebastianelli et al.~\cite{Sebastianelli2021} is discussed qualitatively
 in Sec.~\ref{sec:baselines} but is not included in the across-seed
@@ -1686,7 +1687,7 @@ A submission to Emerald goes through a sequence of platform-side phases that are
 
 \begin{itemize}
 \item \emph{Validation, compile, and post-processing} (blue/light-green segments) run on the IQM platform side and are not billed. Their median wall durations are below 1.5~s for the 28-circuit job, and grow modestly with the circuit count (about 6.6~s for the 273-circuit job, dominated by per-circuit pulse-schedule generation).
-\item \emph{Queue (QPU scheduling)} is a near-constant overhead between the end of compilation and the start of execution: $4.46\pm 0.58$~s across the 184 jobs of the campaign, essentially independent of circuit count. This is the QPU-scheduler latency before the device is allocated to the job.
+\item \emph{Queue (QPU scheduling)} is a near-constant overhead between the end of compilation and the start of execution: $4.45\pm 0.59$~s across the 195 jobs of the campaign, essentially independent of circuit count. This is the QPU-scheduler latency before the device is allocated to the job.
 \item \emph{Execution on QPU} (orange) is the dominant component for any non-trivial circuit count. Its median is 6.16~s for the 28-circuit job and 56.73~s for the 273-circuit job.
 \item \emph{Billing window} (yellow hatched) starts at \texttt{execution\_start} and lasts \texttt{runtime\_seconds} (a field in the job record), which exceeds the wall-clock execution duration by a small additive overhead ($\sim 1.2$~s) attributable to QPU initialization and teardown that the platform attributes to the user but does not expose as a separate timestamp.
 \end{itemize}
@@ -1694,17 +1695,17 @@ A submission to Emerald goes through a sequence of platform-side phases that are
 \begin{figure}[h]
 \centering
 \includegraphics[width=\linewidth]{chapters/qa_figures/iqm_job_anatomy.png}
-\caption{Anatomy of an IQM Resonance job: pipeline phase decomposition (lower bars) and IQM billing window (upper bars), shown as median values across 184 jobs of the Phase~E campaign. (a)~28-circuit forward / weight-shift job; (b)~273-circuit validation job. Only the orange ``execution'' segment is billed; the queue scheduling latency ($\sim 4.4$~s, light orange) and the compile/validation overhead are not. The yellow hatched bar shows the IQM billing window, which exceeds the wall-clock execution by $\sim 1.2$~s of QPU initialization/teardown. The credit cost is computed by $\lceil\,\texttt{runtime\_seconds}\,\rceil \times 0.75$, where the brown segment marks the rounding-up to the next integer second.}
+\caption{Anatomy of an IQM Resonance job: pipeline phase decomposition (lower bars) and IQM billing window (upper bars), shown as median values across the 195 jobs of the Phase~E campaign. (a)~28-circuit forward / weight-shift job; (b)~273-circuit validation job. Only the orange ``execution'' segment is billed; the queue scheduling latency ($\sim 4.4$~s, light orange) and the compile/validation overhead are not. The yellow hatched bar shows the IQM billing window, which exceeds the wall-clock execution by $\sim 1.2$~s of QPU initialization/teardown. The credit cost is computed by $\lceil\,\texttt{runtime\_seconds}\,\rceil \times 0.75$, where the brown segment marks the rounding-up to the next integer second.}
 \label{fig:iqm_job_anatomy}
 \end{figure}
 
 \paragraph{Billing rule.}
-The IQM billing rule for the PAYG (pay-as-you-go) execution mode reduces, on the 184 jobs of our campaign, to the exact integer formula
+The IQM billing rule for the PAYG (pay-as-you-go) execution mode reduces, on the 195 jobs of our campaign, to the exact integer formula
 \begin{equation}
 \text{credit\_cost} \;=\; \lceil\,\texttt{runtime\_seconds}\,\rceil \;\times\; 0.75 \quad\text{(IQM credits)},
 \label{eq:billing_rule}
 \end{equation}
-that we verified to hold to 6 significant digits on 184 of 184 jobs. The $0.75$ figure matches the per-second rate published in the job record (\texttt{payg\_price\_per\_second}). The ceiling rounding induces an average overhead of approximately $8\%$ with respect to the continuous-rate cost: on the realised total QPU runtime of $1581$~s of the Phase~E campaign, the continuous-rate cost would be $1581 \times 0.75 = 1185.75$ credits, against an actually billed $1284$ credits, for a gap of $\approx 98$ credits (Sec.~\ref{subsec:finetune_results}). The relative gap is largest on short jobs (where the ceiling is a substantial fraction of the runtime) and decays to a fraction of a percent for long jobs (Tab.~\ref{tab:billing_rule_check}).
+that we verified to hold to 6 significant digits on 195 of 195 jobs. The $0.75$ figure matches the per-second rate published in the job record (\texttt{payg\_price\_per\_second}). The ceiling rounding induces an average overhead of approximately $8\%$ with respect to the continuous-rate cost: on the realised total QPU runtime of $1581$~s of the Phase~E campaign, the continuous-rate cost would be $1581 \times 0.75 = 1185.75$ credits, against an actually billed $1284$ credits, for a gap of $\approx 98$ credits (Sec.~\ref{subsec:finetune_results}). The relative gap is largest on short jobs (where the ceiling is a substantial fraction of the runtime) and decays to a fraction of a percent for long jobs (Tab.~\ref{tab:billing_rule_check}).
 
 \begin{table}[h]
 \centering
@@ -1722,13 +1723,13 @@ $N$ circuits & jobs & $\overline{\text{cred}}$ & $\overline{\text{runtime}_s}$ &
 \end{table}
 
 \paragraph{Per-circuit time amortization.}
-The QPU runtime per job (\texttt{runtime\_seconds}) is highly linear in the number of circuits, with negligible scatter at fixed $N$. A linear fit on all 184 jobs gives
+The QPU runtime per job (\texttt{runtime\_seconds}) is highly linear in the number of circuits, with negligible scatter at fixed $N$. A per-job linear fit on the full set of $195$ Phase~E jobs (Fig.~\ref{fig:cost_model_validation}) gives
 \begin{equation}
-\texttt{runtime\_seconds}(N) \;=\; (1.44 \pm 0.08)\;\text{s} \;+\; (0.226 \pm 0.001)\;\text{s} \cdot N,
-\qquad R^2 = 0.993 .
+\texttt{runtime\_seconds}(N) \;=\; (1.49 \pm 0.07)\;\text{s} \;+\; (0.225 \pm 0.001)\;\text{s/circ} \cdot N,
+\qquad R^2 = 0.992 .
 \label{eq:job_time_model}
 \end{equation}
-The intercept $1.44$~s is interpretable as the per-job QPU initialization+teardown overhead, while the slope $0.226$~s/circuit is the per-circuit shot loop at $N_s=500$ shots. Combining Eq.~\ref{eq:job_time_model} with the billing rule of Eq.~\ref{eq:billing_rule} provides a closed-form a-priori cost model that is exact up to the ceiling rounding.
+The intercept $1.49$~s is interpretable as the per-job QPU initialization+teardown overhead, while the slope $0.225$~s/circuit is the per-circuit shot loop at $N_s=500$ shots. Combining Eq.~\ref{eq:job_time_model} with the billing rule of Eq.~\ref{eq:billing_rule} provides a closed-form a-priori cost model that is exact up to the ceiling rounding.
 
 \paragraph{Wall-time vs.\ billed-time discrepancy.}
 The wall-clock time observed at the Python client is consistently larger than \texttt{runtime\_seconds} (Fig.~\ref{fig:iqm_job_anatomy}). For the 28-circuit job, the wall median is 12.10~s while the billing window is 7.41~s; for the 273-circuit job, the corresponding values are 70.04~s and 63.38~s. The gap is attributable to compilation, queue scheduling, and post-processing, which are not billed but contribute to the throughput observed by the user. The empirical wall-time-to-billing ratio is
@@ -1744,21 +1745,12 @@ which is what an in-flight cost model based on Python-side wall measurements wou
 \paragraph{Validation against the in-flight model.}
 \label{par:cost_model_validation}
 Figure~\ref{fig:cost_model_validation} summarizes the validation of the
-cost-model of Sec.~\ref{sec:batch-time-model} against the 183 production jobs
-of the Phase~E campaign (180 forward / weight-shift jobs at $N=28$ plus 3
-end-of-epoch validation jobs at $N=273$). A linear least-squares fit of the
-QPU runtime against the bound-circuit count $N$ yields, on the
-\emph{full} set of 195 jobs (183 production + 12 Phase~D minicheck jobs at
-$N\in\{1,5,20,28,50\}$),
-\begin{equation}
-\texttt{runtime\_seconds}(N) = (1.49\pm 0.04)\,\text{s} +
-                                (0.225\pm 0.001)\,\text{s/circ}\cdot N,
-\qquad R^2 = 0.992,
-\label{eq:job_time_model_full_fit}
-\end{equation}
-in agreement with the $N$-binned aggregates of Tab.~\ref{tab:billing_rule_check}
-(Eq.~\ref{eq:job_time_model}, $A=1.44$~s, $B=0.226$~s/circ, fit on the
-$N$-aggregated medians of the same dataset). The intercept $A\!\sim\!1.5$~s
+cost-model of Sec.~\ref{sec:batch-time-model} against the $195$ jobs of the
+Phase~E campaign: $183$ production jobs ($180$ forward / weight-shift jobs at
+$N=28$ plus $3$ end-of-epoch validation jobs at $N=273$) and $12$ small-$N$
+calibration probes at $N\in\{1,5,20,50\}$. The per-job fit of
+Eq.~\ref{eq:job_time_model} (red line in panel~(a)) reproduces the billed QPU
+runtime with $R^2=0.992$. The intercept $A\!\sim\!1.5$~s
 is the per-job QPU initialization+teardown overhead that the in-flight estimator
 of Eq.~\eqref{eq:cred_epoch} does \emph{not} model explicitly: it is small
 relative to $B\cdot N$ in the production regime ($A/(A+BN_{28})\approx 19\%$
@@ -1773,13 +1765,15 @@ small $N$ (Tab.~\ref{tab:billing_rule_check}).
 \caption{Cost-model validation on the IQM Emerald Phase~E campaign.
 \textbf{(a)} Per-job QPU runtime versus bound-circuit count $N$ for the 195
 recorded jobs; the red line is the linear fit of
-Eq.~\eqref{eq:job_time_model_full_fit}, the band is $\pm 2\sigma$ of the
+Eq.~\eqref{eq:job_time_model}, the band is $\pm 2\sigma$ of the
 residual.
 \textbf{(b)} Server-side phase decomposition (median across jobs) for the two
-production regimes $N=28$ (180 jobs) and $N=273$ (3 jobs): only the orange
-\emph{execute} segment is billed; \emph{validate}, \emph{compile},
-\emph{queue} and \emph{post-processing} contribute to the wall time observed
-by the Python client but are not charged.
+production regimes $N=28$ (180 jobs) and $N=273$ (3 jobs): the billed QPU
+window equals the \emph{execution} segment plus a per-job
+initialization/teardown overhead ($7.4$~s${=}6.2{+}1.2$ at $N=28$;
+$63.4$~s${=}56.7{+}6.7$ at $N=273$), while \emph{validate}, \emph{compile},
+\emph{queue} and \emph{post-processing} are observed by the Python client but
+not charged.
 The billing rule of Eq.~\ref{eq:billing_rule} is verified to 6 significant digits on every job of the campaign (Tab.~\ref{tab:billing_rule_check}).}
 \label{fig:cost_model_validation}
 \end{figure}
@@ -1823,7 +1817,7 @@ To insulate against an under-budget mis-estimation, the production notebook adop
 \subsubsection{Hardware characterization results}
 \label{subsec:hw_results}
 
-Before launching the fine-tuning campaign, we executed a minicheck phase (\emph{Phase~D}) on Emerald with the calibration-aware layout of Tab.~\ref{tab:initial_layout} to (i) verify that the per-block measurement statistics are consistent with the device calibration, and (ii) measure the empirical per-circuit time required by the cost model of Sec.~\ref{subsec:cost_model}. The phase consisted of 12 jobs at circuit counts $N\in\{1,5,20,28,50\}$, with the bulk of the runs concentrated on the small-$N$ end (which contributes per-job costs of order $1$--$3$ credits each) and a single longer probe at $N=50$ used to bracket the per-circuit amortization at the production scale; the total billed cost was 18 credits.
+Before launching the fine-tuning campaign, we executed a minicheck phase (\emph{Phase~D}) on Emerald with the calibration-aware layout of Tab.~\ref{tab:initial_layout} to (i) verify that the per-block measurement statistics are consistent with the device calibration, and (ii) measure the empirical per-circuit time required by the cost model of Sec.~\ref{subsec:cost_model}. The phase submitted small-$N$ exploratory probes at $N\in\{1,5,20,50\}$ to estimate the per-circuit execution time entering the cost model of Sec.~\ref{subsec:cost_model}; the timing-estimation batch run immediately before fine-tuning ($N=1,20,50$) cost 18 credits.
 
 \paragraph{Device functional sanity at session boundaries.}
 The Bell-state fidelity test (Sec.~\ref{subsec:backend_setup}) was repeated at the start of each session that used the device. Across three independent sessions over a single day, the observed Bell fidelity $P(00)+P(11)$ took values $0.989$, $0.980$ and $0.990$, consistent within shot noise with the per-qubit readout fidelity floor of the device. We take this stability as evidence that the calibration set used by Emerald did not change appreciably across the campaign, and that the fine-tuning epochs of Sec.~\ref{subsec:finetune_results} are mutually comparable.
