@@ -301,50 +301,7 @@ architectures for remote sensing classification~\cite{Sebastianelli2021}, yet th
 design of quantum convolutional layers remain under-explored. The present chapter builds on the quanvolutional ansatz design of the prior thesis work of Filippi~\cite{Filippi2025Thesis}\footnote{M.Sc.\ thesis in Physics at the University of Pisa, co-supervised by the present author together with Oliver Morsch.} (Eq.~\ref{eq:parallel_circuit}, Fig.~\ref{fig:qconv}, Fig.~\ref{fig:qcnn_ansatz}), and extends it along four dimensions of our own: (i) a multi-seed statistical campaign with explicit matched-capacity classical controls and paired non-parametric significance testing (Sec.~\ref{sec:results-stats}); (ii) a runtime-aware cost model that links circuit-level scheduling to credit-bounded training on cloud-accessed superconducting hardware (Sec.~\ref{sec:runtime-metric}); (iii) the first end-to-end transfer of the trained hybrid Q-CNN onto a $\geq 50$-qubit superconducting device, with parameter-shift fine-tuning on the IQM Emerald processor (Sec.~\ref{sec:hw_validation}); and (iv) a paired multi-seed characterisation of noise sensitivity on a reduced 4-qubit version of the architecture, run under a calibrated IBM Heron r2 noise model, which extends the noise-related claims of (iii) beyond the two-epoch cloud-credit budget (Sec.~\ref{sec:noise_resilience}). The chapter develops the QCNN layer formally, benchmarks multiple architectures on EuroSAT~\cite{Helber2019}, compares the chosen candidate with a classical CNN baseline~\cite{LeCun1998} and a published hybrid network~\cite{Sebastianelli2021}, and closes the loop on physical hardware. Where a figure or an equation is adapted from~\cite{Filippi2025Thesis}, the caption flags the provenance explicitly; everything else is original to this work.
 
 \section{Classical CNNs and quantum machine learning}
-Hybrid quantum--classical learning integrates short-depth quantum computations\ into a larger classical optimization loop, aiming to exploit quantum resources (superposition, entanglement, and measurement-induced nonlinearities) while remaining compatible with near-term noisy hardware. The conceptual and algorithmic underpinnings are well documented in the monograph by Schuld and Petruccione, which frames quantum models as feature maps and variational learners trained by classical optimizers~\cite{SchuldPetruccione2021}. Complementary surveys emphasize the role of Parameterized Quantum Circuits (PQCs) as flexible hypothesis classes, where the inductive bias, that is, the model’s built-in assumptions about the structure of the target function, emerges from how classical data are encoded into quantum states and from the topology of the entangling gates used. In particular, the choice of encoding scheme and entangling pattern determines the expressivity, trainability, and generalization properties of variational quantum models~\cite{Benedetti2019,cerezo2021}.
-
-\paragraph{Data encoding as a feature map.}
-A central design choice is how classical inputs $\mathbf{x}$ are embedded into quantum states. Beyond initialization, \emph{encoding} acts as a feature map $\phi:\mathbf{x}\mapsto \lvert \phi(\mathbf{x})\rangle$ into a high-dimensional Hilbert space, reshaping distances and decision boundaries~\cite{SchuldPetruccione2021,Schuld2019PRA}. Canonical strategies include: (i) \emph{basis encoding}, mapping bits to computational basis states (memory-expensive but simple); (ii) \emph{amplitude encoding}, loading normalized vectors into amplitudes (compact but sensitive to state preparation cost); and (iii) \emph{angle/rotation encoding}, where features modulate rotation angles on single qubits, producing trigonometric feature expansions whose richness grows with depth and entanglement. Interleaving encoders with trainable blocks (\emph{data re-uploading}) probably enhances expressivity by composing nonlinear feature maps with learned unitaries~\cite{PerezSalinas2020,Schuld2020Expressivity}. In many vision-like tasks, locality-aware encodings (e.g., patch-wise rotations) align the quantum hypothesis class with the spatial inductive biases that make classical CNNs effective.
-
-\paragraph{Variational circuits and trainable ans\"atze.}
-A PQC defines a unitary transformation 
-\begin{equation*}
-U(\boldsymbol{\theta},\mathbf{x})=U_L(\theta_L)\,E(\mathbf{x})\cdots U_1(\theta_1)\,E(\mathbf{x})
-\end{equation*}
-
-\noindent that alternates fixed \emph{encoders} $E(\mathbf{x})$ with trainable layers $U_\ell(\theta_\ell)$ (the \emph{ansatz}) and outputs model predictions from expectation values $\langle \hat{O}\rangle$ of suitable observables. Hardware-efficient ans\"atze use native single-qubit rotations and entanglers repeated over shallow depth, while problem-inspired templates inject domain structure via symmetries, locality, or conserved quantities~\cite{Benedetti2019,cerezo2021}. The choice of entangling graph, depth, and encoder placement governs the bias--variance trade-off: too little entanglement limits expressivity; too much depth risks vanishing gradients and noise accumulation.
-
-\paragraph{Forward propagation vs.\ gradient evaluation.}
-In classical deep learning, backpropagation reuses intermediate activations via the chain rule across the entire network. In PQC-based models, \emph{forward propagation} consists of executing the circuit and estimating $\langle \hat{O}\rangle$ from a finite number of measurement shots, introducing statistical noise. The derivative $\partial \langle \hat{O}\rangle / \partial \theta_k$, however, is not available by straightforward reverse-mode differentiation through the unitary on hardware; instead, one leverages \emph{parameter-shift} rules that express exact partial derivatives as linear combinations of forward evaluations at shifted parameters (two evaluations per Pauli-generated rotation)~\cite{Mitarai2018,Schuld2019Grad}. This yields unbiased gradients but increases cost roughly proportional to the number of trainable parameters and required shot precision. Simulator-specific \emph{adjoint} methods can reduce cost in silico, but on actual devices the parameter-shift (or closely related) estimators remain the norm. Compared with classical backprop, this gradient acquisition pipeline changes the computational budget and variance profile, motivating shot-frugal schedules and careful layerwise parameterization.
-
-\paragraph{Trainability, noise, and barren plateaus.}
-Even with analytic gradients, training can fail when variances vanish (so-called \emph{barren plateaus}), which arise under sufficiently expressive or random ans\"atze, global cost functions, and in the presence of noise~\cite{McClean2018}. Practical recipes emphasize shallow, structured circuits, local cost terms, and encoders that restrict the effective hypothesis class to mitigate concentration-of-measure effects~\cite{SchuldPetruccione2021,cerezo2021}.
-
-\paragraph{Implications for hybrid Q-CNNs.}
-These ingredients inform our hybrid quantum convolutional design: (i) patch-wise rotation encoding to respect image locality and to keep state preparation scalable; (ii) shallow entangling blocks arranged in a convolution-like tiling to capture short-range correlations with limited receptive fields; (iii) measurement-defined feature maps serving as quantum ``filters'' whose outputs feed classical layers; and (iv) training via parameter-shift gradients with shot budgeting matched to layer sensitivity. By aligning encoding, ansatz structure, and gradient estimation with the inductive biases of convolutional processing, we obtain architectures that are both hardware-aware and well-posed for the benchmarks presented in the following sections; Fig.~\ref{fig:hybrid_overview} renders this hybrid pipeline schematically. 
-\begin{figure}[htbp]
-    \centering
-    \includegraphics[width=0.9\textwidth]{chapters/qa_figures/intro_ql.png}
-    \caption{Schematic of a hybrid quantum--classical neural network. Adapted from~\cite{Filippi2025Thesis}.}
-    \label{fig:hybrid_overview}
-\end{figure}
-
-The schematic in Fig.~\ref{fig:hybrid_overview} traces the four stages of
-the hybrid pipeline introduced above. Classical features
-$x_1,x_2,x_3$ are first compressed by a conventional dense layer into a
-low-dimensional latent representation $h_1,h_2$ that respects the patch
-budget of the available qubits. The latent activations are then encoded
-into single-qubit rotations $R(h_1)$ and $R(h_2)$, realising the
-angle-encoding feature map of point (i) above. The variational unitary
-$U(\boldsymbol{\theta})$ implements the shallow entangling block of
-point (ii) and acts as the quantum counterpart of a convolutional filter:
-its parameters $\boldsymbol{\theta}$ are the learnable weights updated
-by parameter-shift gradients (point iv). The two measured expectation
-values $m_1,m_2$ — the measurement-defined feature maps of point (iii) —
-are finally fed back into a classical readout layer producing the
-network output $y$. The diagram is therefore a literal pictorial
-realisation of the four design choices listed in the previous paragraph,
-and the rest of this chapter quantifies each of them in turn.
+This chapter combines classical convolutional processing with parameterized quantum circuits in a single hybrid model. The two ingredients are reviewed separately before they are brought together: Sec.~\ref{sec:classical-cnns} recalls the elements of classical CNNs, and Sec.~\ref{sec:qml-qcnn} introduces quantum machine learning and quantum convolutional networks, closing with the hybrid pipeline that the rest of the chapter develops and benchmarks.
 
 
 \subsection{Classical CNNs}\label{sec:classical-cnns}
@@ -378,21 +335,30 @@ In our comparisons we adopt as classical reference a CNN that matches the traina
 
 
 
-\subsection{Quantum Machine Learning and QCNNs}\label{sec:qml-qcnn}
-Quantum Machine Learning (QML) models embed classical data into quantum states and process them
-with \emph{parameterized quantum circuits} (PQCs) trained by a classical optimizer~\cite{SchuldPetruccione2021,cerezo2021}.
-A typical pipeline prepares an encoded state $U_{\phi}(\mathbf{x})\ket{0}$, applies a trainable ansatz $U(\boldsymbol{\theta})$,
-and returns an expectation value of an observable $\hat{O}$:
+\subsection{Quantum machine learning and QCNNs}\label{sec:qml-qcnn}
+Hybrid quantum--classical learning integrates short-depth quantum computations into a larger classical optimization loop, aiming to exploit quantum resources (superposition, entanglement, and measurement-induced nonlinearities) while remaining compatible with near-term noisy hardware. The conceptual and algorithmic underpinnings are well documented in the monograph by Schuld and Petruccione, which frames quantum models as feature maps and variational learners trained by classical optimizers~\cite{SchuldPetruccione2021}. In a quantum machine learning (QML) model the inductive bias---the model's built-in assumptions about the structure of the target function---emerges from how classical data are encoded into quantum states and from the topology of the entangling gates used, which together determine expressivity, trainability, and generalization~\cite{Benedetti2019,cerezo2021}. A typical pipeline prepares an encoded state $U_{\phi}(\mathbf{x})\ket{0}$, applies a trainable ansatz $U(\boldsymbol{\theta})$, and returns an expectation value of an observable $\hat{O}$:
 \begin{equation}
 \hat{y}(\mathbf{x};\boldsymbol{\theta}) \;=\;
 \bra{0}\,U_{\phi}^{\dagger}(\mathbf{x})\,U^{\dagger}(\boldsymbol{\theta})\,
 \hat{O}\,U(\boldsymbol{\theta})\,U_{\phi}(\mathbf{x})\,\ket{0}.
 \label{eq:q-model}
 \end{equation}
-Encoding choices include \emph{basis} encoding, \emph{amplitude} encoding,
-and \emph{angle} (rotation) encoding, possibly in a \emph{data re–uploading}
-pattern that interleaves encoders and trainable layers to enrich expressivity~\cite{SchuldPetruccione2021,PerezSalinas2020,Schuld2020Expressivity}.
-For generators with $\pm 1$ eigenvalues, gradients admit the parameter–shift rule~\cite{Mitarai2018,Schuld2019PRA}:
+
+\paragraph{Data encoding as a feature map.}
+A central design choice is how classical inputs $\mathbf{x}$ are embedded into quantum states. Beyond initialization, \emph{encoding} acts as a feature map $\phi:\mathbf{x}\mapsto \lvert \phi(\mathbf{x})\rangle$ into a high-dimensional Hilbert space, reshaping distances and decision boundaries~\cite{SchuldPetruccione2021,Schuld2019PRA}. Canonical strategies include: (i) \emph{basis encoding}, mapping bits to computational basis states (memory-expensive but simple); (ii) \emph{amplitude encoding}, loading normalized vectors into amplitudes (compact but sensitive to state preparation cost); and (iii) \emph{angle/rotation encoding}, where features modulate rotation angles on single qubits, producing trigonometric feature expansions whose richness grows with depth and entanglement. Interleaving encoders with trainable blocks (\emph{data re-uploading}) can enhance expressivity by composing nonlinear feature maps with learned unitaries~\cite{PerezSalinas2020,Schuld2020Expressivity}. In many vision-like tasks, locality-aware encodings (e.g., patch-wise rotations) align the quantum hypothesis class with the spatial inductive biases that make classical CNNs effective.
+
+
+\paragraph{Variational circuits and trainable ans\"atze.}
+A PQC defines a unitary transformation 
+\begin{equation*}
+U(\boldsymbol{\theta},\mathbf{x})=U_L(\theta_L)\,E(\mathbf{x})\cdots U_1(\theta_1)\,E(\mathbf{x})
+\end{equation*}
+
+\noindent that alternates fixed \emph{encoders} $E(\mathbf{x})$ with trainable layers $U_\ell(\theta_\ell)$ (the \emph{ansatz}) and outputs model predictions from expectation values $\langle \hat{O}\rangle$ of suitable observables. Hardware-efficient ans\"atze use native single-qubit rotations and entanglers repeated over shallow depth, while problem-inspired templates inject domain structure via symmetries, locality, or conserved quantities~\cite{Benedetti2019,cerezo2021}. The choice of entangling graph, depth, and encoder placement governs the bias--variance trade-off: too little entanglement limits expressivity; too much depth risks vanishing gradients and noise accumulation.
+
+
+\paragraph{Forward propagation and the parameter-shift rule.}
+In classical deep learning, backpropagation reuses intermediate activations via the chain rule across the entire network. In PQC-based models, \emph{forward propagation} consists of executing the circuit and estimating $\langle \hat{O}\rangle$ from a finite number of measurement shots, introducing statistical noise. The derivative $\partial \langle \hat{O}\rangle / \partial \theta_k$, however, is not available by straightforward reverse-mode differentiation through the unitary on hardware; instead, one leverages \emph{parameter-shift} rules that express exact partial derivatives as linear combinations of forward evaluations at shifted parameters (two evaluations per Pauli-generated rotation)~\cite{Mitarai2018,Schuld2019Grad}; for generators with $\pm 1$ eigenvalues the rule takes the form
 \begin{equation}
 \frac{\partial}{\partial \theta_k}\,\hat{y}(\mathbf{x};\boldsymbol{\theta})
 \;=\; \tfrac{1}{2}\!\left[
@@ -402,8 +368,13 @@ For generators with $\pm 1$ eigenvalues, gradients admit the parameter–shift r
 \boldsymbol{\theta}_{k}^{\pm}:\ \theta_k \mapsto \theta_k \pm \tfrac{\pi}{2}.
 \label{eq:psr}
 \end{equation}
+This yields unbiased gradients but increases cost roughly proportional to the number of trainable parameters and required shot precision. Simulator-specific \emph{adjoint} methods can reduce cost in silico, but on actual devices the parameter-shift (or closely related) estimators remain the norm. Compared with classical backprop, this gradient acquisition pipeline changes the computational budget and variance profile, motivating shot-frugal schedules and careful layerwise parameterization.
 
-\paragraph{QCNNs.}
+\paragraph{Trainability, noise, and barren plateaus.}
+Even with analytic gradients, training can fail when variances vanish (so-called \emph{barren plateaus}), which arise under sufficiently expressive or random ans\"atze, global cost functions, and in the presence of noise~\cite{McClean2018}. Practical recipes emphasize shallow, structured circuits, local cost terms, and encoders that restrict the effective hypothesis class to mitigate concentration-of-measure effects~\cite{SchuldPetruccione2021,cerezo2021}.
+
+
+\paragraph{Quantum convolutional networks.}
 Quantum convolutional neural networks (QCNNs) implement hierarchical, locality–aware processing
 with shallow, repeating blocks that mirror convolution and pooling~\cite{Cong2019}.
 Let $\rho^{(\ell)}$ denote the layer–$\ell$ state on a 1D register.\footnote{For 2D images we
@@ -419,24 +390,49 @@ Measurements of local observables at each scale provide quantum ``feature maps''
 quantum or classical processing. The choice of encoding $U_{\phi}$ on patches, entangling topology in $W^{(\ell)}$,
 and measurement set $\{\hat{O}\}$ governs the inductive bias and the shot/gradient budget.
 Feature–map perspectives (e.g.\ kernel embeddings) clarify how certain encoders may induce
-advantageous geometries for classification~\cite{Havlicek2019,Schuld2019PRA}.
+advantageous geometries for classification~\cite{Havlicek2019,Schuld2019PRA}. Consequently, QCNN design favors shallow, locality–preserving ans\"atze with encoders aligned to image patches,
+which we operationalize in the architecture and experiments that follow.
 
-\paragraph{Forward vs.\ backward.}
-Unlike classical backpropagation, which shares intermediates across parameters, hardware gradient evaluation relies on additional circuit executions (Eq.~\ref{eq:psr}) and finite–shot estimation,
-impacting sample efficiency and training dynamics~\cite{Schuld2019PRA,SchuldPetruccione2021}.
-Consequently, QCNN design favors shallow, locality–preserving ans\"atze with encoders aligned to image patches,
-which we operationalize in the Methods and Experiments sections.
+\paragraph{Implications for hybrid Q-CNNs.}
+These ingredients inform our hybrid quantum convolutional design: (i) patch-wise rotation encoding to respect image locality and to keep state preparation scalable; (ii) shallow entangling blocks arranged in a convolution-like tiling to capture short-range correlations with limited receptive fields; (iii) measurement-defined feature maps serving as quantum ``filters'' whose outputs feed classical layers; and (iv) training via parameter-shift gradients with shot budgeting matched to layer sensitivity. By aligning encoding, ansatz structure, and gradient estimation with the inductive biases of convolutional processing, we obtain architectures that are both hardware-aware and well-posed for the benchmarks presented in the following sections; Fig.~\ref{fig:hybrid_overview} renders this hybrid pipeline schematically. 
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.9\textwidth]{chapters/qa_figures/intro_ql.png}
+    \caption{Schematic of a hybrid quantum--classical neural network. Adapted from~\cite{Filippi2025Thesis}.}
+    \label{fig:hybrid_overview}
+\end{figure}
+
+The schematic in Fig.~\ref{fig:hybrid_overview} traces the four stages of
+the hybrid pipeline introduced above. Classical features
+$x_1,x_2,x_3$ are first compressed by a conventional dense layer into a
+low-dimensional latent representation $h_1,h_2$ that respects the patch
+budget of the available qubits. The latent activations are then encoded
+into single-qubit rotations $R(h_1)$ and $R(h_2)$, realising the
+angle-encoding feature map of point (i) above. The variational unitary
+$U(\boldsymbol{\theta})$ implements the shallow entangling block of
+point (ii) and acts as the quantum counterpart of a convolutional filter:
+its parameters $\boldsymbol{\theta}$ are the learnable weights updated
+by parameter-shift gradients (point iv). The two measured expectation
+values $m_1,m_2$ — the measurement-defined feature maps of point (iii) —
+are finally fed back into a classical readout layer producing the
+network output $y$. The diagram is therefore a literal pictorial
+realisation of the four design choices listed in the previous paragraph,
+and the rest of this chapter quantifies each of them in turn.
+
+
+
 
 \section{QCNN architecture and training protocol}
 
 Our quantum convolutional layer maps small image patches to expectation values via a PQC composed of:
 (i) angle (rotation) encoding of pixel intensities; (ii) a hardware-efficient entangling ansatz~\cite{Kandala2017};
-and (iii) Pauli measurements whose outcomes form the convolved feature map. In our implementation we employ
-Qiskit's \texttt{ZFeatureMap} and custom two-qubit entanglers~\cite{Qiskit2019}.
+and (iii) Pauli measurements whose outcomes form the convolved feature map. In our implementation the data are embedded by single-qubit $R_y$ rotations
+(angle encoding), and the trainable block interleaves Hadamards, short-range CNOT
+chains, and $R_z$ rotations~\cite{Qiskit2019}.
 Device models and timings used throughout are taken from Qiskit \emph{BackendV2}/\emph{Target}~\cite{QiskitBackendV2Docs,QiskitTargetDocs}.
 
 
-\subsection{Quantum Convolutional Layer}
+\subsection{Quantum convolutional layer}
 We realize a quantum convolution as a local, patch-wise mapping from pixels to expectation values computed by a parameterized quantum circuit (PQC). For an image $X\!\in\![0,1]^{H\times W}$ and a sliding window of size $k\times k$ and stride $s$, each vectorized patch $\mathbf{p}\in\mathbb{R}^{d}$ with $d=k^2$ is transformed into $C$ quantum ``channels''
 \begin{equation}
 \phi_{\boldsymbol{\theta}}(\mathbf{p}) \;=\; \big(\langle M_1\rangle_{\mathbf{p},\boldsymbol{\theta}},\dots,\langle M_C\rangle_{\mathbf{p},\boldsymbol{\theta}}\big),\qquad
@@ -456,8 +452,71 @@ with the left arrow indicating that blocks at larger $\ell$ are applied later (i
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.85\linewidth]{chapters/qa_figures/Fig5_16_SchuldPetruccione2021.eps}
-    \caption{Variational quantum circuit interpreted as a neural network, adapted from Fig.~5.16 of \cite{SchuldPetruccione2021}.}
+    \resizebox{0.92\textwidth}{!}{%
+\begin{tikzpicture}[
+  font=\small,
+  wire/.style={thick},
+  gate/.style={draw,rounded corners=1pt,fill=white,minimum width=8mm,minimum height=6.5mm,inner sep=1pt},
+  meter/.style={draw,fill=white,minimum width=8mm,minimum height=6.5mm,inner sep=1pt},
+  stagelab/.style={font=\small\itshape,align=center},
+  brace/.style={decorate,decoration={brace,amplitude=5pt,mirror},thick,gray!70}
+]
+% ---- wire y-coordinates ----
+\def\ya{0} \def\yb{-1.1} \def\yc{-2.2}
+\def\xL{0.2} \def\xR{9.6}
+% ---- column x-centres ----
+\def\xenc{1.2} \def\xh{2.6} \def\xcxa{3.55} \def\xcxb{4.35}
+\def\xrz{5.4} \def\xcxc{6.45} \def\xcxd{7.25} \def\xmeas{8.5}
+
+% ---- wires ----
+\foreach \y in {\ya,\yb,\yc}{ \draw[wire] (\xL,\y) -- (\xR,\y); }
+% qubit labels
+\node[left] at (\xL,\ya) {$q_0$};
+\node[left] at (\xL,\yb) {$q_1$};
+\node[left] at (\xL,\yc) {$q_2$};
+
+% ---- Stage 1: encoding R_y(x_i) ----
+\foreach \y/\i in {\ya/0,\yb/1,\yc/2}{ \node[gate] at (\xenc,\y) {$R_y(x_\i)$}; }
+
+% ---- Stage 2: variational block ----
+% Hadamards
+\foreach \y in {\ya,\yb,\yc}{ \node[gate] at (\xh,\y) {$H$}; }
+% forward CNOT chain (0->1, 1->2)
+\draw[wire] (\xcxa,\ya) -- (\xcxa,\yb); \fill (\xcxa,\ya) circle (2pt);
+\draw (\xcxa,\yb) circle (3.2pt); \draw (\xcxa,\yb)+(0,-3.2pt) -- +(0,3.2pt);
+\draw[wire] (\xcxb,\yb) -- (\xcxb,\yc); \fill (\xcxb,\yb) circle (2pt);
+\draw (\xcxb,\yc) circle (3.2pt); \draw (\xcxb,\yc)+(0,-3.2pt) -- +(0,3.2pt);
+% R_z(theta_i)
+\foreach \y/\i in {\ya/0,\yb/1,\yc/2}{ \node[gate] at (\xrz,\y) {$R_z(\theta_\i)$}; }
+% reverse CNOT chain (1->2, 0->1)
+\draw[wire] (\xcxc,\yb) -- (\xcxc,\yc); \fill (\xcxc,\yb) circle (2pt);
+\draw (\xcxc,\yc) circle (3.2pt); \draw (\xcxc,\yc)+(0,-3.2pt) -- +(0,3.2pt);
+\draw[wire] (\xcxd,\ya) -- (\xcxd,\yb); \fill (\xcxd,\ya) circle (2pt);
+\draw (\xcxd,\yb) circle (3.2pt); \draw (\xcxd,\yb)+(0,-3.2pt) -- +(0,3.2pt);
+
+% ---- Stage 3: measurement ----
+\foreach \y/\i in {\ya/1,\yb/2,\yc/3}{
+  \node[meter] (m\i) at (\xmeas,\y) {};
+  % gauge dial (semicircle) + needle
+  \draw[thin] ($(m\i.center)+(-4.5pt,-2.2pt)$) arc (180:0:4.5pt);
+  \fill ($(m\i.center)+(0,-2.2pt)$) circle (0.7pt);
+  \draw[thin,-stealth] ($(m\i.center)+(0,-2.2pt)$) -- ($(m\i.center)+(3.0pt,3.2pt)$);
+}
+% outputs
+\node[right=5mm of m1] (o1) {$\langle M_1\rangle$};
+\node[right=5mm of m2] (o2) {$\langle M_2\rangle$};
+\node[right=5mm of m3] (o3) {$\langle M_3\rangle$};
+\foreach \i in {1,2,3}{ \draw[->,>=stealth] (m\i.east) -- (o\i.west); }
+
+% ---- stage braces + neural-network role labels ----
+\draw[brace] (0.55,\yc-0.55) -- node[below=7pt,stagelab]{encoding $S(\mathbf{x})$\\\textmd{(input feature map)}} (1.85,\yc-0.55);
+\draw[brace] (2.05,\yc-0.55) -- node[below=7pt,stagelab]{trainable block $W(\boldsymbol{\theta})$\\\textmd{(learnable filters)}} (7.7,\yc-0.55);
+\draw[brace] (7.95,\yc-0.55) -- node[below=7pt,stagelab]{measurement\\\textmd{(readout)}} (9.05,\yc-0.55);
+
+% ---- (title carried by the LaTeX caption, not drawn inside the figure) ----
+\end{tikzpicture}
+    }
+    \caption{Variational quantum circuit interpreted as a neural network, redrawn after~\cite{SchuldPetruccione2021} (Fig.~5.16). Each image patch is angle-encoded by single-qubit $R_y$ rotations, processed by the trainable block (Hadamards, nearest-neighbour CNOT chains, and $R_z$ weights), and read out by Pauli-$Z$ measurements whose expectation values feed the classical head.}
     \label{fig:qconv_schematic}
 \end{figure}
 
@@ -494,24 +553,23 @@ U(\mathbf{p},\boldsymbol{\theta}) \;=\; \prod_{\ell=1}^{L}\Big[\, W_\ell(\boldsy
 \end{equation}
 which composes encoders with learnable layers, enlarging the accessible Fourier spectrum \cite{PerezSalinas2020, Schuld2020Expressivity}.
 
-The trainable block is a hardware-efficient ansatz,
+The trainable block is a hardware-efficient ansatz. In the baseline circuit each $d$-qubit patch register is processed by a layer of Hadamards, a forward nearest-neighbour CNOT chain, a single $R_z$ rotation per qubit, and a reverse CNOT chain:
 \begin{equation}
-W(\boldsymbol{\theta}) \;=\; \prod_{\ell=1}^{D}\Big[\;\mathcal{E}_\ell\,\bigotimes_{i=1}^{d} R_z(\theta_{\ell i}^{(z)})\,R_x(\theta_{\ell i}^{(x)})\;\Big],
+W(\boldsymbol{\theta}) \;=\; \Big(\!\!\prod_{i=d-2}^{0}\!\mathrm{CX}_{i,i+1}\Big)\Big(\bigotimes_{i=1}^{d} R_z(\theta_{i})\Big)\Big(\prod_{i=0}^{d-2}\mathrm{CX}_{i,i+1}\Big)\Big(\bigotimes_{i=1}^{d} H_i\Big),
 \label{eq:hea}
 \end{equation}
-where $\mathcal{E}_\ell$ applies short-range entanglers (e.g., linear/ring CNOTs). Entanglement couples pixels within a patch, enabling non-separable features akin to classical cross-channel mixing, but excessive expressibility can harm trainability (Sec.~\ref{sec:train-opt}) \cite{Cong2019,Holmes2022PRXQ,Marrero2021PRXQ}. The shot-based estimator for each channel uses $S$ repetitions:
+so that a single depth-$D{=}1$ layer carries $d$ trainable parameters; deeper variants stack $D$ such layers. Entanglement couples pixels within a patch, enabling non-separable features akin to classical cross-channel mixing, but excessive expressibility can harm trainability (Sec.~\ref{sec:train-opt}) \cite{Cong2019,Holmes2022PRXQ,Marrero2021PRXQ}. The shot-based estimator for each channel uses $N_s$ repetitions:
 \begin{equation}
-\widehat{\langle M_c\rangle} \;=\; \frac{1}{S}\sum_{s=1}^{S} m_{c,s},\quad m_{c,s}\in\{-1,+1\},\qquad
-\mathrm{Var}\big[\widehat{\langle M_c\rangle}\big] \;=\; \frac{1-\langle M_c\rangle^2}{S}.
+\widehat{\langle M_c\rangle} \;=\; \frac{1}{N_s}\sum_{s=1}^{N_s} m_{c,s},\quad m_{c,s}\in\{-1,+1\},\qquad
+\mathrm{Var}\big[\widehat{\langle M_c\rangle}\big] \;=\; \frac{1-\langle M_c\rangle^2}{N_s}.
 \label{eq:shotvar}
 \end{equation}
 Placing the vectors $\phi_{\boldsymbol{\theta}}(\mathbf{p})$ on the patch grid yields a tensor of size $H'\times W'\times C$ (stride- and padding-dependent) that serves as the quantum analogue of a convolutional activation and feeds subsequent (classical or quantum) layers \cite{LeCun1998,Cong2019}.
 
 \textbf{Design notes and upgrades.} (a) Mix $R_y$ and $R_z$ encodings per wire to diversify frequency content; (b) use small, overlapping patches to share context; (c) add a lightweight pooling step by measuring and discarding selected qubits to form multiscale features, inspired by QCNN/MERA \cite{Cong2019,Pesah2021PRX}. 
-%We will compare angle-only, angle+phase, and re-uploading variants in Sec.~3.2.
 
 
-\subsection{QCNN Architectures}
+\subsection{QCNN architectures}
 We explore where to insert the quantum layer (early vs late), the number of channels (repetitions per patch),
 and circuit depth. These factors control expressivity and generalization~\cite{Benedetti2019,cerezo2021}.
 Dropout and batch normalization are used in the classical stack~\cite{Goodfellow2016}.
@@ -523,7 +581,7 @@ Denote by $\mathrm{QConv}(k,C,D,L)$ a quantum layer using $k{\times}k$ patches, 
     \includegraphics[width=0.95\textwidth]{chapters/qa_figures/conv_circuit.png}
     \caption{TwoLocal ansatz used in the quantum convolutional layer, consisting of 
     nine qubits and alternating $R_Y$/$R_Z$ rotations followed by chains of CNOT 
-    entangling gates. The circuit depth $L$ corresponds to the number of alternating 
+    entangling gates. The circuit depth $D$ corresponds to the number of alternating 
     layers applied. 
     Adapted from~\cite{Filippi2025Thesis}.}
     \label{fig:qconv}
@@ -534,8 +592,8 @@ We extract local patches of side-length $k$ (i.e., $k\times k$), with $c_{\text{
 flatten them into $d$-dimensional feature vectors, where
 $d \;=\; k^2\,c_{\text{in}}$ or the post-projection dimension, if a linear reduction is applied.
 
-Each $d$-dimensional vector is encoded into a $D$-qubit register via a data-encoding unitary
-$U_{\text{enc}}:\mathbb{R}^{d}\to \mathrm{SU}(2)^{\otimes D}$ (see Fig.~\ref{fig:qcnn_ansatz}).
+Each $d$-dimensional vector is encoded into a $d$-qubit register via a data-encoding unitary
+$U_{\text{enc}}:\mathbb{R}^{d}\to \mathrm{SU}(2)^{\otimes d}$ (see Fig.~\ref{fig:qcnn_ansatz}).
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.8\textwidth]{chapters/qa_figures/basic_entangled.png}
@@ -550,18 +608,13 @@ $U_{\text{enc}}:\mathbb{R}^{d}\to \mathrm{SU}(2)^{\otimes D}$ (see Fig.~\ref{fig
 
 The variational block then applies
 $L$ layers of trainable unitaries $U(\boldsymbol{\theta})$, followed by Pauli measurements to produce
-$C_q$ quantum feature maps per spatial location. The number of shots per measured channel is $S$.
+$C$ quantum feature maps per spatial location. The number of shots per measured channel is $N_s$.
 
 Two insertion patterns are particularly meaningful. In an \emph{early-fusion} arrangement ($\mathrm{QConv}\!\to\!\mathrm{Conv}\!\to\!\cdots$) the quantum layer is placed first, exposing the classical trunk to quantum-enriched local features; in a \emph{late-fusion} arrangement ($\mathrm{Conv}\!\to\!\cdots\!\to\!\mathrm{QConv}\!\to\!\text{head}$) the order is reversed, turning higher-level classical features into compact quantum embeddings and measurements. We benchmark both in Sec.~\ref{sec:variants}.
-Let the per-patch parameter count be $T\!=\!2D d$ for the rotation layers in Eq.~\ref{eq:hea} (ignoring entangler choices) and total parameters $\mathcal{O}(C\,T)$; capacity scales linearly in $C$ and $D$.
+Let the per-patch parameter count be $T\!=\!D d$ for the rotation layers in Eq.~\ref{eq:hea} (one $R_z$ per qubit per layer) and total parameters $\mathcal{O}(C\,T)$; capacity scales linearly in $C$ and $D$.
 
 \paragraph{Pooling and hierarchy.}
-As previously stated, QCNNs provide a principled way to compress representations by tracing out measured qubits. If $\rho^{(\ell)}$ is the state at layer $\ell$ and $W^{(\ell)}$ acts on local neighborhoods, the next scale is
-\begin{equation}
-\rho^{(\ell+1)} \;=\; \mathrm{Tr}_{\mathrm{pool}}\!\left[\,W^{(\ell)}\;\rho^{(\ell)}\;W^{(\ell)\dagger}\right],
-\label{eq:qcnn-pool}
-\end{equation}
-reducing width while propagating entanglement to coarser receptive fields (a MERA-like hierarchy) \cite{Cong2019}. Practically, we implement a ``quantum stride'' by computing a subset of observables per patch and discarding the rest, aligning the spatial downsampling with the entangling light-cone.
+As previously stated, QCNNs provide a principled way to compress representations by tracing out measured qubits. Following the pooling map of Eq.~\ref{eq:qcnn-pooling}, tracing out the measured qubits reduces width while propagating entanglement to coarser receptive fields (a MERA-like hierarchy)~\cite{Cong2019}. Practically, we implement a ``quantum stride'' by computing a subset of observables per patch and discarding the rest, aligning the spatial downsampling with the entangling light-cone.
 
 \paragraph{Entanglement range vs.\ generalization.}
 Local entanglers (nearest-neighbor CNOTs) match the short-range statistics of natural scenes and help avoid overly expressive, 2-design-like behavior that correlates with vanishing gradients \cite{Holmes2022PRXQ}. QCNN-style locality and logarithmic depth guarantee that gradients need not vanish exponentially with system size, improving trainability relative to global ansätze \cite{Pesah2021PRX}. Empirically, moderate $D$ (1–3) and small $k$ (2–4) give the best accuracy-to-variance trade-off on EuroSAT while preserving hardware viability.
@@ -579,21 +632,17 @@ while reducing the number of parameters and mitigating barren plateau effects~\c
 
 
 \paragraph{Complexity.}
-For each patch and channel, we need $S$ shots per observable; a full forward pass costs $\mathcal{O}(N_{\mathrm{patch}}\,C\,L\,D\,S)$ circuit evaluations. Late-fusion reduces $N_{\mathrm{patch}}$ because it acts on feature maps of smaller spatial size; early-fusion may provide a stronger signal to the classical trunk. In our experiments, we report both patterns and ablations over $C, D, L$ to measure accuracy vs.\ variance vs.\ time.
+For each patch and channel, we need $N_s$ shots per observable; a full forward pass costs $\mathcal{O}(N_{\mathrm{patch}}\,C\,L\,D\,N_s)$ circuit evaluations. Late-fusion reduces $N_{\mathrm{patch}}$ because it acts on feature maps of smaller spatial size; early-fusion may provide a stronger signal to the classical trunk. In our experiments, we report both patterns and ablations over $C, D, L$ to measure accuracy vs.\ variance vs.\ time.
 \paragraph{Ablation studies.}
 To assess the relative contribution of circuit width, depth, and output dimensionality,
-we performed a set of ablation studies varying the number of qubits ($D$), 
-variational layers ($L$), and quantum channels ($C$) while keeping all other settings fixed. 
+we performed a set of ablation studies varying the number of qubits ($d=k^2$), 
+the ansatz depth ($D$), and the quantum channels ($C$) while keeping all other settings fixed. 
 Each configuration was trained over ten runs to evaluate accuracy, variance, and runtime. 
 We also compared early- and late-fusion schemes, isolating the effect of the 
 insertion point of the quantum layer on overall model performance and computational cost.
 
 
-\subsection{QCNN model}
-
-
-
-\subsection{Dataset and Preprocessing}
+\subsection{Dataset and preprocessing}
 \label{sec:dataset-and-preprocessing}
 We use EuroSAT (Sentinel-2) with $64{\times}64$ tiles and evaluate a binary subset to isolate the effect of quantum feature extraction \cite{Helber2019,Sebastianelli2021}. We keep the classical and hybrid pipelines as comparable as possible.
 In this work, we limited the analysis to a binary subset of the EuroSAT dataset, 
@@ -614,17 +663,16 @@ We extract vectorized patches $\mathbf{p}\in\mathbb{R}^{k^2}$ with kernel $k\!\i
 
 \paragraph{Augmentation and splits.}
 We apply light augmentations (horizontal/vertical flips, $\pm 10^\circ$ rotations) equally to classical and hybrid models. The dataset is stratified into 80\% train and 20\% validation, balanced per class. Batches mix patches from multiple images to reduce inter-sample correlations
-and approximate $\mathbf{i}$ndependent and $\mathbf{i}$dentically $\mathbf{d}$istributed (i.i.d.) sampling, ensuring unbiased gradient estimates for the classical head.
-\cite{Goodfellow2016}.
+and approximate independent and identically distributed (i.i.d.) sampling, ensuring unbiased gradient estimates for the classical head~\cite{Goodfellow2016}.
 
 \paragraph{Why encoding design matters here.}
-Angle encodings are robust and cheap; re-uploading can significantly improve fit in low-depth settings by enriching the frequency content \cite{PerezSalinas2020,Schuld2020Expressivity}. Kernel-style feature maps (e.g., data-dependent ZZ-phases on neighboring wires) induce inner-product geometries beneficial for some land-use separations \cite{Havlicek2019}. We used angle-only encoding and leave to future work to compare: (i) angle-only; (ii) angle+phase; (iii) re-uploaded angle. For completeness, it should also be benchmarked a small amplitude-encoding variant on downsampled patches to assess the trade-off between state-prep cost and qubit efficiency.
+Angle encodings are robust and cheap; re-uploading can significantly improve fit in low-depth settings by enriching the frequency content \cite{PerezSalinas2020,Schuld2020Expressivity}. Kernel-style feature maps (e.g., data-dependent ZZ-phases on neighboring wires) induce inner-product geometries beneficial for some land-use separations \cite{Havlicek2019}. We used angle-only encoding and leave to future work to compare: (i) angle-only; (ii) angle+phase; (iii) re-uploaded angle. For completeness, a small amplitude-encoding variant on downsampled patches should also be benchmarked to assess the trade-off between state-preparation cost and qubit efficiency.
 
 \paragraph{Outputs for downstream heads.}
 The quantum feature tensor $F\in\mathbb{R}^{H'\times W'\times C}$ feeds either a shallow classical CNN head or a linear classifier. We matched heads across baselines so that performance differences reflect the quantum layer rather than a stronger classical readout. This way, we kept the readout capacity normalized so that any gain is due to the quantum convolution, not a stronger classifier.
 
 
-\subsection{Training and Optimization}\label{sec:train-opt}
+\subsection{Training and optimization}\label{sec:train-opt}
 Our optimization protocol is staged. First, we conduct architecture search and hyperparameter tuning entirely on \emph{simulators} within the Qiskit ecosystem, selecting a single best candidate per setting. Second, we run a focused \emph{hardware validation} of the selected candidate on an IQM superconducting device (54 qubits) accessed via the Qiskit-IQM adapter, to assess its robustness under realistic noise and topology constraints. The full hardware-validation campaign and its results are reported in Sec.~\ref{sec:hw_validation}.
 
 \paragraph{Objective and gradient evaluation.}
@@ -633,36 +681,29 @@ Let $f_{\boldsymbol{\theta}}(X)$ denote the logit produced after pooling the qua
 \mathcal{L}(\boldsymbol{\theta})
 = -\frac{1}{N}\sum_{n=1}^{N}\!\big[y_n\log \sigma(f_{\boldsymbol{\theta}}(X_n)) + (1-y_n)\log \!\big(1-\sigma(f_{\boldsymbol{\theta}}(X_n))\big)\big],
 \end{equation}
-and compute PQC gradients with the \emph{parameter-shift} rule \cite{Schuld2019PRA,Mitarai2018}: for gates generated by Pauli operators,
+and compute PQC gradients with the \emph{parameter-shift} rule \cite{Schuld2019Grad,Mitarai2018}: for gates generated by Pauli operators,
 \begin{equation}
 \frac{\partial}{\partial \theta_j}\,\langle M\rangle_{\boldsymbol{\theta}}
 = \tfrac{1}{2}\Big(\,\langle M\rangle_{\theta_j+\tfrac{\pi}{2}} - \langle M\rangle_{\theta_j-\tfrac{\pi}{2}}\,\Big),
 \label{eq:psr-34}
 \end{equation}
-so each partial derivative requires two additional forward evaluations. On Qiskit, we use the \emph{Estimator} primitive to obtain expectation values consistently across simulators and hardware backends \cite{QiskitEstimatorDocs,Qiskit2019}. With $s$ shots per expectation, the variance of the estimator scales as
-\begin{equation}
-\mathrm{Var}\!\left[\widehat{\langle M\rangle}\right] \;=\; \frac{1-\langle M\rangle^2}{s},
-\qquad
-\mathrm{SE}\!\left[\widehat{\langle M\rangle}\right] \;=\; \mathcal{O}(S^{-1/2}),
-\label{eq:shot-var-34}
-\end{equation}
-Hence, we schedule $S$ to increase during training (low $S$ for exploration, high $S$ for convergence) to lower Standard Error (SE).
+so each partial derivative requires two additional forward evaluations. On Qiskit, we use the \emph{Estimator} primitive to obtain expectation values consistently across simulators and hardware backends~\cite{QiskitEstimatorDocs,Qiskit2019}. With $N_s$ shots per expectation, the estimator variance follows Eq.~\ref{eq:shotvar}, so its standard error scales as $\mathcal{O}(N_s^{-1/2})$. Hence we schedule $N_s$ to increase during training (low $N_s$ for exploration, high $N_s$ for convergence) to lower the standard error.
 
 \paragraph{Simulator-first search (Qiskit 2.2).}
 For relatively rapid prototyping, we rely on Qiskit Aer backends under Qiskit~2.2 (primitives V2). Where relevant, we use (i) exact statevector simulation for sanity checks (no sampling noise), (ii) shot-based simulation to match the training signal of hardware, and (iii) device-aware transpilation (layout and coupling map) to estimate depth and two-qubit counts faithfully. For IQM-targeted experiments, we employ the IQM Qiskit adapter to simulate circuits with IQM-specific noise models (when available) and topology, so that the selected candidate is realistic with respect to gate set, connectivity, and expected error channels \cite{IQMClientDocs2025,QiskitOnIQMGuide}. The per-batch cost of a forward–backward pass is
 \begin{equation}
-\mathcal{O}\!\big(N_{\text{patch}}\;C\,L\,D\,S\big)
+\mathcal{O}\!\big(N_{\text{patch}}\;C\,L\,D\,N_s\big)
 \end{equation}
-circuit executions (Sec.~3.2 notation), which we keep tractable by small patches, moderate depth $D$, and re-uploading for spectral richness rather than extra qubits.
+circuit executions (same notation as above), which we keep tractable by small patches, moderate depth $D$, and re-uploading for spectral richness rather than extra qubits.
 
 \paragraph{Hardware validation (IQM Emerald, 54 qubits via Qiskit).}
-The selected candidate is validated on the IQM Emerald 54-qubit superconducting processor through the Qiskit-IQM adapter (same Estimator interface as in simulation). Circuits are transpiled to the device's coupling graph using a calibration-aware initial layout that maps each parallel block onto a high-readout-fidelity 4-qubit chain (Sec.~\ref{sec:hw_validation}); the ansatz uses nearest-neighbor entanglers, and the shot budget is set to $S=150$ per observable, balancing gradient stability against queue and credit costs. Measurement error mitigation and basic readout calibration are enabled when supported by the provider, complementing the gradient-norm clipping and early-stopping heuristics already in use. Following common practice, we \emph{do not} re-tune the full architecture on hardware: only the trainable quantum weights $\boldsymbol{w}$ are updated by parameter-shift gradients on the QPU, with the classical backbone frozen at its simulator-pretrained values, ensuring a fair sim-to-device transfer. The detailed hardware-validation methodology and results are reported in Sec.~\ref{sec:hw_validation}.
+The selected candidate is validated on the IQM Emerald 54-qubit superconducting processor through the Qiskit-IQM adapter (same Estimator interface as in simulation). Circuits are transpiled to the device's coupling graph using a calibration-aware initial layout that maps each parallel block onto a high-readout-fidelity 4-qubit chain (Sec.~\ref{sec:hw_validation}); the ansatz uses nearest-neighbor entanglers, and the shot budget is set to $N_s=500$ per observable, balancing gradient stability against queue and credit costs. Measurement error mitigation and basic readout calibration are enabled when supported by the provider, complementing the gradient-norm clipping and early-stopping heuristics already in use. Following common practice, we \emph{do not} re-tune the full architecture on hardware: only the trainable quantum weights $\boldsymbol{w}$---the $R_z$ angles of Eq.~\ref{eq:hea}, i.e.\ the quantum components of the variational parameters $\boldsymbol{\theta}$---are updated by parameter-shift gradients on the QPU, with the classical backbone frozen at its simulator-pretrained values, ensuring a fair sim-to-device transfer. The detailed hardware-validation methodology and results are reported in Sec.~\ref{sec:hw_validation}.
 
 \paragraph{Entanglement, trainability, and generalization.}
 Entanglement within a patch is key to building non-separable features; however, over-expressive, randomizing ansätze correlate with vanishing gradients (\emph{barren plateaus}) \cite{McClean2018,Holmes2022PRXQ,Marrero2021PRXQ}. Our QCNN-style, locality-preserving construction and shallow depth mitigate this effect, and theory guarantees that QCNN gradients need not vanish exponentially with system size \cite{Pesah2021PRX}. From a sample-efficiency perspective, keeping the number of trainable gates modest and pooling before the linear head improves generalization from few examples \cite{Caro2022NatCommun}. Empirically, on both simulators and hardware, we observe that re-uploading (fixed qubit count, moderate $D$) matches or outperforms deeper, more entangling variants—supporting the view that encoding frequency content is as impactful as raw circuit depth.
 
 \paragraph{Optimizers and schedules.}
-We adopt Adam with warmup and cosine decay, gradient-norm clipping, and a two-phase shot schedule $S_t$: (i) simulator phase—small $S$ for fast model selection; (ii) hardware phase—larger $S$ on the shortlisted candidate. This preserves iteration speed during search and allocates physical runs only where they are most informative.
+We adopt Adam with warmup and cosine decay, gradient-norm clipping, and a two-phase shot schedule $N_{s,t}$: (i) simulator phase—small $N_s$ for fast model selection; (ii) hardware phase—larger $N_s$ on the shortlisted candidate. This preserves iteration speed during search and allocates physical runs only where they are most informative.
 
 \subsection{Runtime-aware metrics and batch-time estimation}
 \label{sec:runtime-metric}
@@ -708,7 +749,7 @@ notebook (Sec.~\ref{subsec:cost_model}, Phase D and Phase E):
   $p_{\rm img}=C_{\rm conv}\cdot Q^2$ where $C_{\rm conv}=6$ is the number of
   convolutional channels and $Q=5$ is the quanvolutional output side
   (Sec.~\ref{subsec:minibatch_sgd}); thus $p_{\rm img}=150$.
-\item[$S$] — shots per circuit (\texttt{SHOTS}; $S=500$).
+\item[$N_s$] — shots per circuit (\texttt{SHOTS}; $N_s=500$).
 \item[$\tau_{\rm circ}^{\rm wall}$] — empirical wall-clock time per bound circuit
   observed at the Python client; calibrated in Phase D
   (Sec.~\ref{subsec:hw_results}).
@@ -805,14 +846,14 @@ matches Phase~D code in \texttt{hybrid\_qcnn\_v4\_3\_0\_emerald.ipynb}.}
 \end{algorithm}
 
 \paragraph{Why we do not propagate per-shot times explicitly.}
-The shot count $S$ does not appear explicitly in
+The shot count $N_s$ does not appear explicitly in
 Eqs.~\eqref{eq:N_step}--\eqref{eq:cred_epoch}. The reason is operational: on
 the IQM Resonance API the shot loop is amortized inside the per-circuit pulse
 schedule and is not user-controllable on a finer granularity than the bound
-circuit. The dependence of $\tau_{\rm circ}^{\rm wall}$ on $S$ is therefore
-absorbed into the calibration constant of Phase~D, and any change in $S$
+circuit. The dependence of $\tau_{\rm circ}^{\rm wall}$ on $N_s$ is therefore
+absorbed into the calibration constant of Phase~D, and any change in $N_s$
 requires a re-calibration. For the campaign reported in Sec.~\ref{sec:hw_validation}
-we kept $S=500$ throughout, so this distinction is immaterial in our setting.
+we kept $N_s=500$ throughout, so this distinction is immaterial in our setting.
 
 \paragraph{Practical guidelines.}
 Three operational habits keep the cost model trustworthy in practice. The wall-time-per-circuit $\tau_{\rm circ}^{\rm wall}$ must be calibrated on the actual submission pattern (same $N$ per job, same connectivity) immediately before launching a cost-bounded campaign, since cached schedules and cold-start effects can shift it by up to $\pm 30\%$. The number of parallel blocks $K$ should be set as close as possible to the toolchain limit $K_{\max}$ to amortise $\tau_{\rm circ}^{\rm wall}$ over more patches per circuit, with the caveat that the speed-up is linear only up to the additional depth and SWAP overhead introduced by the layout of Sec.~\ref{subsec:transpilation}. Finally, the in-flight cost projection $\widehat{\mathrm{cred}}_{\rm ep}$ of Eq.~\eqref{eq:cred_epoch} should be treated as a conservative upper bound: on our campaign it overestimated the actual billed cost by $\sim 24\%$ (Sec.~\ref{subsec:cost_model}), so if credit headroom matters one should plan against this estimate but reconcile against the dashboard after the first epoch.
@@ -831,7 +872,7 @@ It comprises ten land-use and land-cover classes---\emph{Residential, Industrial
 Highway, River, Sea Lake, Forest, Annual Crop, Permanent Crop, Herbaceous Vegetation,}
 and \emph{Pasture}---each containing 2,000--3,000 labeled patches of $64\times64$ pixels.
 For our binary classification experiments, subsets of these classes were selected
-and balanced to form the training and test partitions described in Sec.~4.2.
+and balanced to form the training and test partitions described in Sec.~\ref{sec:dataset-and-preprocessing}.
 
 \begin{figure}[H]
     \centering
@@ -851,7 +892,7 @@ and hybrid quantum--classical models.
 To reduce dimensionality while retaining discriminative structure, each
 $64\times64\times3$ image is converted to a set of $N_\mathrm{patch}$ subpatches,
 normalized to $[0,1]$, and encoded into amplitude- or angle-based quantum embeddings
-as described in Sec.~4.3
+as described in Sec.~\ref{sec:dataset-and-preprocessing}
 
 \paragraph{Implementation.}
 Classical components are implemented in PyTorch; quantum circuits are executed via Qiskit primitives with parameter-shift gradients. Unless otherwise noted, we train for 10 epochs with minibatches sized to keep GPU and simulator utilization high; 10 epochs are sufficient to bring both architectures past the plateau documented in~\cite{Filippi2025Thesis} while keeping the simulator-time per seed manageable across the $R=10$ replications of Sec.~\ref{sec:stats-significance}. Loss is cross-entropy; classical derivatives are computed by the host framework (and checked with finite-difference when needed), quantum derivatives via parameter-shift~\cite{Schuld2019Grad}. Accuracy is reported as
@@ -889,7 +930,7 @@ hybrid quantum--classical literature, and it has the additional benefit
 of decoupling the model-selection question (best on simulator) from the
 noise-robustness question (best after on-device fine-tuning).
 
-Figure~\ref{fig:training-dynamics} compares the learning curves (cross-entropy loss and binary accuracy versus epoch) of our hybrid Q-CNN backbone against the classical-only ablation, both trained on the simulator under identical preprocessing, optimizer settings and binary subset of EuroSAT (Forest vs.\ AnnualCrop, $10$ images/class for both train and val splits). The two models share the convolutional feature extractor; the only difference is whether the quanvolutional layer is replaced by a classical pointwise convolution (the classical ablation, Sec.~\ref{sec:variants}) or by the parameterized quantum filter (the hybrid Q-CNN). Both models reach $\geq 90\%$ validation accuracy within a handful of epochs and saturate at $\approx 95\%$ at the end of pre-training; the validation curves are essentially indistinguishable beyond epoch~6, while the training-loss trajectory of the hybrid model exhibits the moderately larger step-to-step variance expected from the parameter-shift gradient estimator on $S=500$ shots.
+Figure~\ref{fig:training-dynamics} compares the learning curves (cross-entropy loss and binary accuracy versus epoch) of our hybrid Q-CNN backbone against the classical-only ablation, both trained on the simulator under identical preprocessing, optimizer settings and binary subset of EuroSAT (Forest vs.\ AnnualCrop, $10$ images/class for both train and val splits). The two models share the convolutional feature extractor; the only difference is whether the quanvolutional layer is replaced by a classical pointwise convolution (the classical ablation, Sec.~\ref{sec:variants}) or by the parameterized quantum filter (the hybrid Q-CNN). Both models reach $\geq 90\%$ validation accuracy within a handful of epochs and saturate at $\approx 95\%$ at the end of pre-training; the validation curves are essentially indistinguishable beyond epoch~6, while the training-loss trajectory of the hybrid model exhibits the moderately larger step-to-step variance expected from the parameter-shift gradient estimator on $N_s=500$ shots.
 
 \begin{figure}[H]
     \centering
@@ -900,22 +941,21 @@ Figure~\ref{fig:training-dynamics} compares the learning curves (cross-entropy l
 
 Reading these curves: the hybrid Q-CNN follows the same broad learning trajectory as the classical ablation within run-to-run variability, with the largest visible difference at the first epoch and a comparable plateau thereafter. The simulator checkpoint that is loaded onto Emerald in Sec.~\ref{sec:hw_validation} for the hardware fine-tuning campaign is the one obtained at the end of this run, with only the four trainable quantum weights $\boldsymbol{w}\in\mathbb{R}^{4}$ remaining unfrozen during on-device adaptation.
 
-\subsection{Architectural search: the C16--Q64 winner}
+\subsection{Architectural search and the architecture adopted here}
 \label{sec:variants}
 
-The systematic exploration of QCNN variants along the three design axes
-that govern the encoding pipeline --- the \emph{placement} of the
-quantum convolution (early vs.\ late fusion with respect to the
-classical convolutional trunk), the number of \emph{parallel quantum
-channels} per patch, and the \emph{depth} of the variational block ---
-was performed in the prior master's thesis of
-Filippi~\cite{Filippi2025Thesis}, carried out at the University of
-Pisa under the co-supervision of the present author and Oliver Morsch.
-We summarise its outcome
-here because all subsequent work in this chapter, including the
-multi-seed statistical campaign of Sec.~\ref{sec:results-stats} and the
-hardware-validation campaign of Sec.~\ref{sec:hw_validation}, builds on
-the architecture identified by that search.
+The design space of the quanvolutional pipeline --- the placement of the
+quantum convolution (early versus late fusion with respect to the classical
+convolutional trunk), the number of parallel quantum channels per patch, and
+the depth of the variational block --- was explored in the prior single-seed
+master's thesis of Filippi~\cite{Filippi2025Thesis}, carried out at the
+University of Pisa under the co-supervision of the present author and Oliver
+Morsch. That exploration found late fusion (classical $\to$ classical $\to$
+quantum) to be systematically preferable to early fusion and identified
+\texttt{C16--Q64} as its strongest single-seed configuration. We summarise it
+here because the present chapter inherits its qualitative design lesson; the
+architecture studied below, however, departs from that winner, for the reasons
+set out at the end of this section.
 
 Tab.~\ref{tab:qcnn-variants} reproduces the validation metrics obtained
 in~\cite{Filippi2025Thesis} on the same binary EuroSAT subset adopted
@@ -939,7 +979,7 @@ the depth/SNR trade-offs known for PQCs~\cite{cerezo2021}.
 
 \begin{table}[h]
 \centering
-\caption{Architectural search outcome reproduced from~\cite{Filippi2025Thesis}. Architectures are labelled by the first and last convolutional layer and their output channels (\texttt{C} = classical, \texttt{Q} = quantum). All entries from the same single-seed simulator campaign of~\cite{Filippi2025Thesis}; the present chapter takes the winner \texttt{C16--Q64} (in \textbf{bold}) as the architecture for the multi-seed statistical campaign of Sec.~\ref{sec:results-stats} and the hardware-validation campaign of Sec.~\ref{sec:hw_validation}.}
+\caption{Architectural search outcome reproduced from~\cite{Filippi2025Thesis}. Architectures are labelled by the first and last convolutional layer and their output channels (\texttt{C} = classical, \texttt{Q} = quantum). All entries from the same single-seed simulator campaign of~\cite{Filippi2025Thesis}; the present chapter retains the late-fusion finding of this search but, for the reasons given in the text, adopts a leaner architecture of its own for the multi-seed and hardware campaigns; the capacity of \texttt{C16--Q64} (in \textbf{bold}) enters the study only as the target of the Level-1 high-capacity classical reference (Sec.~\ref{sec:results-stats}).}
 \label{tab:qcnn-variants}
 \begin{tabular}{lcc}
 \toprule
@@ -959,14 +999,34 @@ in~\cite{Filippi2025Thesis} on the late-fusion variants is a
 pronounced first-epoch accuracy jump (from $\sim 30\%$ to $\sim 85\%$)
 followed by rapid stabilisation within $\sim 10$ epochs; this is
 consistent with the feature-map view of the quantum
-layer~\cite{Schuld2019Grad,Havlicek2019}, and is the original
+layer~\cite{Schuld2019PRA,Havlicek2019}, and is the original
 observation that motivated the multi-seed statistical investigation we
 develop in the next section to test whether the same epoch~$1$
 advantage survives the seed-to-seed variability.
 
+\paragraph{The architecture adopted here.}
+We retain the late-fusion arrangement favoured by the search above, but we do
+not adopt the \texttt{C16--Q64} winner itself. Two considerations motivate a
+leaner design. First, the comparison we set out to make requires an $R=10$
+multi-seed campaign (Sec.~\ref{sec:results-stats}) and a fine-tuning campaign on
+physical hardware (Sec.~\ref{sec:hw_validation}); replicating and transferring
+the $\sim\!85.6\times10^{6}$-parameter \texttt{C16--Q64} ten times over is not
+compatible with the available simulator time and hardware-credit budget. Second,
+and independently of cost, a model of that capacity is disproportionate to the
+task: the benchmark is a binary classification on a reduced EuroSAT subset of a
+few hundred images, a regime in which tens of millions of parameters are far
+more than the data can constrain and tend to favour overfitting over
+generalisation. We therefore study a deliberately compact architecture of our
+own: a six-channel convolutional trunk feeding a nine-qubit quanvolutional block
+($\sim\!4.6\times10^{5}$ trainable parameters in total), reduced to four qubits
+for the Emerald hardware runs. The high-capacity \texttt{C16--Q64} re-enters the
+study only as the capacity target of the high-capacity classical reference
+(Level~1 of Sec.~\ref{sec:results-stats}), where it serves to bound, rather than
+to instantiate, the comparison.
+
 \subsection{Comparison to baselines}
 \label{sec:baselines}
-We benchmark the best QCNN (\texttt{C16--Q64}) against two classical/hybrid references. As a published hybrid remote-sensing model we cite Sebastianelli et al.~\cite{Sebastianelli2021}; we report performance figures only qualitatively, since the original publication does not provide seed-resolved data and a paired comparison is therefore not available.
+We benchmark our hybrid Q-CNN against two classical/hybrid references. As a published hybrid remote-sensing model we cite Sebastianelli et al.~\cite{Sebastianelli2021}; we report performance figures only qualitatively, since the original publication does not provide seed-resolved data and a paired comparison is therefore not available.
 
 \paragraph{Filippi's classical baseline and the capacity confounder.}
 The prior thesis work of Filippi~\cite{Filippi2025Thesis} compared the same \texttt{C16--Q64} hybrid architecture against a compact LeNet-5-style CNN with $6/16$ convolutional channels~\cite{LeCun1998} on a two-class EuroSAT subset, reporting validation loss $0.37$ for the classical baseline against $0.25$ for the hybrid. As reported in~\cite{Filippi2025Thesis}, the LeNet-5 baseline has substantially fewer trainable parameters than the hybrid \texttt{C16--Q64}, so the loss gap, when read as a quantum-vs-classical contrast, conflates two distinct effects: the contribution of the quantum convolutional layer, and the contribution of the larger $16/32/64$-channel classical trunk that surrounds it. The work reported in this thesis builds on Filippi's quanvolutional ansatz design (Eq.~\ref{eq:parallel_circuit}, Fig.~\ref{fig:qconv}, Fig.~\ref{fig:qcnn_ansatz}, all adapted from~\cite{Filippi2025Thesis} as flagged in the respective captions) and extends it along three new directions of our own.
@@ -1024,7 +1084,7 @@ difference agree~\cite{Wilcoxon1945}. We did not compute McNemar
 contingency tests on individual validation items, because the same items
 appear in every run and are therefore not exchangeable across runs.
 
-\subsection{Results and Statistical Robustness}
+\subsection{Results and statistical robustness}
 \label{sec:results-stats}
 
 To ensure statistical robustness, three architectures are trained and
@@ -1461,12 +1521,12 @@ $p$-values.
 \end{figure}
 \end{comment}
 
-\subsection{Training Dynamics}
+\subsection{Training dynamics}
 \label{sec:qcnn_training_dynamics}
 
 Figure~\ref{fig:QCNN-with-std} together with the pre-training curves of Fig.~\ref{fig:training-dynamics} characterizes the training dynamics of the hybrid model on the simulator. We report three observations of these curves without inferring any asymptotic behaviour.
 
-First, the hybrid Q-CNN reaches an across-seed mean final-epoch validation accuracy of $\bar{a}_{\mathrm{hybrid}}=0.945$, against $\bar{a}_{\mathrm{small}}=0.970$ for the matched-capacity classical control (Sec.~\ref{sec:results-stats}); the two architectures therefore plateau within $\sim 2.6$ percentage points of each other within roughly five epochs on the binary EuroSAT subset, with run-to-run variability that is consistent with the per-seed dispersion of Sec.~\ref{sec:stats-significance}. Second, at the first epoch the hybrid model exhibits a substantially higher validation accuracy than the matched-capacity classical control (Fig.~\ref{fig:QCNN-with-std}, right panel): the across-seed mean gap of $\sim 29$ percentage points at epoch~$1$ shrinks over the subsequent epochs, reverses sign around epoch~$3$, and asymptotes to the $\sim 2.6$~pp deficit reported above once both models have reached their respective plateaus. Third, the per-step training loss of the hybrid model carries a moderately larger step-to-step variance than the classical control, in a manner consistent with the residual sampling noise of the parameter-shift gradient estimator at $S=500$ shots per observable.
+First, the hybrid Q-CNN reaches an across-seed mean final-epoch validation accuracy of $\bar{a}_{\mathrm{hybrid}}=0.945$, against $\bar{a}_{\mathrm{small}}=0.970$ for the matched-capacity classical control (Sec.~\ref{sec:results-stats}); the two architectures therefore plateau within $\sim 2.6$ percentage points of each other within roughly five epochs on the binary EuroSAT subset, with run-to-run variability that is consistent with the per-seed dispersion of Sec.~\ref{sec:stats-significance}. Second, at the first epoch the hybrid model exhibits a substantially higher validation accuracy than the matched-capacity classical control (Fig.~\ref{fig:QCNN-with-std}, right panel): the across-seed mean gap of $\sim 29$ percentage points at epoch~$1$ shrinks over the subsequent epochs, reverses sign around epoch~$3$, and asymptotes to the $\sim 2.6$~pp deficit reported above once both models have reached their respective plateaus. Third, the per-step training loss of the hybrid model carries a moderately larger step-to-step variance than the classical control, in a manner consistent with the residual sampling noise of the parameter-shift gradient estimator at $N_s=500$ shots per observable.
 
 These observations should be read narrowly. The binary subset of EuroSAT used here saturates close to the inherent class-overlap ceiling already after a handful of epochs, so the convergence scale itself is short, and any epoch-count differential measured on it has limited resolving power. The first-epoch margin is presented here as a property of the simulated training trajectory in the present setting; it does not by itself support a claim that the quantum filter accelerates training in a meaningful, transferable sense. A quantitative comparison with stronger classical baselines and on multi-class targets, together with a controlled study of the effect of seed and initialisation, would be required before any inference about the relative learning speeds of the two architectures is drawn.
 
@@ -1484,7 +1544,7 @@ Model selection was conducted on Qiskit simulators, while functional correctness
 \subsection{Hardware validation on real quantum backends}
 \label{sec:hw_validation}
 
-The simulator-based architecture search of Sec.~\ref{sec:baselines} identified the \texttt{C16--Q64} Hybrid Q-CNN as the best-performing candidate. To assess whether this candidate transfers to noisy intermediate-scale quantum (NISQ) hardware, we have executed it on IQM's 54-qubit superconducting processor \emph{Emerald}~\cite{IQMResonance2025}, accessed through the IQM Resonance cloud platform via the \texttt{iqm-client} Python adapter for Qiskit~\cite{IQMClientDocs2025,QiskitOnIQMGuide}. The transition from simulator to physical device required addressing three classes of challenges that are seldom discussed in published Q-CNN benchmarks: (i) the interaction between our parallel-block circuit topology and the physical connectivity graph of the device, (ii) accurate calibration of the credit-based cost model that bounds the experiment, and (iii) selection of training hyperparameters compatible with a strict computational budget. We document each of these challenges in turn, since their resolution constitutes a methodological contribution that we believe is portable to other QPU-bound experiments.
+The hybrid Q-CNN adopted in Sec.~\ref{sec:baselines} --- the compact late-fusion design motivated there, rather than Filippi's high-capacity \texttt{C16--Q64} winner --- was carried to physical hardware to assess whether it transfers to the noisy intermediate-scale quantum (NISQ) regime. We have executed it, in the reduced four-qubit form dictated by the device budget, on IQM's 54-qubit superconducting processor \emph{Emerald}~\cite{IQMResonance2025}, accessed through the IQM Resonance cloud platform via the \texttt{iqm-client} Python adapter for Qiskit~\cite{IQMClientDocs2025,QiskitOnIQMGuide}. The transition from simulator to physical device required addressing three classes of challenges that are seldom discussed in published Q-CNN benchmarks: (i) the interaction between our parallel-block circuit topology and the physical connectivity graph of the device, (ii) accurate calibration of the credit-based cost model that bounds the experiment, and (iii) selection of training hyperparameters compatible with a strict computational budget. We document each of these challenges in turn, since their resolution constitutes a methodological contribution that we believe is portable to other QPU-bound experiments.
 
 \subsubsection{Backend selection and connection setup}
 \label{subsec:backend_setup}
@@ -1508,7 +1568,7 @@ The earlier convention based on a per-device sub-path (\texttt{cocos.resonance.m
 \paragraph{Functional sanity check.}
 Before submitting any production circuit, we run a Bell-state preparation 
 (Hadamard on qubit 0, CNOT to qubit 1, computational-basis measurement) 
-at $S=1000$ shots. On the calibration set used throughout this section, 
+at $N_s=1000$ shots. On the calibration set used throughout this section, 
 the observed Bell fidelity $P(00)+P(11)=0.989$ confirms that the device 
 is operational, that authentication and routing are correct, and that the 
 shot statistics are consistent with the gate-level error budget. The same 
@@ -1668,7 +1728,7 @@ The QPU runtime per job (\texttt{runtime\_seconds}) is highly linear in the numb
 \qquad R^2 = 0.993 .
 \label{eq:job_time_model}
 \end{equation}
-The intercept $1.44$~s is interpretable as the per-job QPU initialization+teardown overhead, while the slope $0.226$~s/circuit is the per-circuit shot loop at $S=500$ shots. Combining Eq.~\ref{eq:job_time_model} with the billing rule of Eq.~\ref{eq:billing_rule} provides a closed-form a-priori cost model that is exact up to the ceiling rounding.
+The intercept $1.44$~s is interpretable as the per-job QPU initialization+teardown overhead, while the slope $0.226$~s/circuit is the per-circuit shot loop at $N_s=500$ shots. Combining Eq.~\ref{eq:job_time_model} with the billing rule of Eq.~\ref{eq:billing_rule} provides a closed-form a-priori cost model that is exact up to the ceiling rounding.
 
 \paragraph{Wall-time vs.\ billed-time discrepancy.}
 The wall-clock time observed at the Python client is consistently larger than \texttt{runtime\_seconds} (Fig.~\ref{fig:iqm_job_anatomy}). For the 28-circuit job, the wall median is 12.10~s while the billing window is 7.41~s; for the 273-circuit job, the corresponding values are 70.04~s and 63.38~s. The gap is attributable to compilation, queue scheduling, and post-processing, which are not billed but contribute to the throughput observed by the user. The empirical wall-time-to-billing ratio is
@@ -1769,7 +1829,7 @@ Before launching the fine-tuning campaign, we executed a minicheck phase (\emph{
 The Bell-state fidelity test (Sec.~\ref{subsec:backend_setup}) was repeated at the start of each session that used the device. Across three independent sessions over a single day, the observed Bell fidelity $P(00)+P(11)$ took values $0.989$, $0.980$ and $0.990$, consistent within shot noise with the per-qubit readout fidelity floor of the device. We take this stability as evidence that the calibration set used by Emerald did not change appreciably across the campaign, and that the fine-tuning epochs of Sec.~\ref{subsec:finetune_results} are mutually comparable.
 
 \paragraph{Per-block bias under zero input.}
-With $\boldsymbol{x}^{(k)}=\mathbf{0}$ and $\boldsymbol{w}=\mathbf{0}$ for all blocks $k$, the output of each block in Eq.~\ref{eq:parallel_circuit} reduces to a single $H$ followed by a chain of CX gates and a $Z$-basis measurement on qubit $q^{(k)}_0$, which produces an unbiased estimator $\langle Z_0^{(k)}\rangle = 0$ in the absence of noise. We submitted 50 such circuits and recorded the per-block sample mean $\widehat{\langle Z_0^{(k)}\rangle}$ and its standard error. The standard error of the per-block mean over $N_z$ independent circuits, each estimated from $s$ shots, is $\sigma_{\mathrm{mean}}=1/\sqrt{s\,N_z}$. The corresponding 3-$\sigma$ shot-noise threshold is $3/\sqrt{s\,N_z}=0.019$ with $s=500$ shots and $N_z=50$ circuits.
+With $\boldsymbol{x}^{(k)}=\mathbf{0}$ and $\boldsymbol{w}=\mathbf{0}$ for all blocks $k$, the output of each block in Eq.~\ref{eq:parallel_circuit} reduces to a single $H$ followed by a chain of CX gates and a $Z$-basis measurement on qubit $q^{(k)}_0$, which produces an unbiased estimator $\langle Z_0^{(k)}\rangle = 0$ in the absence of noise. We submitted 50 such circuits and recorded the per-block sample mean $\widehat{\langle Z_0^{(k)}\rangle}$ and its standard error. The standard error of the per-block mean over $N_z$ independent circuits, each estimated from $N_s$ shots, is $\sigma_{\mathrm{mean}}=1/\sqrt{N_s\,N_z}$. The corresponding 3-$\sigma$ shot-noise threshold is $3/\sqrt{N_s\,N_z}=0.019$ with $N_s=500$ shots and $N_z=50$ circuits.
 
 \begin{table}[h]
 \centering
@@ -1974,14 +2034,14 @@ Rotation (angle) encoding followed by short-range entanglers creates non-separab
 
 
 \paragraph{Limitations and threats to validity.}
-First, the evaluation uses a binary subset of EuroSAT~\cite{Helber2019}; while useful for controlled comparisons, it narrows class diversity and may overstate gains that depend on specific spectral contrasts. Second, model selection was performed on simulators, with hardware validation restricted to a single architecture (the \texttt{C16--Q64} candidate) on a single device (IQM Emerald) and a credit-bounded fine-tuning campaign of two on-device epochs (Sec.~\ref{sec:hw_validation}). The noise sensitivity is additionally characterised through a paired multi-seed study on a reduced 4-qubit version of the architecture under a calibrated IBM Heron r2 noise model (Sec.~\ref{sec:noise_resilience}), which extends the statistical claims beyond the on-device two-epoch budget; nevertheless, conclusions about noise robustness should be read as restricted to the studied regime (binary task, shallow circuit, moderate cumulative infidelity), and a broader cross-device study would be needed to claim portability. Third, the classical references we adopt for the multi-seed statistical comparison are (i) a high-capacity ablation of the hybrid \texttt{C16--Q64} that contains $\sim$$185\times$ more trainable parameters than the simulator-trained hybrid of Sec.~\ref{sec:results-stats}, and (ii) a matched-capacity ablation that is structurally isomorphic to that hybrid at $0.07\%$ parameter-count tolerance; the second of these is what we read as the genuine like-for-like comparison, while the first sets the absolute classical asymptote on this task. With both references in place the asymptotic accuracy gap of the hybrid is $\sim$$2.6$~pp (matched) and $\sim$$3.9$~pp (high-capacity), with the early-epoch advantage of the hybrid largest at epoch~$1$ ($\sim$$29$~pp on the matched comparison). The hybrid result has not been tuned independently for the classical task, and we make no claim about its persistence against architectures that have been independently tuned to the classical optimum. Finally, patch extraction introduces choices (stride, overlap) that affect $N_{\text{patch}}$ and information leakage across borders; we mitigated this with consistent preprocessing, but a broader ablation is warranted.
+First, the evaluation uses a binary subset of EuroSAT~\cite{Helber2019}; while useful for controlled comparisons, it narrows class diversity and may overstate gains that depend on specific spectral contrasts. Second, model selection was performed on simulators, with hardware validation restricted to a single architecture (our compact hybrid Q-CNN) on a single device (IQM Emerald) and a credit-bounded fine-tuning campaign of two on-device epochs (Sec.~\ref{sec:hw_validation}). The noise sensitivity is additionally characterised through a paired multi-seed study on a reduced 4-qubit version of the architecture under a calibrated IBM Heron r2 noise model (Sec.~\ref{sec:noise_resilience}), which extends the statistical claims beyond the on-device two-epoch budget; nevertheless, conclusions about noise robustness should be read as restricted to the studied regime (binary task, shallow circuit, moderate cumulative infidelity), and a broader cross-device study would be needed to claim portability. Third, the classical references we adopt for the multi-seed statistical comparison are (i) a high-capacity reference sized to Filippi's \texttt{C16--Q64} capacity, containing $\sim$$185\times$ more trainable parameters than the simulator-trained hybrid of Sec.~\ref{sec:results-stats}, and (ii) a matched-capacity ablation that is structurally isomorphic to that hybrid at $0.07\%$ parameter-count tolerance; the second of these is what we read as the genuine like-for-like comparison, while the first sets the absolute classical asymptote on this task. With both references in place the asymptotic accuracy gap of the hybrid is $\sim$$2.6$~pp (matched) and $\sim$$3.9$~pp (high-capacity), with the early-epoch advantage of the hybrid largest at epoch~$1$ ($\sim$$29$~pp on the matched comparison). The hybrid result has not been tuned independently for the classical task, and we make no claim about its persistence against architectures that have been independently tuned to the classical optimum. Finally, patch extraction introduces choices (stride, overlap) that affect $N_{\text{patch}}$ and information leakage across borders; we mitigated this with consistent preprocessing, but a broader ablation is warranted.
 
 \paragraph{Scalability and time-to-train.}
 The practical bottleneck for hybrid training is the number of circuit evaluations,
 \(
 N_{\text{exec}}\!\approx\!N_{\text{patch}}\,S\,[\,M+2K\,M_{\!\nabla}\,]
 \),
-and the scheduled per-shot duration \(T_{\text{sched}}\) (Duration-Weighted Depth) reported by the compiler. We found \(T_{\text{sched}}\) a reliable wall-time surrogate under BackendV2/Target timing, whereas plain (unweighted) depth can be misleading when 2Q gates dominate layer latency—echoing timing-aware mapping results~\cite{Lao2020TimingMapping,Dousti2013LEQA} and recent “gate-aware depth’’ discussions~\cite{GateAwareDepth2025}. Late fusion also helps time-to-train because it acts on spatially downsampled feature maps (smaller $N_{\text{patch}}$). That said, the linear dependence on $S$ and on the number of active parameters $K$ remains a key constraint for larger models.
+and the scheduled per-shot duration \(T_{\text{sched}}\) (Duration-Weighted Depth) reported by the compiler. We found \(T_{\text{sched}}\) a reliable wall-time surrogate under BackendV2/Target timing, whereas plain (unweighted) depth can be misleading when 2Q gates dominate layer latency—echoing timing-aware mapping results~\cite{Lao2020TimingMapping,Dousti2013LEQA} and recent “gate-aware depth’’ discussions~\cite{GateAwareDepth2025}. Late fusion also helps time-to-train because it acts on spatially downsampled feature maps (smaller $N_{\text{patch}}$). That said, the linear dependence on $N_s$ and on the number of active parameters $K$ remains a key constraint for larger models.
 
 \paragraph{Generalization and sample efficiency.}
 Keeping parameter count modest (via shallow depth and re-uploading rather than wider/global entanglement) appears beneficial. This echoes bounds and empirical evidence that quantum models can generalize from relatively few examples when capacity is controlled~\cite{Caro2022NatCommun}. In our setting, pooling before the linear head and limiting entanglement range likely reduce variance while preserving class-discriminative features.
