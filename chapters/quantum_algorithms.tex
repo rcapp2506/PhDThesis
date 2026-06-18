@@ -904,7 +904,7 @@ and complements loss curves to assess generalization.
 \paragraph{Hardware note.}
 All model selection is performed on device-aware simulators. To validate portability and timing, we executed the selected candidate on an IQM Emerald 54-qubit backend through the Qiskit-IQM interface, confirming functional correctness and latency trends predicted by our scheduled-duration analysis (see Sec.~\ref{sec:runtime-metric}); the full hardware-validation report, including a credit-bounded fine-tuning campaign on Emerald, is given in Sec.~\ref{sec:hw_validation}.
 
-\subsection{Training dynamics and learning curves}
+\subsection{Learning curves}
 \label{sec:results-curves}
 
 \paragraph{Why a simulator pre-training stage.}
@@ -930,7 +930,7 @@ hybrid quantum--classical literature, and it has the additional benefit
 of decoupling the model-selection question (best on simulator) from the
 noise-robustness question (best after on-device fine-tuning).
 
-Figure~\ref{fig:training-dynamics} compares the learning curves (cross-entropy loss and binary accuracy versus epoch) of our hybrid Q-CNN backbone against the classical-only ablation, both trained on the simulator under identical preprocessing, optimizer settings and binary subset of EuroSAT (Forest vs.\ AnnualCrop, $10$ images/class for both train and val splits). The two models share the convolutional feature extractor; the only difference is whether the quanvolutional layer is replaced by a classical pointwise convolution (the classical ablation, Sec.~\ref{sec:variants}) or by the parameterized quantum filter (the hybrid Q-CNN). Both models reach $\geq 90\%$ validation accuracy within a handful of epochs and saturate at $\approx 95\%$ at the end of pre-training; the validation curves are essentially indistinguishable beyond epoch~6, while the training-loss trajectory of the hybrid model exhibits the moderately larger step-to-step variance expected from the parameter-shift gradient estimator on $N_s=500$ shots.
+Figure~\ref{fig:training-dynamics} compares the learning curves (cross-entropy loss and binary accuracy versus epoch) of our hybrid Q-CNN backbone against the classical-only ablation, both trained on the simulator under identical preprocessing, optimizer settings and binary subset of EuroSAT (Forest vs.\ AnnualCrop, $10$ images/class for both train and val splits). The two models share the convolutional feature extractor; the only difference is whether the quanvolutional layer is replaced by a classical pointwise convolution (the classical ablation, Sec.~\ref{sec:variants}) or by the parameterized quantum filter (the hybrid Q-CNN). Both models reach $\geq 90\%$ validation accuracy within a handful of epochs and saturate at $\approx 95\%$ at the end of pre-training; the validation curves are essentially indistinguishable beyond epoch~6. The across-seed learning dynamics---including the early-epoch behaviour and the per-step loss variance---are quantified in Sec.~\ref{sec:qcnn_training_dynamics}.
 
 \begin{figure}[H]
     \centering
@@ -939,7 +939,7 @@ Figure~\ref{fig:training-dynamics} compares the learning curves (cross-entropy l
     \label{fig:training-dynamics}
 \end{figure}
 
-Reading these curves: the hybrid Q-CNN follows the same broad learning trajectory as the classical ablation within run-to-run variability, with the largest visible difference at the first epoch and a comparable plateau thereafter. The simulator checkpoint that is loaded onto Emerald in Sec.~\ref{sec:hw_validation} for the hardware fine-tuning campaign is the one obtained at the end of this run, with only the four trainable quantum weights $\boldsymbol{w}\in\mathbb{R}^{4}$ remaining unfrozen during on-device adaptation.
+The simulator checkpoint that is loaded onto Emerald in Sec.~\ref{sec:hw_validation} for the hardware fine-tuning campaign is the one obtained at the end of this run, with only the four trainable quantum weights $\boldsymbol{w}\in\mathbb{R}^{4}$ remaining unfrozen during on-device adaptation.
 
 \subsection{Architectural search and the architecture adopted here}
 \label{sec:variants}
@@ -1224,7 +1224,7 @@ run metrics are reported), the per-seed differences
 $\Delta_{r}=a_{\mathrm{hybrid},r}-a_{\mathrm{small},r}$ are negative for
 eight seeds, positive for two seeds, and zero for none; the Wilcoxon
 exact two-sided test gives $W_{\mathrm{obs}}=6$,
-$p_{\mathrm{obs}}=2.7\times 10^{-2}$, with paired Cohen's $d=-0.87$ and
+$p_{\mathrm{obs}}=2.7\times 10^{-2}$, with paired Cohen's $d=-0.86$ and
 mean $\bar{\Delta}=-0.0255$ (bootstrap 95\% CI on the per-seed difference
 $[-0.043,\,-0.009]$). A complementary paired $t$-test gives
 $t_{9}=-2.74$, $p=2.3\times 10^{-2}$, with the same direction. The
@@ -1257,9 +1257,8 @@ For completeness, the Wilcoxon paired test between Level~3 and Level~1
 Fig.~\ref{fig:qcnn-vs-ccnn-paired}) gives $W_{\mathrm{obs}}=0$
 at $n_{\mathrm{eff}}=9$ (one tie at $s=486$), two-sided
 $p_{\mathrm{obs}}\approx 2/2^{9}=3.9\times 10^{-3}$, with paired
-Cohen's $d=-1.48$ and $\bar{\Delta}=-0.039$. This is the result that
-was reported in the manuscript's earlier draft; with the matched-capacity
-Level-2 control in place, approximately one third of this gap
+Cohen's $d=-1.48$ and $\bar{\Delta}=-0.039$. This is the headline comparison when no matched-capacity control is
+available; with the matched-capacity Level-2 control in place, approximately one third of this gap
 ($\sim$$1.4$~pp out of $\sim$$3.9$~pp) is attributable to classical
 parameter count and the remainder ($\sim$$2.6$~pp) to the architectural
 substitution itself. A compact summary of all four levels at the final
