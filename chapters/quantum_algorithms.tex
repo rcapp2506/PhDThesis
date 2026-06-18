@@ -1329,10 +1329,15 @@ $R_Z$ rotation angles) but not through its inputs: the upstream classical
 convolutional trunk receives its training signal directly from the
 classification loss via the rest of the network, but not through the
 parameter-shift Jacobian of the quanvolutional block itself. This
-``input-detached'' configuration halves the number of estimator calls per
-backward pass (from $2(W+n)=36$ to $2W=18$ for $W=9$ trainable weights and
-$n=9$ input variables) and is the dominant simulator-time saving of the
-present campaign. The matched-capacity classical control is trained
+``input-detached'' configuration halves the number of parameter-shift
+\emph{gradient} evaluations per backward pass (from $2(W+n)=36$ to $2W=18$
+for $W=9$ trainable weights and $n=9$ input variables): two shifted
+circuit evaluations per differentiated parameter. Including the single
+unshifted forward evaluation, which is shared with the loss computation and
+counted once, the per-step totals are $1+2(W+n)$ and $1+2W$ respectively ---
+the convention in which the hardware budget of
+Sec.~\ref{subsec:minibatch_sgd} is stated. This input-detached saving is the
+dominant simulator-time reduction of the present campaign. The matched-capacity classical control is trained
 end-to-end without any such restriction, so the comparison is conservative
 in the direction of the hybrid: any residual advantage of the hybrid
 reflects expressivity of the quantum block in isolation, with its
