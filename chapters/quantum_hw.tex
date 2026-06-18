@@ -520,7 +520,98 @@ In a \emph{symmetric} SQUID ($d=0$), $E_J^{\rm eff}(\Phi)$ varies between a maxi
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=\linewidth]{chapters/qh_figures/fig_qubit_squid_didactic.pdf}
+  \resizebox{\linewidth}{!}{%
+\begin{tikzpicture}[font=\small,>=Latex]
+%================= PANEL (a) =================
+\begin{scope}
+  \node[anchor=west] at (-0.2,6.4) {(a) anharmonicity makes the transmon a qubit};
+  % energy axis
+  \draw[->] (-1.15,-0.2) -- (-1.15,6.0) node[above]{};
+  \node[rotate=90] at (-1.6,3.0) {energy};
+
+  %---- LC oscillator: parabola U = k x^2 (harmonic), equal level spacing ----
+  \def\kc{0.55}\def\xcL{1.9}
+  \draw[gray,thick,domain=-2.85:2.85,smooth,samples=90]
+        plot ({\xcL+\x},{\kc*\x*\x+0.7});
+  % equally spaced levels E_n = (n+0.5)*dE
+  \foreach \n in {0,1,2,3,4}{
+    \pgfmathsetmacro{\E}{(\n+0.5)*0.92}
+    \pgfmathsetmacro{\xt}{sqrt(\E/\kc)}
+    \draw[blue!70!black,very thick] ({\xcL-\xt},{\E+0.7}) -- ({\xcL+\xt},{\E+0.7});
+    \node[blue!70!black,right] at ({\xcL+\xt+0.04},{\E+0.7}) {\footnotesize$|\n\rangle$};
+  }
+  \node[align=center] at (\xcL,-0.05) {\textbf{LC oscillator}\\[-1pt]\footnotesize$\omega_{n+1,n}=\omega_r$ (equal spacing)};
+
+  % divider
+  \draw[gray!55,dashed] (4.95,-0.4) -- (4.95,6.0);
+
+  %---- Transmon: cosine well U = D(1-cos), anharmonic (compressing) levels ----
+  \def\xc{8.2}\def\D{5.2}
+  \draw[gray,thick,domain=-2.95:2.95,smooth,samples=120]
+        plot ({\xc+\x},{\D*(1-cos(\x r))/2+0.7});
+  % anharmonic levels inside the well, gaps decreasing (alpha<0):
+  % E0=0.65; gaps 1.05,0.90,0.75,0.60 -> 1.70,2.60,3.35,3.95
+  \def\Ea{0.65}\def\Eb{1.70}\def\Ec{2.60}\def\Ed{3.35}\def\Ee{3.95}
+  \foreach \E/\n in {\Ea/0,\Eb/1,\Ec/2,\Ed/3,\Ee/4}{
+    \pgfmathsetmacro{\arg}{1-2*\E/\D}
+    \pgfmathsetmacro{\xtr}{acos(\arg)*3.14159265/180}
+    \draw[red!65!black,very thick] ({\xc-\xtr},{\E+0.7}) -- ({\xc+\xtr},{\E+0.7});
+    \node[red!60!black,right] at ({\xc+\xtr+0.04},{\E+0.7}) {\footnotesize$|\n\rangle$};
+  }
+  % omega_10 and omega_21 arrows (right side)
+  \draw[<->] (\xc+2.05,{\Ea+0.7}) -- (\xc+2.05,{\Eb+0.7})
+        node[midway,right]{\footnotesize$\omega_{10}$};
+  \draw[<->] (\xc+1.55,{\Eb+0.7}) -- (\xc+1.55,{\Ec+0.7})
+        node[midway,right]{\footnotesize$\omega_{21}$};
+  \node[align=center] at (\xc,-0.05) {\textbf{Transmon}\\[-1pt]\footnotesize$\alpha=\omega_{21}-\omega_{10}\approx -E_C$};
+\end{scope}
+
+%================= PANEL (b) =================
+\begin{scope}[xshift=12.8cm]
+  \node[anchor=west] at (-0.3,6.4) {(b) asymmetric SQUID with external flux $\Phi_{\mathrm{ext}}$};
+  \node[anchor=west] at (-0.3,5.55)
+    {$E_J^{\mathrm{eff}}(\Phi)=(E_{J1}{+}E_{J2})\,|\cos(\pi\Phi/\Phi_0)|\,\sqrt{1+d^2\tan^2(\pi\Phi/\Phi_0)}$};
+
+  % --- circuit: one shunt capacitor C over a SQUID loop (two junctions) ---
+  \def\L{0.6}\def\R{6.0}\def\TY{4.6}\def\BY{1.7}
+  % top rail with shunt capacitor C in the middle
+  \draw[green!45!black,very thick] (\L,\TY) -- (2.7,\TY);
+  \draw[green!45!black,very thick] (2.7,\TY+0.32) -- (2.7,\TY-0.32); % cap plate
+  \draw[green!45!black,very thick] (3.0,\TY+0.32) -- (3.0,\TY-0.32); % cap plate
+  \draw[green!45!black,very thick] (3.0,\TY) -- (\R,\TY);
+  \node[green!45!black] at (2.85,\TY+0.62) {$C$};
+  % left & right verticals down to the loop
+  \draw[green!45!black,very thick] (\L,\TY) -- (\L,\BY);
+  \draw[green!45!black,very thick] (\R,\TY) -- (\R,\BY);
+  % bottom rail
+  \draw[green!45!black,very thick] (\L,\BY) -- (\R,\BY);
+  % two junction arms (the SQUID loop) : left arm E_J1, right arm E_J2
+  % left junction (box with X) on left vertical
+  \def\jy{3.15}
+  \draw[red!55!black,very thick] (\L-0.28,\jy-0.28) rectangle (\L+0.28,\jy+0.28);
+  \draw[red!55!black,very thick] (\L-0.28,\jy-0.28)--(\L+0.28,\jy+0.28)
+        (\L-0.28,\jy+0.28)--(\L+0.28,\jy-0.28);
+  \node[red!55!black,left] at (\L-0.40,\jy) {$E_{J1}$};
+  % right junction (smaller) on right vertical
+  \draw[red!55!black,very thick] (\R-0.22,\jy-0.22) rectangle (\R+0.22,\jy+0.22);
+  \draw[red!55!black,very thick] (\R-0.22,\jy-0.22)--(\R+0.22,\jy+0.22)
+        (\R-0.22,\jy+0.22)--(\R+0.22,\jy-0.22);
+  \node[red!55!black,right] at (\R+0.34,\jy+0.12) {$E_{J2}$};
+  \node[red!55!black,right] at (\R+0.34,\jy-0.28) {\footnotesize\itshape(smaller)};
+  % external flux symbol in the loop centre
+  \draw[blue!70,thick] ({(\L+\R)/2},{(\TY+\BY)/2}) circle (0.34);
+  \draw[blue!70,thick] ({(\L+\R)/2-0.24},{(\TY+\BY)/2-0.24})--({(\L+\R)/2+0.24},{(\TY+\BY)/2+0.24});
+  \draw[blue!70,thick] ({(\L+\R)/2-0.24},{(\TY+\BY)/2+0.24})--({(\L+\R)/2+0.24},{(\TY+\BY)/2-0.24});
+  \node[blue!70,right] at ({(\L+\R)/2+0.45},{(\TY+\BY)/2}) {$\Phi_{\mathrm{ext}}$};
+
+  % asymmetry parameter + sweet-spot note
+  \node at (3.0,0.75) {$d=\dfrac{E_{J1}-E_{J2}}{E_{J1}+E_{J2}}$};
+  \node[align=center] at (3.0,-0.35)
+    {\footnotesize\itshape two flux-insensitive sweet spots per period if $d\neq0$:\\[-1pt]
+     \footnotesize\itshape upper at $\Phi=0$, lower at $\Phi=\Phi_0/2$ with $E_J^{\mathrm{eff}}=(E_{J1}{+}E_{J2})|d|$};
+\end{scope}
+\end{tikzpicture}
+  }
   \caption{Two ingredients of the asymmetric-SQUID transmon. (a) The
     harmonic LC oscillator (left) has equally spaced levels and cannot
     be addressed selectively as a two-level system; the cosine potential
