@@ -276,7 +276,7 @@
 \begin{abstract}
 This chapter develops, trains and validates on physical hardware a hybrid quantum--classical convolutional neural network (Q-CNN) for binary satellite-image classification on a subset of the EuroSAT dataset. The architecture inserts a quanvolutional layer of nine qubits and eighteen trainable parameters into a classical convolutional trunk; the layer encodes patches into rotation-angle features, processes them through a shallow hardware-efficient entangling block, and reads out marginal Pauli-$Z$ expectations as quantum-derived feature maps.
 
-Four independent contributions are reported. First, a multi-seed statistical campaign at $R=10$ seeds compares the hybrid Q-CNN against two purpose-built classical controls: a structurally isomorphic matched-capacity baseline at $0.07\%$ parameter-count tolerance, and a high-capacity reference at $\sim 185\times$ the parameter count of the hybrid. Paired Wilcoxon signed-rank exact tests yield a final-epoch validation accuracy of $0.9445\pm 0.0243$ for the hybrid against $0.9700\pm 0.0133$ for the matched-capacity classical control ($p=2.7\times 10^{-2}$ at $R=10$, paired Cohen's $d=-0.87$); at the first training epoch, however, the same hybrid is approximately $29$ percentage points ahead of the matched-capacity control. The reading is one of training-efficiency advantage for the quantum block paired with a small asymptotic-accuracy deficit, both statistically supported on the same data.
+Four independent contributions are reported. First, a multi-seed statistical campaign at $R=10$ seeds compares the hybrid Q-CNN against two purpose-built classical controls: a structurally isomorphic matched-capacity baseline at $0.07\%$ parameter-count tolerance, and a high-capacity reference at $\sim 185\times$ the parameter count of the hybrid. Paired Wilcoxon signed-rank exact tests yield a final-epoch validation accuracy of $0.9445\pm 0.0243$ for the hybrid against $0.9700\pm 0.0133$ for the matched-capacity classical control ($p=2.7\times 10^{-2}$ at $R=10$, paired Cohen's $d=-0.86$); at the first training epoch, however, the same hybrid is approximately $29$ percentage points ahead of the matched-capacity control. The reading is one of training-efficiency advantage for the quantum block paired with a small asymptotic-accuracy deficit, both statistically supported on the same data.
 
 Second, a runtime-aware cost model is calibrated from $195$ jobs of the IQM Emerald production campaign; the model links bound-circuit count, mini-batch size and per-circuit wall time to a closed-form a-priori credit-cost estimate, and is verified to six significant digits against the dashboard billing rule $\lceil\,\texttt{runtime\_seconds}\,\rceil\times 0.75$. The Python-side wall-time-to-credit predictor is found to be conservative by $\sim 24\%$ with respect to the QPU-side billing.
 
@@ -1081,7 +1081,7 @@ seed-by-seed accuracy differences between the two architectures, with
 pairing on the \texttt{run\_idx}. With $R=10$ the smallest two-sided
 $p$-value achievable by the exact Wilcoxon test is
 $2/2^{10}\approx 0.002$, reached when all ten signs of the per-seed
-difference agree~\cite{Wilcoxon1945}. We did not compute McNemar
+difference agree~\cite{Wilcoxon1945}.\footnote{The exact signed-rank test handles zero per-seed differences (ties) by Wilcoxon's reduction: they are discarded and the effective sample size $n_{\mathrm{eff}}$ is reduced accordingly. Per-seed accuracies are rounded to four decimals before differencing, so that float32 artefacts neither create nor destroy ties; at $N_{\mathrm{val}}=200$ the accuracy granularity is $1/200$, hence the occasional genuine tie (e.g.\ seed $486$ in the Level-1 contrast).} We did not compute McNemar
 contingency tests on individual validation items, because the same items
 appear in every run and are therefore not exchangeable across runs.
 
@@ -1297,7 +1297,7 @@ seed-resolved data are not available for it.
 
 \paragraph{Item-level corroboration (vs.\ Level~1).}
 For the three hybrid Q-CNN seeds in which the per-item correctness
-vector is currently archived on disk (seeds $708,819,930$), and against
+vector is available (seeds $708,819,930$), and against
 the Level-1 high-capacity classical control whose per-item correctness
 is available for all ten seeds on the same image ordering as the hybrid,
 McNemar's paired test on the $200$ validation items can be evaluated
@@ -1317,10 +1317,10 @@ is the item-level counterpart of the per-seed Wilcoxon test against
 Level~1: the two evidences agree on the same direction and qualitative
 magnitude, with the item-level $p$-value much smaller only because it
 sees $600$ paired draws rather than the $9$ usable per-seed contrasts
-of the across-seed test. The extension of this analysis to the Level-2
-matched-capacity control awaits item-by-item alignment of the validation
-ordering across the two campaigns, which is a clerical rather than a
-statistical issue.
+of the across-seed test. Extending this analysis to the Level-2
+matched-capacity control would require aligning the per-item validation
+ordering across the two campaigns; the across-seed paired Wilcoxon test
+already supplies the matched-capacity comparison at the seed level.
 
 \paragraph{A note on the gradient flow through the quanvolutional layer.}
 In the simulator-based training of this section we propagate gradients
