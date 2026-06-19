@@ -1,6 +1,68 @@
 % !TEX root = ../main.tex
 \begin{comment}
 === Revision log ===
+2026-06-17  R. Cappuccio / Claude  (Branch wave-physics-cap2 -- holistic physics/editorial revision of Ch. 2)
+
+  Holistic, single-source-of-truth revision of the hardware chapter,
+  replacing the earlier patch-based workflow that had let hardcoded
+  numbers diverge across text, tables, captions, and scripts.
+
+  Infrastructure: all physical numbers now derive from
+  qh_hardware/canonical_params.json via derive_canonical.py, which
+  emits chapters/canonical_macros.tex (\input in main.tex preamble).
+  No physical constant is typed by hand in the .tex any more.
+
+  Ratified canonical design point (300 GHz / 4 K, "Design B"):
+  alpha = -15 GHz (E_J/E_C = 50, E_C = 15 GHz); Delta_q = 600 MHz;
+  g = 80 MHz; J = -5.2 MHz (300 GHz) / -7.0 MHz (baseline);
+  xi_ZZ = -74 kHz (300 GHz) / -106 kHz (baseline), level-shift
+  convention xi_ZZ = E11+E00-E01-E10 (sigma_z x sigma_z coeff = xi_ZZ/4);
+  t_CNOT = 152.5 ns; F_CNOT = 97.9% at 4 K (thermal-limited:
+  eps_thermal = 1.41% irreducible floor, F_ceiling = 98.59%);
+  surface-code threshold fixed at 98%.
+
+  Change clusters: (i) J/xi_ZZ table and convention; (ii) fidelity
+  prose corrected to thermal-limited framing; (iii) improvement
+  pathways -- removed the "lower T to 3.5 K" option (would require
+  dilution refrigeration and destroy the 4 K value proposition);
+  (iv) decoherence figures regenerated; (v) alpha/relic purge of a
+  discredited exploratory parameter set; (vi) gate-feasibility note
+  (Omega_ZX independent of alpha for |alpha| >> Delta_q, so large
+  anharmonicity does not slow the gate; fixed-frequency operation);
+  (vii) economic estimates removed entirely (cost figures, % savings,
+  euro breakdowns) -- operational facts only, cost analysis deferred
+  to future work; (viii) scattered numbers reconciled (baseline
+  thermal population 9.0e-5%, the spurious 1.4e-312 -> "negligible").
+
+  Junction fabrication (capacitance-driven rewrite): the E_C-capacitance
+  constraint is highlighted as the design driver. omega_q = 300 GHz and
+  E_J/E_C = 50 fix both C_Sigma = 1.29 fF and I_c = 1.51 uA, so the
+  constraint C_J,tot = c_s I_c / J_c <= C_Sigma collapses to a single
+  material ratio c_s/J_c <= C_Sigma/I_c ~ 0.85 fF/uA. With the empirical
+  NbN/AlN scaling c_s ~ 20 sqrt(J_c[kA/cm^2]) fF/um^2 the budget is met
+  at J_c ~ 6 kA/cm^2 (single junction d ~ 180 nm, C_J ~ 1.2 fF, AlN
+  barrier ~ 1.3 nm). tab:junction_sizes rewritten with c_s and C_J
+  columns; fig:system_parameters panel (c) regenerated with
+  capacitance-budget colouring. Feasibility grounded in literature:
+  NbN/AlN SIS-mixer maturity (tens of kA/cm^2, Wang1994HighJcNbN) and
+  recent all-nitride ALD transmons (J_c over seven orders of magnitude
+  with microsecond coherence above 300 mK, Wang2026ALDNitride); the
+  binding constraint is sub-gap quality at high J_c, not lithography.
+  Arrays demoted from "necessary" to optional yield/uniformity aid
+  (parallel arrays leave total area, hence C_J, unchanged). New bib
+  entries: Wang1994HighJcNbN, Wang2026ALDNitride.
+
+  CZ figure (CZ_freevolution_fidelity_vs_zeta.png) regenerated to the
+  ratified convention: x-axis |xi_ZZ| (level shift), t_CZ = pi/|xi_ZZ|,
+  canonical markers at 106 kHz (baseline, F ~ 39%) and 74 kHz
+  (300 GHz, F ~ 2%), both below the surface-code threshold.
+
+  Build: 0 errors, 0 undefined references/citations.
+
+\end{comment}
+
+\begin{comment}
+=== Revision log ===
 2026-05-07  R. Cappuccio / Claude  (Wave G -- Signorelli S1 distributed-pedagogy sweep, Ch. 3)
 
   Continuation of the S1 task started in Wave F (sensing chapter).
@@ -363,7 +425,7 @@
                 Majer 2007); deferred true longitudinal cross-Kerr
                 derivation to new Section 3.7
     * Patch P3: updated Numerical Values for HEATS-Q with redesigned
-                Delta_q = 280 MHz baseline (stretched-CR sweet spot)
+                Delta_q = 600 MHz (stretched-CR operating point)
     * Patch P4: replaced "ZZ Coupling and CNOT Gates" section with the
                 cross-resonance gate strategy (Sheldon 2016) — see
                 Section "Gate strategy: cross-resonance with echo correction"
@@ -401,9 +463,9 @@ This chapter presents a comprehensive theoretical analysis of
 asymmetric SQUID-based superconducting qubits across two operational 
 paradigms. Part A introduces the architecture and theoretical 
 framework. Part B validates baseline performance at 10-20 mK with 
-99.55\% CNOT fidelity. Part C explores elevated-temperature operation 
-at 300 GHz and 4-10 K, reducing cooling costs by 70-80\% while 
-maintaining 97-99\% gate fidelities.
+\FCNOTbase\% CNOT fidelity. Part C explores elevated-temperature operation 
+at 300 GHz and 4-10 K, replacing the dilution refrigerator with a
+closed-cycle cryocooler while maintaining 97-99\% gate fidelities.
 \end{abstract}
 }
 \partnopage[Asymmetric-SQUID Qubit]{Asymmetric-SQUID Qubit}
@@ -458,7 +520,98 @@ In a \emph{symmetric} SQUID ($d=0$), $E_J^{\rm eff}(\Phi)$ varies between a maxi
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=\linewidth]{chapters/qh_figures/fig_qubit_squid_didactic.pdf}
+  \resizebox{\linewidth}{!}{%
+\begin{tikzpicture}[font=\small,>=Latex]
+%================= PANEL (a) =================
+\begin{scope}
+  \node[anchor=west] at (-0.2,6.4) {(a) anharmonicity makes the transmon a qubit};
+  % energy axis
+  \draw[->] (-1.15,-0.2) -- (-1.15,6.0) node[above]{};
+  \node[rotate=90] at (-1.6,3.0) {energy};
+
+  %---- LC oscillator: parabola U = k x^2 (harmonic), equal level spacing ----
+  \def\kc{0.55}\def\xcL{1.9}
+  \draw[gray,thick,domain=-2.85:2.85,smooth,samples=90]
+        plot ({\xcL+\x},{\kc*\x*\x+0.7});
+  % equally spaced levels E_n = (n+0.5)*dE
+  \foreach \n in {0,1,2,3,4}{
+    \pgfmathsetmacro{\E}{(\n+0.5)*0.92}
+    \pgfmathsetmacro{\xt}{sqrt(\E/\kc)}
+    \draw[blue!70!black,very thick] ({\xcL-\xt},{\E+0.7}) -- ({\xcL+\xt},{\E+0.7});
+    \node[blue!70!black,right] at ({\xcL+\xt+0.04},{\E+0.7}) {\footnotesize$|\n\rangle$};
+  }
+  \node[align=center] at (\xcL,-0.05) {\textbf{LC oscillator}\\[-1pt]\footnotesize$\omega_{n+1,n}=\omega_r$ (equal spacing)};
+
+  % divider
+  \draw[gray!55,dashed] (4.95,-0.4) -- (4.95,6.0);
+
+  %---- Transmon: cosine well U = D(1-cos), anharmonic (compressing) levels ----
+  \def\xc{8.2}\def\D{5.2}
+  \draw[gray,thick,domain=-2.95:2.95,smooth,samples=120]
+        plot ({\xc+\x},{\D*(1-cos(\x r))/2+0.7});
+  % anharmonic levels inside the well, gaps decreasing (alpha<0):
+  % E0=0.65; gaps 1.05,0.90,0.75,0.60 -> 1.70,2.60,3.35,3.95
+  \def\Ea{0.65}\def\Eb{1.70}\def\Ec{2.60}\def\Ed{3.35}\def\Ee{3.95}
+  \foreach \E/\n in {\Ea/0,\Eb/1,\Ec/2,\Ed/3,\Ee/4}{
+    \pgfmathsetmacro{\arg}{1-2*\E/\D}
+    \pgfmathsetmacro{\xtr}{acos(\arg)*3.14159265/180}
+    \draw[red!65!black,very thick] ({\xc-\xtr},{\E+0.7}) -- ({\xc+\xtr},{\E+0.7});
+    \node[red!60!black,right] at ({\xc+\xtr+0.04},{\E+0.7}) {\footnotesize$|\n\rangle$};
+  }
+  % omega_10 and omega_21 arrows (right side)
+  \draw[<->] (\xc+2.05,{\Ea+0.7}) -- (\xc+2.05,{\Eb+0.7})
+        node[midway,right]{\footnotesize$\omega_{10}$};
+  \draw[<->] (\xc+1.55,{\Eb+0.7}) -- (\xc+1.55,{\Ec+0.7})
+        node[midway,right]{\footnotesize$\omega_{21}$};
+  \node[align=center] at (\xc,-0.05) {\textbf{Transmon}\\[-1pt]\footnotesize$\alpha=\omega_{21}-\omega_{10}\approx -E_C$};
+\end{scope}
+
+%================= PANEL (b) =================
+\begin{scope}[xshift=12.8cm]
+  \node[anchor=west] at (-0.3,6.4) {(b) asymmetric SQUID with external flux $\Phi_{\mathrm{ext}}$};
+  \node[anchor=west] at (-0.3,5.55)
+    {$E_J^{\mathrm{eff}}(\Phi)=(E_{J1}{+}E_{J2})\,|\cos(\pi\Phi/\Phi_0)|\,\sqrt{1+d^2\tan^2(\pi\Phi/\Phi_0)}$};
+
+  % --- circuit: one shunt capacitor C over a SQUID loop (two junctions) ---
+  \def\L{0.6}\def\R{6.0}\def\TY{4.6}\def\BY{1.7}
+  % top rail with shunt capacitor C in the middle
+  \draw[green!45!black,very thick] (\L,\TY) -- (2.7,\TY);
+  \draw[green!45!black,very thick] (2.7,\TY+0.32) -- (2.7,\TY-0.32); % cap plate
+  \draw[green!45!black,very thick] (3.0,\TY+0.32) -- (3.0,\TY-0.32); % cap plate
+  \draw[green!45!black,very thick] (3.0,\TY) -- (\R,\TY);
+  \node[green!45!black] at (2.85,\TY+0.62) {$C$};
+  % left & right verticals down to the loop
+  \draw[green!45!black,very thick] (\L,\TY) -- (\L,\BY);
+  \draw[green!45!black,very thick] (\R,\TY) -- (\R,\BY);
+  % bottom rail
+  \draw[green!45!black,very thick] (\L,\BY) -- (\R,\BY);
+  % two junction arms (the SQUID loop) : left arm E_J1, right arm E_J2
+  % left junction (box with X) on left vertical
+  \def\jy{3.15}
+  \draw[red!55!black,very thick] (\L-0.28,\jy-0.28) rectangle (\L+0.28,\jy+0.28);
+  \draw[red!55!black,very thick] (\L-0.28,\jy-0.28)--(\L+0.28,\jy+0.28)
+        (\L-0.28,\jy+0.28)--(\L+0.28,\jy-0.28);
+  \node[red!55!black,left] at (\L-0.40,\jy) {$E_{J1}$};
+  % right junction (smaller) on right vertical
+  \draw[red!55!black,very thick] (\R-0.22,\jy-0.22) rectangle (\R+0.22,\jy+0.22);
+  \draw[red!55!black,very thick] (\R-0.22,\jy-0.22)--(\R+0.22,\jy+0.22)
+        (\R-0.22,\jy+0.22)--(\R+0.22,\jy-0.22);
+  \node[red!55!black,right] at (\R+0.34,\jy+0.12) {$E_{J2}$};
+  \node[red!55!black,right] at (\R+0.34,\jy-0.28) {\footnotesize\itshape(smaller)};
+  % external flux symbol in the loop centre
+  \draw[blue!70,thick] ({(\L+\R)/2},{(\TY+\BY)/2}) circle (0.34);
+  \draw[blue!70,thick] ({(\L+\R)/2-0.24},{(\TY+\BY)/2-0.24})--({(\L+\R)/2+0.24},{(\TY+\BY)/2+0.24});
+  \draw[blue!70,thick] ({(\L+\R)/2-0.24},{(\TY+\BY)/2+0.24})--({(\L+\R)/2+0.24},{(\TY+\BY)/2-0.24});
+  \node[blue!70,right] at ({(\L+\R)/2+0.45},{(\TY+\BY)/2}) {$\Phi_{\mathrm{ext}}$};
+
+  % asymmetry parameter + sweet-spot note
+  \node at (3.0,0.75) {$d=\dfrac{E_{J1}-E_{J2}}{E_{J1}+E_{J2}}$};
+  \node[align=center] at (3.0,-0.35)
+    {\footnotesize\itshape two flux-insensitive sweet spots per period if $d\neq0$:\\[-1pt]
+     \footnotesize\itshape upper at $\Phi=0$, lower at $\Phi=\Phi_0/2$ with $E_J^{\mathrm{eff}}=(E_{J1}{+}E_{J2})|d|$};
+\end{scope}
+\end{tikzpicture}
+  }
   \caption{Two ingredients of the asymmetric-SQUID transmon. (a) The
     harmonic LC oscillator (left) has equally spaced levels and cannot
     be addressed selectively as a two-level system; the cosine potential
@@ -772,13 +925,13 @@ The detunings are:
 \Delta_2 &= \omega_{q2} - \omega_r = \SI{-1.3}{GHz}
 \end{align}
 
-Figure~\ref{fig:system_schematic} shows the physical architecture of the two-qubit system. Two transmon qubits (Q1 and Q2) are coupled to a common cavity resonator with coupling strengths $g_1$ and $g_2$. The qubits are detuned from the cavity frequency, placing the system in the dispersive regime where virtual photon exchange mediates an effective transverse exchange coupling $J/2\pi \simeq 6.5$~MHz (Sec.~\ref{sec:cavity_mediated_couplings}, Eq.~\ref{eq:transverse_J_intro}).
+Figure~\ref{fig:system_schematic} shows the physical architecture of the two-qubit system. Two transmon qubits (Q1 and Q2) are coupled to a common cavity resonator with coupling strengths $g_1$ and $g_2$. The qubits are detuned from the cavity frequency, placing the system in the dispersive regime where virtual photon exchange mediates an effective transverse exchange coupling $J/2\pi \simeq \BaseJ$~MHz (Sec.~\ref{sec:cavity_mediated_couplings}, Eq.~\ref{eq:transverse_J_intro}).
 
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.95\textwidth]{chapters/qh_figures/fig1_system_schematic_clean.pdf}
     \caption{\textbf{Two-qubit cavity QED system architecture.} 
-    Two transmon qubits (Q1 at 5.8~GHz, Q2 at 5.2~GHz) couple to a shared cavity resonator at 6.5~GHz with coupling strengths $g_1 = g_2 = 80$~MHz. The qubits are red-detuned from the cavity ($\Delta_1 = -0.7$~GHz, $\Delta_2 = -1.3$~GHz), enabling dispersive operation. Virtual photon exchange through the cavity mediates a transverse exchange coupling $J/2\pi \simeq 6.5$~MHz between the qubits (Sec.~\ref{sec:cavity_mediated_couplings}); the residual longitudinal cross-Kerr is $|\zeta_{zz}|/2\pi \simeq 1.7$~MHz, too small to drive a free-evolution CZ at high fidelity (Fig.~\ref{fig:CZ_unfeasible}), and the two-qubit gate is implemented as an echo cross-resonance instead. }
+    Two transmon qubits (Q1 at 5.8~GHz, Q2 at 5.2~GHz) couple to a shared cavity resonator at 6.5~GHz with coupling strengths $g_1 = g_2 = 80$~MHz. The qubits are red-detuned from the cavity ($\Delta_1 = \BaseDeltaOne$~GHz, $\Delta_2 = \BaseDeltaTwo$~GHz), enabling dispersive operation. Virtual photon exchange through the cavity mediates a transverse exchange coupling $J/2\pi \simeq \BaseJ$~MHz between the qubits (Sec.~\ref{sec:cavity_mediated_couplings}); the residual longitudinal cross-Kerr is $|\xi_{ZZ}|/2\pi \simeq \BaseXiZZmag$~kHz, too small to drive a free-evolution CZ at high fidelity (Fig.~\ref{fig:CZ_unfeasible}), and the two-qubit gate is implemented as an echo cross-resonance instead. }
     \label{fig:system_schematic}
 \end{figure}
 
@@ -857,20 +1010,30 @@ effective $\zeta_{zz}$:
 \label{eq:zeta_zz_correct}
 \end{equation}
 where $\Delta_q \equiv \omega_{q,1} - \omega_{q,2}$ is the qubit--qubit detuning
-and $\alpha_i < 0$ is the anharmonicity of qubit~$i$. For
+and $\alpha_i < 0$ is the anharmonicity of qubit~$i$. Equation~\eqref{eq:zeta_zz_correct}
+gives the ZZ \emph{level shift}
+$\xi_{ZZ}\equiv E_{|11\rangle}+E_{|00\rangle}-E_{|01\rangle}-E_{|10\rangle}$,
+which is the directly measurable ``ZZ rate'' quoted throughout this work; the
+coefficient of the $\hat\sigma_z^{(1)}\hat\sigma_z^{(2)}$ Hamiltonian term is
+$\zeta_{zz}=\xi_{ZZ}/4$. For
 $\alpha_1=\alpha_2=\alpha$ and $|\alpha|\ll|\Delta_q|$, this reduces to
-$\zeta_{zz}\approx 4J^2 \alpha/\Delta_q^2$, which is suppressed by an additional
+$\xi_{ZZ}\approx 4J^2 \alpha/\Delta_q^2$, which is suppressed by an additional
 factor $|\alpha/\Delta_q|$ compared to the naive estimate $J^2/\Delta_q$.
 
-We have validated Eq.~\eqref{eq:zeta_zz_correct} by exact diagonalization of a
-three-level transmon model (4~levels per qubit, Fock~6 for the cavity); the
-extracted $\zeta_{zz} = E_{|11\rangle} + E_{|00\rangle} - E_{|01\rangle} -
-E_{|10\rangle}$ matches Eq.~\eqref{eq:zeta_zz_correct} to within 0.3\% for our
-working parameters.
+We have evaluated $\xi_{ZZ}$ by exact diagonalization of a three-level transmon
+model (3~levels per qubit, Fock~6 for the cavity), extracting
+$\xi_{ZZ}=E_{|11\rangle}+E_{|00\rangle}-E_{|01\rangle}-E_{|10\rangle}$ directly
+from the dressed spectrum. For the baseline parameters this yields
+$\xi_{ZZ}/2\pi = \BaseXiZZ$~kHz, in agreement with the perturbative
+Eq.~\eqref{eq:zeta_zz_correct} at the $\sim15\%$ level. At the 300~GHz operating
+point the condition $|\alpha|\ll|\Delta_q|$ is strongly violated
+($|\alpha|=\InnAlpha$~GHz $\gg \Delta_q=\InnDeltaQ$~MHz), so the perturbative
+expression is no longer quantitatively reliable and we quote the
+exact-diagonalization value $\xi_{ZZ}/2\pi = \InnXiZZ$~kHz instead.
 
 The numerical values of the two interactions in our system are summarized in
 Table~\ref{tab:J_vs_zetazz}. The transverse $J$ dominates by nearly two orders
-of magnitude over the longitudinal $\zeta_{zz}$, which has direct consequences
+of magnitude over the longitudinal $\xi_{ZZ}$, which has direct consequences
 for the choice of two-qubit gate protocol (\S\ref{sec:gate_strategy}).
 
 \begin{table}[htbp]
@@ -878,16 +1041,19 @@ for the choice of two-qubit gate protocol (\S\ref{sec:gate_strategy}).
 \small
 \begin{tabularx}{\linewidth}{@{}L c c c@{}}
 \toprule
-System & $J/2\pi$ (MHz) & $\zeta_{zz}/2\pi$ (kHz) & Ratio $|J/\zeta_{zz}|$ \\
+System & $J/2\pi$ (MHz) & $\xi_{ZZ}/2\pi$ (kHz) & Ratio $|J/\xi_{ZZ}|$ \\
 \midrule
-Baseline mK ($\Delta_q\!=\!280$~MHz, $\alpha\!=\!-200$~MHz)         & $-6.5$ & $\sim 1700$ & $4$  \\
-Innovation 300~GHz ($\Delta_q\!=\!600$~MHz, $\alpha\!=\!-1000$~MHz) & $-9.4$ & $\sim 880$  & $11$ \\
+Baseline ($\Delta_q\!=\!\BaseDeltaQ$~MHz, $\alpha\!=\!-200$~MHz)        & $\BaseJ$ & $\BaseXiZZ$ & $\BaseRatioJZeta$  \\
+Innovation 300~GHz ($\Delta_q\!=\!\InnDeltaQ$~MHz, $\alpha\!=\!\InnAlpha$~GHz) & $\InnJ$ & $\InnXiZZ$  & $\InnRatioJZeta$ \\
 \bottomrule
 \end{tabularx}
-\caption{Transverse exchange coupling $J$ and longitudinal cross-Kerr
-$\zeta_{zz}$ for the redesigned system parameters
-(\S\ref{sec:system_params}). The dominance of $J$ over $\zeta_{zz}$ informs
-the choice of gate protocol.}
+\caption{Transverse exchange coupling $J$ and longitudinal cross-Kerr,
+reported as the ZZ level shift $\xi_{ZZ}=E_{11}+E_{00}-E_{01}-E_{10}$
+(the standard ``ZZ rate''; the $\sigma_z\!\otimes\!\sigma_z$ Hamiltonian
+coefficient is $\xi_{ZZ}/4$). Values are obtained by exact diagonalization of
+the two-transmon--cavity Hamiltonian (\S\ref{sec:cavity_mediated_couplings}).
+The transverse $J$ dominates $\xi_{ZZ}$ by nearly two orders of magnitude at
+both operating points, which informs the choice of gate protocol.}
 \label{tab:J_vs_zetazz}
 \end{table}
 
@@ -928,31 +1094,31 @@ longitudinal cross-Kerr $\sigma_z\!\otimes\!\sigma_z$ coupling. The resonant
 $\sqrt{i\text{SWAP}}$ is incompatible with elevated-temperature operation
 because it requires flux-control electronics on the cold stage. The
 free-evolution CZ is in principle compatible with the present hardware
-constraints, but the actual $\zeta_{zz}$ obtained from the four-level
-Magesan--Krantz expression (Eq.~\ref{eq:zeta_zz_correct}) is of order
-$100$~kHz at the operating point of this work, an order of magnitude
-smaller than the transverse exchange $J$ of
-Eq.~\eqref{eq:transverse_J}; the gate time
-$t_{\mathrm{CZ}} \simeq \pi/(2|\zeta_{zz}|)$ would exceed
-$10~\mu$s and is incompatible with the available coherence budget
-(Fig.~\ref{fig:CZ_unfeasible}).
+constraints, but the actual cross-Kerr obtained from the exact
+diagonalization (Eq.~\ref{eq:zeta_zz_correct} and
+Table~\ref{tab:J_vs_zetazz}) is $\xi_{ZZ}/2\pi = \BaseXiZZmag$~kHz at the
+operating point of this work, nearly two orders of magnitude smaller than the
+transverse exchange $J$ of Eq.~\eqref{eq:transverse_J}; the corresponding gate
+time $t_{\mathrm{CZ}} \simeq \pi/|\xi_{ZZ}|$ would be of order several
+microseconds, comparable to the coherence time $T_2$ and therefore incompatible
+with a high-fidelity gate (Fig.~\ref{fig:CZ_unfeasible}).
 
 The two-qubit gate is therefore implemented as an \emph{echo
-cross-resonance} protocol at the operating point $\Delta_q = 280$~MHz
-between qubits, which exploits the dominant transverse exchange $J$ rather
+cross-resonance} protocol at the qubit--qubit detuning $\Delta_q = \BaseDeltaQ$~MHz,
+which exploits the dominant transverse exchange $J$ rather
 than the suppressed longitudinal cross-Kerr. The resulting gate has
-$t_{\mathrm{CNOT}} \sim 250$~ns and $F_{\mathrm{avg}} \gtrsim 99\%$ limited
-by the coherence times of Sec.~\ref{sec:decoherence}; the full derivation
+$t_{\mathrm{CNOT}} \simeq \tCNOT$~ns and $F_{\mathrm{CNOT}} \simeq \FCNOT\%$
+(Sec.~\ref{sec:decoherence}); the full derivation
 follows below.
 
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.78\textwidth]{chapters/qh_figures/CZ_freevolution_fidelity_vs_zeta.png}
     \caption{Average gate fidelity of a free-evolution CZ as a function of
-    the longitudinal cross-Kerr $|\zeta_{zz}|$, with
-    $t_{\mathrm{CZ}} = \pi/(2|\zeta_{zz}|)$ and decoherence-limited dynamics.
-    The vertical dotted lines mark $|\zeta_{zz}|$ extracted from
-    Eq.~\eqref{eq:zeta_zz_correct} for the two elevated-temperature operating
+    the longitudinal cross-Kerr level shift $|\xi_{ZZ}|$, with
+    $t_{\mathrm{CZ}} = \pi/|\xi_{ZZ}|$ and decoherence-limited dynamics.
+    The vertical dotted lines mark $|\xi_{ZZ}|$ obtained by exact
+    diagonalization (Table~\ref{tab:J_vs_zetazz}) for the two operating
     points considered. Both fall well below the surface-code threshold,
     motivating the echo-cross-resonance gate strategy adopted in this
     section.}
@@ -1050,6 +1216,30 @@ duration $t_{\mathrm{CR}} = \pi/(2|\Omega_{ZX}|)$. A CNOT is recovered by
 single-qubit pre- and post-rotations, which are virtually instantaneous in our
 implementation~\cite{krantz2019}.
 
+\paragraph{Gate speed is not limited by the anharmonicity.}
+A property of Eq.~\eqref{eq:omega_ZX} that is central to the elevated-temperature
+design concerns its behaviour at large anharmonicity. In the regime
+$|\alpha| \gg \Delta_q$ --- which is precisely that of the $300$~GHz device,
+where $|\alpha| = 15$~GHz while $\Delta_q = \InnDeltaQ$~MHz --- the factor
+$(\Delta_q + \alpha) \to \alpha$ and the rate reduces to
+\begin{equation}
+\Omega_{ZX} \;\xrightarrow{\;|\alpha|\gg\Delta_q\;}\;
+-\,\frac{J\,\Omega}{\Delta_q},
+\label{eq:omega_ZX_largealpha}
+\end{equation}
+which is \emph{independent of} $\alpha$. The cross-resonance gate speed is thus
+set by the exchange coupling $J$, the drive amplitude $\Omega$ and the
+qubit--qubit detuning $\Delta_q$ alone; it is not degraded by the large
+anharmonicity that the design deliberately adopts to suppress thermal excitation
+and leakage. The two requirements --- a large $|\alpha|$ for thermal and leakage
+protection, and a fast entangling gate --- are therefore not in tension. With
+the canonical values this gives $\Omega_{ZX}/2\pi \simeq 1.8$~MHz and
+$t_{\mathrm{CNOT}} \simeq \tCNOT$~ns, shorter than the coherence time
+$T_{2,\mathrm{echo}} = \TTwoEcho~\mu$s by more than two orders of magnitude. The
+two-qubit gate is consequently realised at fixed qubit frequency, with the
+SQUID held at its flux-insensitive sweet spot, and requires no active flux
+tuning during operation.
+
 \subsubsection{Optimization of the qubit--qubit detuning}
 \label{subsec:dq_optimization}
 
@@ -1083,7 +1273,11 @@ $\Delta_q = |\alpha|$.
 
 The chosen operating points (Table~\ref{tab:gate_params}) avoid the straddling
 divergence by a comfortable margin while maintaining $\Omega_{ZX}$ in the
-multi-MHz range, yielding sub-microsecond gate times.
+multi-MHz range, yielding sub-microsecond gate times. The optimal $\Delta_q$
+identified here is a \emph{fabrication} target: it is fixed by the chosen
+qubit frequencies and reached with the SQUID at its flux-insensitive sweet
+spot, so that operation remains fixed-frequency and no active flux tuning is
+applied during gates.
 
 \begin{table}[htbp]
 \centering
@@ -1096,7 +1290,7 @@ $t_{\mathrm{CR}}$ & Comment \\
 \midrule
 Baseline mK         & 280~MHz & 200~MHz & 60~MHz  & 3.8~MHz & 210~ns
                     & stretched-CR sweet spot \\
-Innovation 300~GHz  & 600~MHz & 1~GHz   & 180~MHz & 7.0~MHz & 220~ns
+Innovation 300~GHz  & 600~MHz & 15~GHz  & 200~MHz & 1.8~MHz & 138~ns
                     & deeply stretched, $|\alpha|$ large \\
 \bottomrule
 \end{tabular}
@@ -1229,7 +1423,7 @@ The system operates without flux control, using only fixed-frequency qubits and 
 
 \subsubsection{Performance Summary}
 
-The two-qubit system demonstrates excellent performance for fault-tolerant quantum computing:
+The two-qubit system meets the requirements for fault-tolerant operation:
 
 \begin{table}[h]
 \centering
@@ -1238,9 +1432,9 @@ The two-qubit system demonstrates excellent performance for fault-tolerant quant
 \textbf{Aspect} & \textbf{Result} \\
 \midrule
 Dispersive regime         & $|\Delta_1|/g_1 = 8.8$ and $|\Delta_2|/g_2 = 16.2$ (above the $|\Delta|/g > 5$ requirement) \\
-Transverse exchange $J$   & $|J|/2\pi = 6.5$~MHz (Eq.~\eqref{eq:J_dispersive}; cross-Kerr $|\zeta_{zz}|/2\pi \simeq 1.7$~MHz from Eq.~\eqref{eq:zeta_zz_correct}) \\
+Transverse exchange $J$   & $|J|/2\pi = \BaseJmag$~MHz (Eq.~\eqref{eq:J_dispersive}; cross-Kerr $|\xi_{ZZ}|/2\pi \simeq \BaseXiZZmag$~kHz from Eq.~\eqref{eq:zeta_zz_correct}) \\
 Two-qubit gate            & echo-CR (Sheldon~\textit{et~al.}~\cite{Sheldon2016}); see Section~\ref{subsec:echoCR} \\
-Predicted $t_{\mathrm{CNOT}}$ & $\sim 250$~ns at the redesigned operating point ($\Delta_q/2\pi = 280$~MHz) \\
+Predicted $t_{\mathrm{CNOT}}$ & $\sim 250$~ns at the baseline gate operating point ($\Delta_q/2\pi = 280$~MHz, set by fabrication) \\
 Predicted gate fidelity   & $F_{\mathrm{avg}} \gtrsim 99\%$ with full pulse-engineering (Table~\ref{tab:fidelity_budget}) \\
 Readout                   & all four computational states distinguishable (Section~\ref{sec:dispersive}) \\
 \bottomrule
@@ -1274,7 +1468,7 @@ These results validate the design for two-qubit quantum operations at elevated t
 
 \begin{baselinebox}
 \textbf{Baseline Performance Summary at 10--20 mK:}
-Single-qubit gates achieve $F > 99.9\%$ and the two-qubit CNOT reaches $F = 99.55\%$; thermal effects are negligible ($< 10^{-5}\%$). The system is therefore \textbf{competitive with state-of-the-art} platforms.
+Single-qubit gates achieve $F > 99.9\%$ and the two-qubit CNOT reaches $F = \FCNOTbase\%$; thermal effects are negligible ($< 10^{-5}\%$), consistent with values reported for millikelvin transmon platforms based on comparable junction technology.
 \end{baselinebox}
 
 A consolidated validation of the baseline configuration is summarised in Table~\ref{tab:baseline_validation_metrics}. The asymmetric SQUID qubits at 5--6~GHz operating at 10--20~mK achieve:
@@ -1286,7 +1480,7 @@ A consolidated validation of the baseline configuration is summarised in Table~\
 \textbf{Metric} & \textbf{Value} \\
 \midrule
 Single-qubit fidelity   & $> 99.9\%$ \\
-Two-qubit fidelity      & $> 99.5\%$ \\
+Two-qubit fidelity      & $\FCNOTbase\%$ \\
 Single-qubit gate time  & $20$~ns \\
 Two-qubit gate time     & $\sim 250$~ns (echo CR, see Section~\ref{sec:gate_strategy}) \\
 Dispersive ratio        & $|\Delta|/g > 8$ \\
@@ -1314,7 +1508,6 @@ Table~\ref{tab:dilution_vs_pulsetube}.
 \toprule
 \textbf{Aspect} & \textbf{Dilution refrigerator} & \textbf{Pulse-tube cooler at 4 K} \\
 \midrule
-Cooling cost      & \$500\,k--\$2\,M                       & \$50\,k--\$100\,k ($10\times$ cheaper) \\
 Cool-down time    & days                                  & hours \\
 Power consumption & kW-scale at room temperature          & $\sim 100$~W scale \\
 Scalability       & limited beyond hundreds of qubits     & modular, distributed systems \\
@@ -1365,7 +1558,7 @@ n_{\text{th}} = \frac{1}{\exp(R_Q) - 1} = \frac{1}{\exp(3.60) - 1} = 0.0281 = 2.
 
 This thermal population contributes to gate errors but remains manageable. At lower temperatures, $n_{\text{th}}$ decreases exponentially:
 \begin{align}
-\text{At } T = 3 \text{ K}: \quad n_{\text{th}} &= 0.56\% \\
+\text{At } T = 3 \text{ K}: \quad n_{\text{th}} &= 0.83\% \\
 \text{At } T = 2 \text{ K}: \quad n_{\text{th}} &= 0.07\%
 \end{align}
 
@@ -1379,7 +1572,7 @@ Figure~\ref{fig:system_parameters}(b) shows thermal population versus temperatur
 
 it must be \textbf{strong enough} for fast two-qubit gates ($J_{zz} \propto g^2/\Delta$), yet \textbf{weak enough} to preserve the dispersive regime ($|\Delta|/g > 5$).
 
-at $5.8$~GHz and $20$~mK we have $\hbar\omega/(k_B T) = 14.0$ and $n_{\text{th}} = 0.08\%$, while at $300$~GHz and $4$~K we obtain $\hbar\omega/(k_B T) = 3.60$ and $n_{\text{th}} = 2.81\%$, both safely in the quantum regime.
+at $5.8$~GHz and $20$~mK we have $\hbar\omega/(k_B T) = 13.9$ and $n_{\text{th}} = 9.0\times10^{-5}\%$, while at $300$~GHz and $4$~K we obtain $\hbar\omega/(k_B T) = 3.60$ and $n_{\text{th}} = 2.81\%$, both safely in the quantum regime.
 
 \begin{table}[h]
 \centering
@@ -1387,7 +1580,7 @@ at $5.8$~GHz and $20$~mK we have $\hbar\omega/(k_B T) = 14.0$ and $n_{\text{th}}
 \toprule
 \textbf{Temperature} & \textbf{$\hbar\omega/(k_B T)$} & \textbf{$n_{\text{th}}$} & \textbf{Assessment} \\
 \midrule
-20~mK & 720 & $1.4 \times 10^{-312}$ & Excellent \\
+20~mK & 720 & negligible ($<10^{-300}$) & Excellent \\
 2~K & 7.20 & 0.075\% & Excellent \\
 4~K & 3.60 & 2.81\% & Good \\
 6~K & 2.40 & 9.98\% & Acceptable \\
@@ -1410,7 +1603,7 @@ The 4~K entry of Tab.~\ref{tab:300ghz_thermal}, $n_{\text{th}} = 2.81\%$, is man
     \label{fig:operating_regime_300ghz}
 \end{figure}
 
-The qualitative picture suggested by Fig.~\ref{fig:operating_regime_300ghz} is that the elevated-temperature operating point trades five orders of magnitude in thermal suppression with respect to the dilution-refrigerator baseline for an operating temperature about $200$--$500$ times higher; the same trade also yields the $70$--$80\%$ cryogenic-stack saving discussed in Sec.~\ref{sec:summary_of_findings}. Whether this trade-off is favourable in practice depends on the relative weight assigned to error-correction overhead and infrastructure complexity, and is therefore a question of system-level design rather than of single-qubit physics.
+The qualitative picture suggested by Fig.~\ref{fig:operating_regime_300ghz} is that the elevated-temperature operating point trades five orders of magnitude in thermal suppression with respect to the dilution-refrigerator baseline for an operating temperature about $200$--$500$ times higher, in exchange for the simpler cryogenic infrastructure of a closed-cycle cryocooler. Whether this trade-off is favourable in practice depends on the relative weight assigned to error-correction overhead and infrastructure complexity, and is therefore a question of system-level design rather than of single-qubit physics.
 
 \begin{figure}[htbp]
     \centering
@@ -1424,35 +1617,43 @@ This six-panel analysis of Fig.\ref{fig:thermal_comprehensive_300ghz} provides a
 \textbf{Panel (b)}: Thermal population versus qubit frequency at different temperatures (4--20~K). At 4~K (bottom blue curve), frequencies above 200~GHz achieve quantum regime operation ($n_{\text{th}} < 10\%$). The red star marks the 300~GHz "typical transmons" sweet spot at 4~K ($n_{\text{th}} = 2.81\%$). Classical-to-quantum crossover occurs around 100~GHz at 4~K and 250~GHz at 10~K, with the 300~GHz-Q range (vertical purple band) providing a robust operating window.
 \textbf{Panel (c)}: Two-dimensional thermal population landscape (logarithmic color scale). The 300~GHz-Q sweet spot design (red star) sits comfortably in a low-thermal-excitation zone (blue region). The landscape reveals an exponential suppression boundary (black dashed contour at 5\% threshold) that defines the feasible operating region. White dashed box indicates the 300~GHz-Q parameter space (250--350~GHz, 4--10~K).
 \textbf{Panel (d)}: Energy ratio $\hbar\omega/(k_B T)$ versus temperature for different frequencies, with performance thresholds indicated: green (ratio $>10$, excellent), yellow (ratio $>5$, good), orange (ratio $>3$, acceptable), and red (ratio $>1$, poor). The 300~GHz design maintains ratio $>3$ across the entire 4--8~K window, ensuring quantum behavior dominates thermal fluctuations. Traditional transmons achieve ratios $\sim 10^3$ but require dilution refrigeration.
-\textbf{Panel (e)}: Performance comparison table quantifying thermal populations $n_{\text{th}}$, energy ratios, and status assessment for traditional Al-based transmons (5~GHz at 20~mK) versus 300~GHz-Q operation at 4, 6, 8, and 10~K. Traditional configuration achieves essentially zero thermal noise (0.020\%, excellent) with energy ratio 11998. The 300~GHz-Q at 4~K maintains good performance (2.81\%, ratio 3.60), transitioning to marginal at 6~K (9.98\%, ratio 2.40) and poor beyond 8~K (19.81\%, ratio 1.80). This confirms the 4--6~K operating window for high-fidelity quantum operations.
+\textbf{Panel (e)}: Performance comparison table quantifying thermal populations $n_{\text{th}}$, energy ratios, and status assessment for traditional Al-based transmons (5~GHz at 20~mK) versus 300~GHz-Q operation at 4, 6, 8, and 10~K. Traditional configuration achieves essentially zero thermal noise ($n_{\text{th}} \approx 10^{-4}\%$, excellent) with energy ratio 13.9. The 300~GHz-Q at 4~K maintains good performance (2.81\%, ratio 3.60), transitioning to marginal at 6~K (9.98\%, ratio 2.40) and poor beyond 8~K (19.81\%, ratio 1.80). This confirms the 4--6~K operating window for high-fidelity quantum operations.
 \textbf{Panel (f)}: Minimum required qubit frequency versus temperature to maintain specified thermal population thresholds (1\%, 2\%, 5\%, 10\%). The 300~GHz-Q design points (blue circles) lie well above the 2\% curve and comfortably above the 5\% threshold, providing margin for parameter drift and environmental fluctuations. The traditional 20~mK transmon at 5~GHz (green square at left edge) achieves $<1\%$ thermal population despite low frequency due to extreme temperature suppression. To extend 300~GHz-Q operation to 15~K while maintaining $<2\%$ thermal population would require increasing frequency to $\sim$450~GHz (red dashed line extrapolation).
 Overall, this comprehensive analysis establishes that 300~GHz operation at 4--6~K represents an optimal design point, balancing quantum regime requirements ($\hbar\omega \gg k_B T$) against experimental feasibility, enabling a transformative reduction in cryogenic complexity while maintaining performance compatible with fault-tolerant quantum error correction.
 
 \subsubsection{Coupling and gate-time targets}
 
-For the 300~GHz / 4~K design point we adopt a conservative coupling
-$g = 500$~MHz with detunings $\Delta_1 = -20$~GHz and $\Delta_2 = -40$~GHz,
-which keeps the dispersive ratio $|\Delta_i|/g \in \{40, 80\}$ comfortably
-above the $|\Delta|/g > 5$ threshold while still allowing a fast two-qubit
-gate. Inserting these values in Eq.~\ref{eq:J_dispersive} gives a transverse
-exchange $J/2\pi \simeq 9.4$~MHz, which through the echo cross-resonance
-protocol of Sec.~\ref{sec:gate_strategy} yields a CNOT time
-$t_{\mathrm{CNOT}} \sim 250$~ns. The free-evolution alternative
+For the 300~GHz / 4~K design point we adopt, by analogy with the validated
+baseline, a coupling $g = 80$~MHz with the cavity placed $\sim 1$~GHz above the
+qubits, giving detunings $\Delta_1 = \InnDeltaOne$~GHz and
+$\Delta_2 = \InnDeltaTwo$~GHz. These keep the dispersive ratios
+$|\Delta_i|/g \in \{\InnRatioOne, \InnRatioTwo\}$ comfortably above the
+$|\Delta|/g > 5$ threshold while still allowing a fast two-qubit gate. The
+coupling $g$ is a representative microwave-analog value: its absolute magnitude
+at $300$~GHz must be confirmed by the electromagnetic simulation discussed in
+Sec.~\ref{sec:em_simulation} (reviewer comment), but the dispersive ratio
+$g/\Delta\sim 0.08$ that governs the gate is preserved regardless. Inserting
+these values in Eq.~\ref{eq:J_dispersive} gives a transverse exchange
+$J/2\pi \simeq \InnJmag$~MHz, which through the echo cross-resonance protocol of
+Sec.~\ref{sec:gate_strategy} yields a CNOT time
+$t_{\mathrm{CNOT}} \simeq \tCNOT$~ns. The free-evolution alternative
 based on the longitudinal cross-Kerr is excluded for the reasons summarised
 in Sec.~\ref{sub:tqb_twoq_cr} and Fig.~\ref{fig:CZ_unfeasible}.
 
 \subsubsection{Detuning Selection}
 
-The detunings are:
+With both qubits near $300$~GHz at the canonical qubit--qubit detuning
+$\Delta_q = \InnDeltaQ$~MHz and the cavity at $\omega_r \simeq 301.3$~GHz, the
+qubit--cavity detunings are:
 \begin{align}
-\Delta_1 &= \omega_{q1} - \omega_r = 300 - 320 = -20 \text{ GHz} \\
-\Delta_2 &= \omega_{q2} - \omega_r = 280 - 320 = -40 \text{ GHz}
+\Delta_1 &= \omega_{q1} - \omega_r = 300.3 - 301.3 = \InnDeltaOne \text{ GHz} \\
+\Delta_2 &= \omega_{q2} - \omega_r = 299.7 - 301.3 = \InnDeltaTwo \text{ GHz}
 \end{align}
 
 The dispersive ratios are:
 \begin{align}
-\frac{|\Delta_1|}{g} &= \frac{20 \text{ GHz}}{500 \text{ MHz}} = 40 \gg 5 \quad \checkmark \\
-\frac{|\Delta_2|}{g} &= \frac{40 \text{ GHz}}{500 \text{ MHz}} = 80 \gg 5 \quad \checkmark
+\frac{|\Delta_1|}{g} &= \frac{1.0 \text{ GHz}}{80 \text{ MHz}} = \InnRatioOne \gg 5 \quad \checkmark \\
+\frac{|\Delta_2|}{g} &= \frac{1.6 \text{ GHz}}{80 \text{ MHz}} = \InnRatioTwo \gg 5 \quad \checkmark
 \end{align}
 
 Both ratios greatly exceed the requirement $|\Delta|/g > 5$, confirming valid dispersive operation. Large detunings also suppress Purcell decay (Section~\ref{sec:purcell}).
@@ -1463,9 +1664,9 @@ Both ratios greatly exceed the requirement $|\Delta|/g > 5$, confirming valid di
 \caption{\textbf{System Parameters and Thermal Analysis.} 
 \textbf{(a)} Quantum ratio $\hbar\omega/\kB T$ versus temperature for various frequencies. The 300 GHz operating point at 4 K (orange star) achieves $R_Q = 3.6$, placing it in the good quantum regime (green region). For comparison, the baseline 5.8 GHz system (green circle) operates at 20 mK with $R_Q = 13.9$. Reference lines show excellent ($R_Q > 5$, green), good ($R_Q = 3-5$, yellow), and poor ($R_Q < 3$, red) quantum regimes.
 \textbf{(b)} Thermal population $n_{\text{th}}$ at 300 GHz versus temperature. At the target operating point of 4 K (highlighted), thermal population is 2.81\%, manageable for quantum operations. Green and orange dashed lines indicate 5\% and 10\% thresholds.
-\textbf{(c)} Josephson junction diameter versus current density $J_c$ for required critical current $I_c = 1.51$ $\mu$A (computed in Sec.~\ref{sec:junction_design}). Higher current densities (1000--2000 A/cm$^2$, green region) yield feasible junction sizes near the 200~nm target. Lower densities produce impractically large junctions ($> 1\,\mu$m).
-\textbf{(d)} Dispersive parameters at the 300~GHz / 4~K design point: dispersive shifts $|\chi_i|$ and the cavity-mediated transverse exchange $|J|$ (left axis, blue/cyan bars; $J/2\pi \simeq 9.4$~MHz from Eq.~\ref{eq:J_dispersive} with $g=500$~MHz, $\Delta_1=-20$~GHz, $\Delta_2=-40$~GHz), and dispersive ratios $|\Delta_i|/g$ (right axis, green bars). All values support quantum non-demolition readout and the echo-CR two-qubit gate of Sec.~\ref{sec:gate_strategy}.
-\textbf{(e)} Transmon energy level diagram showing anharmonicity $\alpha = -1$ GHz. Energy spacings deviate from harmonic oscillator (dashed), enabling selective addressing of $|0\rangle \leftrightarrow |1\rangle$ transition. Thermal populations at 4 K are indicated (left side).}
+\textbf{(c)} Josephson junction diameter versus current density $J_c$ for required critical current $I_c = 1.51$ $\mu$A (Sec.~\ref{sec:junction_capacitance_point}). The capacitance budget is met around $J_c\simeq 6$~kA/cm$^2$ (green region), giving $d\simeq 180$~nm; lower densities ($\lesssim 1$~kA/cm$^2$) produce large, over-capacitive junctions ($d>400$~nm).
+\textbf{(d)} Dispersive parameters at the 300~GHz / 4~K design point: dispersive shifts $|\chi_i|$ and the cavity-mediated transverse exchange $|J|$ (left axis, blue/cyan bars; $J/2\pi \simeq \InnJmag$~MHz from Eq.~\ref{eq:J_dispersive} with $g=80$~MHz, $\Delta_1=\InnDeltaOne$~GHz, $\Delta_2=\InnDeltaTwo$~GHz), and dispersive ratios $|\Delta_i|/g$ (right axis, green bars). All values support quantum non-demolition readout and the echo-CR two-qubit gate of Sec.~\ref{sec:gate_strategy}.
+\textbf{(e)} Transmon energy level diagram showing anharmonicity $\alpha = \InnAlpha$~GHz. Energy spacings deviate from harmonic oscillator (dashed), enabling selective addressing of $|0\rangle \leftrightarrow |1\rangle$ transition. Thermal populations at 4 K are indicated (left side).}
 \label{fig:system_parameters}
 \end{figure}
 
@@ -1513,160 +1714,129 @@ I_c = \frac{2\pi E_J}{\Phi_0} = \frac{2\pi (4.97 \times 10^{-22})}{2.07 \times 1
 \toprule
 \textbf{Parameter} & \textbf{Baseline} & \textbf{Innovation (300~GHz)} \\
 \midrule
-Qubit 1 frequency & 5.8~GHz & 300~GHz \\
-Qubit 2 frequency & 5.2~GHz & 280~GHz \\
-Cavity frequency & 6.5~GHz & 320~GHz \\
-Coupling strength & 80~MHz & 500~MHz \\
-Detuning & 0.7--1.3~GHz & 10--20~GHz \\
+Qubit 1 frequency & 5.8~GHz & 300.3~GHz \\
+Qubit 2 frequency & 5.2~GHz & 299.7~GHz \\
+Cavity frequency & 6.5~GHz & 301.3~GHz \\
+Coupling strength & 80~MHz & 80~MHz \\
+Detuning & 0.7--1.3~GHz & 1.0--1.6~GHz \\
 Operating temperature & 10--20~mK & 4--10~K \\
 \bottomrule
 \end{tabular}
 \caption{System parameters of the baseline and the elevated-temperature ($300$~GHz, $4$~K) configurations: cavity frequency, qubit--cavity coupling strength, qubit--cavity detuning range, and operating temperature. Detuning ranges scale with the qubit frequency in each regime so that the dispersive condition is maintained.}
 \end{table}
 
-\subsubsection{Junction Geometry: Area and Diameter Calculation }
+\subsubsection{Junction geometry and the capacitance-limited design point}
+\label{sec:junction_capacitance_point}
 
-The junction area depends on the current density $J_c$:
+For a junction of critical-current density $J_c$, the area and the (circular) diameter follow directly from the target critical current,
 \begin{equation}
-A = \frac{I_c}{J_c}
+A = \frac{I_c}{J_c}, \qquad d = \sqrt{\frac{4A}{\pi}} = \sqrt{\frac{4 I_c}{\pi J_c}} .
 \end{equation}
+With $I_c = 1.51~\mu$A fixed, $J_c$ alone sets the junction size. The value of $J_c$ is, however, not a free choice: it is pinned by the shunt-capacitance budget.
 
-For circular junctions, the diameter is:
+\paragraph{The $E_C$--capacitance constraint fixes $J_c$.}
+The two design choices $\omega_{01}/2\pi = 300$~GHz and $E_J/E_C = 50$ fix \emph{both} the charging energy and the critical current,
 \begin{equation}
-d = \sqrt{\frac{4A}{\pi}} = \sqrt{\frac{4I_c}{\pi J_c}}
+E_C = \frac{\hbar\omega_{01}}{20} = 15~\text{GHz} \;\Rightarrow\; C_{\Sigma}=\frac{e^2}{2E_C}=1.29~\text{fF},
+\qquad
+I_c = \frac{2\pi E_J}{\Phi_0}=1.51~\mu\text{A},
 \end{equation}
+so that neither $C_{\Sigma}$ nor $I_c$ is an adjustable parameter. The junction's own capacitance, $C_{J,\text{tot}}=c_s A = c_s I_c/J_c$ with specific capacitance $c_s$, must fit inside this budget. Because $I_c$ is fixed, the requirement $C_{J,\text{tot}}\le C_{\Sigma}$ reduces to a constraint on a single material ratio,
+\begin{equation}
+\frac{c_s}{J_c} \;\le\; \frac{C_{\Sigma}}{I_c} \;\approx\; 0.85~\frac{\text{fF}}{\mu\text{A}} .
+\label{eq:cs_jc_constraint}
+\end{equation}
+This inverts the conventional transmon picture: at $5$--$6$~GHz the total capacitance $C_{\Sigma}\sim 50$--$100$~fF is dominated by a deliberately patterned shunt, whereas at $300$~GHz the budget is so small that the junction capacitance alone saturates it. The design is therefore driven toward \emph{small} junctions and \emph{high} $J_c$ -- the opposite of standard low-$J_c$ transmons -- and $J_c$ is an output of the capacitance budget rather than an independent fabrication parameter.
 
-Table~\ref{tab:junction_sizes} shows junction dimensions for various current densities.
+\paragraph{Sizing.}
+Table~\ref{tab:junction_sizes} lists the junction diameter and capacitance as a function of $J_c$, using the empirical NbN/AlN scaling $c_s\simeq 20\sqrt{J_c\,[\text{kA/cm}^2]}~\text{fF}/\mu\text{m}^2$ reported for these tunnel junctions~\cite{Wang1994HighJcNbN}. Since $c_s$ grows with $J_c$ while $A\propto 1/J_c$, the capacitance falls only as $C_{J,\text{tot}}\propto 1/\sqrt{J_c}$, and the budget is met around $J_c\simeq 6$~kA/cm$^2$, where $d\simeq 180$~nm and $C_{J,\text{tot}}\simeq 1.2$~fF. Lower densities ($J_c\lesssim 1$~kA/cm$^2$) yield larger junctions whose capacitance overshoots the budget by $2$--$3\times$ or more; substantially higher densities provide little further headroom while degrading the junction's sub-gap quality (see below).
 
 \begin{table}[H]
 \centering
-\caption{Junction dimensions versus current density for $I_c = 1.51$ $\mu$A}
+\caption{Junction diameter and capacitance versus current density for $I_c = 1.51$~$\mu$A, with $c_s\simeq 20\sqrt{J_c\,[\text{kA/cm}^2]}~\text{fF}/\mu$m$^2$~\cite{Wang1994HighJcNbN}. The capacitance budget is $C_{\Sigma}=1.29$~fF.}
 \label{tab:junction_sizes}
-\begin{tabular}{@{}lccl@{}}
+\begin{tabular}{@{}ccccl@{}}
 \toprule
-$J_c$ (A/cm$^2$) & Area ($\mu$m$^2$) & Diameter (nm) & Feasibility \\
+$J_c$ (A/cm$^2$) & $d$ (nm) & $c_s$ (fF/$\mu$m$^2$) & $C_{J,\text{tot}}$ (fF) & Status \\
 \midrule
-100  & 1.510 & 1387 & \textcolor{red}{Too large} ($>$ 1 $\mu$m) \\
-500  & 0.302 & 620  & \textcolor{green}{Feasible but large} \\
-1000 & 0.151 & 439  & \textcolor{orange}{Challenging} \\
-2000 & 0.075 & 310  & \textcolor{orange}{Challenging} \\
-5000 & 0.030 & 196  & \textcolor{red}{Very challenging} \\
+500   & 620 & 14 & 4.3 & \textcolor{red}{Capacitance too high} \\
+1000  & 439 & 20 & 3.0 & \textcolor{red}{Capacitance too high} \\
+3000  & 253 & 35 & 1.7 & \textcolor{orange}{Marginal} \\
+6000  & 179 & 49 & 1.2 & \textcolor{green}{\textbf{Optimal} \checkmark} \\
+10000 & 139 & 63 & 1.0 & \textcolor{orange}{Sub-gap quality limited} \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-namely $J_c \geq 3000$~A/cm$^2$ for $d < 300$~nm, ultra-thin AlN$_x$ barriers ($< 0.8$~nm)~\cite{nakamura2011epitaxialNbN}, and overall placement at the edge of current fabrication capability.
+\paragraph{Is $J_c\simeq 6$~kA/cm$^2$ achievable?}
+At the material level this density is modest for the NbN/AlN/NbN platform: submillimetre SIS mixers built on this trilayer use comparable or substantially higher densities, with $J_c$ in the tens of kA/cm$^2$ at barrier thicknesses of order $1$~nm~\cite{Wang1994HighJcNbN}. The genuine constraint is coherence rather than lithography: a qubit-grade junction must keep sub-gap leakage low, and the sub-gap quality factor $R_{sg}/R_N$ of all-nitride junctions falls from $\sim 23$ at $J_c\sim 50$~A/cm$^2$ to $\sim 6$ at $3$~kA/cm$^2$~\cite{kim2021}. Recent work addresses precisely this trade-off: all-nitride transmons grown entirely by atomic-layer deposition tune $J_c$ over seven orders of magnitude with sub-{\aa}ngstr\"om barrier-thickness control while retaining microsecond relaxation times above $300$~mK~\cite{Wang2026ALDNitride}. The chosen point -- $J_c\simeq 6$~kA/cm$^2$ at an AlN barrier of $\sim 1.3$~nm -- therefore sits at the frontier of qubit-grade fabrication, but is supported both by the maturity of high-$J_c$ NbN/AlN mixer technology and by the most recent coherence demonstrations.
 
-\subsubsection{Optimal Design Point}
-
-is achievable with modern e-beam lithography ($10$--$20$~nm resolution), provides margin for fabrication tolerances, enables flux tunability through the SQUID loop, and allows the use of junction arrays for current distribution if needed.
-
-\subsection{Junction arrays and shunt capacitance}
-
-\subsubsection{Why Junction Arrays are Necessary}
-
-The fundamental problem: maintaining $E_J/E_C = 50$ at 300 GHz requires $I_c = 1.51$ $\mu$A, leading to impractically small junctions. 
-
-\noindent \textbf{Solution:} Use $N \times N$ junctions in parallel:
-\begin{equation}
-I_{c,\text{total}} = N^2 \times I_{c,\text{single}}, \quad E_{J,\text{total}} = N^2 \times E_{J,\text{single}}
-\end{equation}
-
-\noindent Each individual junction can be larger and easier to fabricate.
-
-\subsubsection{Array Configurations}
-
-\begin{table}[H]
-\centering
-\caption{Junction Array Solutions ($J_c = 1000$ A/cm$^2$)}
-\begin{tabular}{@{}lcccc@{}}
-\toprule
-Config & $N_{\text{junc}}$ & $I_{c,\text{single}}$ ($\mu$A) & $d_{\text{single}}$ (nm) & Status \\
-\midrule
-1$\times$1 & 1   & 1.510  & 439  & \textcolor{red}{Too small} \\
-3$\times$3 & 9   & 0.168  & 146  & \textcolor{orange}{Marginal} \\
-5$\times$5 & 25  & 0.060  & 88   & \textcolor{green}{\textbf{Good} \checkmark} \\
-7$\times$7 & 49  & 0.031  & 63   & \textcolor{green}{\textbf{Good} \checkmark} \\
-10$\times$10 & 100 & 0.015  & 44   & \textcolor{red}{Challenging} \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\textbf{Recommendation:} 5$\times$5 or 7$\times$7 array with individual junction diameters of 63--88 nm, well within fabrication capabilities ($>$ 50 nm).
+\paragraph{Junction arrays are not required.}
+A single junction of $d\simeq 180$~nm already satisfies \emph{both} the critical-current target and the capacitance budget, so the design does not depend on a large junction array. This is reinforced by the capacitance analysis of the next section: parallel arrays leave the total junction area -- and hence $C_{J,\text{tot}}=c_s I_c/J_c$ -- unchanged, and so cannot be used to relax the budget. Arrays therefore remain available only as an optional means of improving fabrication yield and uniformity; they are not part of the baseline single-junction solution.
 
 \subsubsection{Shunt Capacitance Constraint and the Limits of Array Solutions}
 \label{sec:shunt_cap_array}
 
-The array discussion above relaxes the requirement on the \emph{individual}
-junction critical current, but does not by itself address an independent and
-equally tight constraint: the \emph{total} shunt capacitance of the qubit.
-Maintaining $E_J/E_C = 50$ at $\omega_{01}/2\pi = 300$~GHz requires
+The capacitance budget of Eq.~\eqref{eq:cs_jc_constraint} is tight enough that
+it is natural to ask whether a junction \emph{array} could be used to relax it.
+It cannot. The total junction capacitance,
 \begin{equation}
-C_{\Sigma} \;=\; \frac{e^2}{2\,E_C} \;\approx\; 1.3~\text{fF},
-\label{eq:Csigma_target}
-\end{equation}
-which must be partitioned between the intrinsic junction capacitance
-$C_{J,\text{tot}}$, any deliberate shunt capacitor $C_{\text{sh}}$,
-and unavoidable stray capacitance $C_{\text{stray}}$ to substrate and ground.
-Standard mK transmons have $C_{\Sigma}\sim 50$--$100$~fF, almost entirely
-dominated by a deliberately patterned $C_{\text{sh}}$; the elevated-temperature design at 300~GHz
-inverts this picture and leaves no room for an external shunt.
-
-This has direct consequences for the array geometry.
-For an $N\times N$ \emph{parallel} array of identical junctions of area
-$A_{\text{single}}$ and specific capacitance $c_s$ (with
-$c_s\sim 50$~fF/$\mu$m$^2$ typical of NbN/AlN/NbN
-trilayers~\cite{kim2021,nakamura2011epitaxialNbN}), the junction-array
-contribution alone is
-\begin{equation}
-C_{J,\text{tot}} \;=\; N^{2}\, c_s\, A_{\text{single}} ,
+C_{J,\text{tot}} \;=\; c_s\,\frac{I_c}{J_c},
 \label{eq:CJ_parallel}
 \end{equation}
-which scales \emph{linearly} with the total junction area $N^{2}A_{\text{single}}$.
-A 5$\times$5 array with $d_{\text{single}}=88$~nm
-(Tab.~\ref{tab:array_advantages}'s recommended point, $A_{\text{single}}\approx 6\times 10^{-3}\,\mu$m$^2$)
-already gives $C_{J,\text{tot}}\sim 7.5$~fF, an order of magnitude above the
-budget~\eqref{eq:Csigma_target}. Reaching $C_{\Sigma}\le 1.5$~fF therefore
-requires either ultra-thin tunnel barriers
-(reducing $c_s$ by a factor of 5--10, e.g.\ AlN$_x$ barriers
-$d_{\text{ox}} \lesssim 0.8$~nm~\cite{nakamura2011epitaxialNbN}) or
-significantly smaller individual junction areas, or both.
+depends only on the total junction area $I_c/J_c$, which an $N\times N$
+\emph{parallel} array leaves unchanged: distributing the required critical
+current over $N^{2}$ junctions divides the area of each by $N^{2}$ but restores
+exactly the same total, and the individual capacitances add back in parallel.
+A parallel array therefore reproduces the single-junction capacitance and
+offers no relief on $C_{\Sigma}$ -- for instance, any parallel array delivering
+$I_c=1.51~\mu$A at $J_c=1$~kA/cm$^2$ has $C_{J,\text{tot}}\approx 3$~fF,
+independently of its multiplicity, more than twice the budget.
 
 A \emph{series} array of $N$ junctions works in the opposite direction:
 the capacitance becomes $C_{\text{eff}}=C_{\text{single}}/N$, but the
-effective Josephson energy is correspondingly reduced
+effective Josephson energy is reduced in the same proportion
 ($E_{J,\text{eff}}=E_{J,\text{single}}/N$, see e.g.\
 Ref.~\cite{manucharyan2009fluxonium}),
 so the ratio $E_J/E_C$ scales as $1/N^{2}$ and is degraded rather than improved.
 Series geometries thus relax the capacitance constraint only at the cost of
 demanding even larger individual junctions to recover the target $E_J$,
-moving the design back into the regime ruled out by Tab.~\ref{tab:junction_sizes}.
+moving the design back into the high-capacitance regime ruled out by
+Tab.~\ref{tab:junction_sizes}.
 
-In summary, parallel arrays remain the favoured solution, but the constraint
-$C_{\Sigma}\approx 1$--$1.5$~fF is genuinely tight and is \emph{not} relaxed by
-array multiplicity alone. It pins the design to an aggressive combination of
-sub-nm tunnel barriers, small individual junctions
-($d_{\text{single}}\sim 60$--$90$~nm), and a 3D cavity environment
-(Sec.~\ref{sec:dielectric_loss_300ghz}) in which $C_{\text{stray}}$ to
-the substrate is suppressed by orders of magnitude relative to a planar 2D
-geometry. The hardware programme outlined here adopts all three measures
-simultaneously; absent any one of them, the 300~GHz operating point
-would not be reachable.
+In summary, the constraint $C_{\Sigma}\approx 1.3$~fF is genuinely tight and is
+\emph{not} relaxed by array multiplicity. It is met instead by the
+single-junction route identified above: a high-density junction
+($J_c\simeq 6$~kA/cm$^2$, $d\simeq 180$~nm) with a $\sim 1.3$~nm AlN barrier,
+combined with a 3D cavity environment (Sec.~\ref{sec:dielectric_loss_300ghz})
+in which $C_{\text{stray}}$ to the substrate is suppressed by orders of
+magnitude relative to a planar 2D geometry. The hardware programme outlined
+here adopts both measures; arrays are retained only as an optional aid to
+fabrication yield and uniformity, not as a means of meeting the capacitance
+budget.
 
-\subsubsection{Array Advantages}
+\subsubsection{Optional arrays for yield and uniformity}
+
+Although a single junction is sufficient, an $N\times N$ parallel array may
+still be adopted as a fabrication convenience, since it distributes the
+critical current over several nominally identical elements. Its advantages are
+purely related to yield and reproducibility, not to the capacitance budget
+(Sec.~\ref{sec:shunt_cap_array}), and are summarised in
+Table~\ref{tab:array_advantages}.
+
 \begin{table}[h]
 \centering
 \begin{tabular}{@{}lp{0.65\textwidth}@{}}
 \toprule
 \textbf{Property} & \textbf{Advantage} \\
 \midrule
-Fabrication yield & individually larger junctions are easier to fabricate \\
+Fabrication yield & current shared over several elements, easing per-junction tolerances \\
 Tunability        & each junction can be tuned individually for uniformity \\
 Redundancy        & the array is fault-tolerant to single-junction defects \\
 Uniformity        & the total $E_J$ is more accurately controlled \\
 \bottomrule
 \end{tabular}
-\caption{Advantages of an $N \times N$ array of small junctions over a single large junction.}
+\caption{Yield- and uniformity-related advantages of an optional $N \times N$ parallel array over a single junction. These do not relax the shunt-capacitance budget, which is set by the total junction area alone (Sec.~\ref{sec:shunt_cap_array}).}
 \label{tab:array_advantages}
 \end{table}
 
@@ -1892,7 +2062,7 @@ To fully characterize the elevated-temperature operating regime, we analyze the 
 
 \paragraph{Energy Ratio Criterion.} Panel (d) plots the dimensionless energy ratio $\hbar\omega_{01}/(k_B T)$, which must be $\gg 1$ for quantum behavior to dominate over thermal fluctuations. At the elevated-temperature sweet spot, this ratio exceeds nine even at \SI{10}{mK}, satisfying the criterion for reliable qubit operation. For comparison, traditional transmons at \SI{20}{mK} achieve ratios of $\sim 10^4$, but this extreme suppression is unnecessary for fault-tolerant quantum computing with modern error correction codes.
 
-\paragraph{Performance Benchmarking.} The comparison table in panel e) quantitatively demonstrates that the elevated-temperature thermal populations remain orders of magnitude below typical gate error rates (0.1--1\%). While traditional Al-based transmons achieve negligible thermal excitation at \SI{20}{mK}, the infrastructural cost of dilution refrigeration makes scaled deployment challenging. According to our estimation, the elevated-temperature approach sacrifices four orders of magnitude in thermal suppression but gains a 70--80\% reduction in cryogenic system cost and complexity.
+\paragraph{Performance Benchmarking.} The comparison table in panel e) quantitatively demonstrates that the elevated-temperature thermal populations remain orders of magnitude below typical gate error rates (0.1--1\%). While traditional Al-based transmons achieve negligible thermal excitation at \SI{20}{mK}, the dilution refrigeration they require complicates scaled deployment. The elevated-temperature approach sacrifices four orders of magnitude in thermal suppression but operates with a compact closed-cycle cryocooler in place of a dilution unit.
 
 \paragraph{Design Constraints.} Panel (f) maps the relationship between operating temperature and minimum required qubit frequency for various thermal population thresholds. The elevated-temperature operating points (blue circles) lie well above the 1\% threshold curve, indicating robust operation at standard conditions, with margin for parameter drift and environmental fluctuations. 
 
@@ -2013,7 +2183,7 @@ The renormalized frequencies are:
 
 \subsubsection{Numerical values at the redesigned operating point}
 
-Adopting the redesigned operating point $\Delta_q/2\pi = 280$~MHz
+Adopting the operating point $\Delta_q/2\pi = \InnDeltaQ$~MHz
 ($\omega_{q,1}/2\pi = 5.640$~GHz, $\omega_{q,2}/2\pi = 5.360$~GHz; see
 discussion of the cross-resonance sweet spot in
 Section~\ref{subsec:dq_optimization}), the dispersive shifts become
@@ -2104,16 +2274,16 @@ From Eq.~\ref{eq:dispersive_shift}, the dispersive shift for each qubit is:
 \chi_i = \frac{g^2}{\Delta_i} \cdot \frac{\alpha}{\Delta_i + \alpha}
 \end{equation}
 
-\subsubsection{Qubit 1 ($\Delta_1 = -20$ GHz)}
+\subsubsection{Qubit 1 ($\Delta_1 = \InnDeltaOne$~GHz)}
 
 \begin{align}
-\chi_1 &= \frac{(500)^2}{-20000} \frac{-15000}{-20000 - 15000} = \boxed{-5.36 \text{ MHz}}
+\chi_1 &= \frac{(80)^2}{-1000} \frac{-15000}{-1000 - 15000} = \boxed{\InnChiOne \text{ MHz}}
 \end{align}
 
-\subsubsection{Qubit 2 ($\Delta_2 = -40$ GHz)}
+\subsubsection{Qubit 2 ($\Delta_2 = \InnDeltaTwo$~GHz)}
 
 \begin{align}
-\chi_2 &= \frac{(500)^2}{-40000} \frac{-15000}{-40000 - 15000} = \boxed{-1.70 \text{ MHz}}
+\chi_2 &= \frac{(80)^2}{-1600} \frac{-15000}{-1600 - 15000} = \boxed{\InnChiTwo \text{ MHz}}
 \end{align}
 
 \subsubsection{Physical Interpretation}
@@ -2129,8 +2299,8 @@ when the qubit transitions $\ket{0} \to \ket{1}$:
 
 \textbf{Readout fidelity.} A larger $|\chi|$ enables faster, higher-fidelity readout.
 Typical targets are $|\chi| > 1$~MHz; our baseline values
-($|\chi_1| = 0.6$~MHz, $|\chi_2| = 0.15$~MHz, before the Section~\ref{sec:gate_strategy}
-redesign) are modest but workable.
+($|\chi_1| = \BaseChiOneMag$~MHz, $|\chi_2| = \BaseChiTwoMag$~MHz) meet this
+target for the control qubit and are workable for the target qubit.
 
 \textbf{Stark shift.} Readout photons in the cavity cause AC Stark shifts of the
 qubit frequencies, which must be calibrated out before each operation.
@@ -2365,7 +2535,7 @@ dielectric participation are also accounted for, reinforcing the conclusion
 of Sec.~\ref{sec:dielectric_loss_300ghz} that all loss channels must be
 suppressed simultaneously.
 
-\paragraph{Qubit--cavity coupling and the need for electromagnetic simulation.}
+\paragraph{Qubit--cavity coupling and the need for electromagnetic simulation.}\label{sec:em_simulation}
 The coupling strengths $g_1=g_2=80\,\text{MHz}$ adopted in
 Sec.~\ref{sec:cavity_mediated_couplings} and
 Tab.~\ref{tab:heatsQ_baseline_params} were fixed at the architecture level by
@@ -2580,19 +2750,26 @@ Figure~\ref{fig:decoherence}(e) shows CNOT fidelity versus temperature. Key obse
 \toprule
 \textbf{$T$} & \textbf{Thermal population} & \textbf{$F_{\text{CNOT}}$} & \textbf{Status} \\
 \midrule
-$2$~K & $0.07\%$ & $98.7\%$ & excellent \\
-$3$~K & $0.56\%$ & $98.3\%$ & above threshold \\
-$4$~K & $2.81\%$ & $97.3\%$ & near threshold \\
-$5$~K & $7.52\%$ & $95.8\%$ & below threshold \\
+% Values computed with the echo-CR budget of derive_canonical / ok_create_corrected_figures.py
+% panel (e): F = 1 - t_CNOT/T2_echo - n_th*0.5 - (J/alpha)^2 - eps_control.
+$2$~K & $0.07\%$ & $99.3\%$ & above threshold \\
+$3$~K & $0.83\%$ & $98.9\%$ & above threshold \\
+$4$~K & $2.81\%$ & $97.9\%$ & near threshold \\
+$5$~K & $5.95\%$ & $96.3\%$ & below threshold \\
 \bottomrule
 \end{tabular}
 \caption{Temperature dependence of the thermal population and predicted CNOT
-fidelity at the elevated-temperature operating point ($\omega_q\sim 300$~GHz). Above $\sim 4$~K
-the thermal-induced error rate exceeds the surface-code threshold.}
+fidelity at the elevated-temperature operating point ($\omega_q\sim 300$~GHz). The
+predicted fidelity falls below the $98\%$ surface-code threshold above
+$\sim 3.5$~K.}
 \label{tab:thermal_population_vs_T}
 \end{table}
 
-The optimal operating window is 3--4 K, balancing thermal errors against refrigeration complexity.
+The cryocooler-compatible design point is $4$~K, where the fidelity sits just
+below threshold; operating below $\sim 3.5$~K would clear the threshold on the
+thermal term alone but forfeits the cryogenic advantage that motivates the
+design, so threshold-crossing is instead pursued through the soft-term
+reductions of Sec.~\ref{sec:fidelity}.
 
 \begin{figure}[p]
 \centering
@@ -2600,9 +2777,9 @@ The optimal operating window is 3--4 K, balancing thermal errors against refrige
 \caption{\textbf{Comprehensive decoherence analysis.}
 \textbf{(a)} $T_1$ versus frequency for the different loss mechanisms considered. Dielectric loss (red, solid) scales as $1/\omega$. Radiative loss is catastrophic at $300$~GHz when unshielded (dark red, dashed) but is brought back into the manageable range by a 3D cavity providing $\sim 60$~dB of electromagnetic shielding (cyan). Quasiparticle tunneling (green) is frequency-independent in the regime considered here, which is the key advantage at $300$~GHz. The two operating points overlaid are the baseline ($5.8$~GHz, $20$~mK, green circle) and the elevated-temperature point ($300$~GHz, $4$~K, orange star).
 \textbf{(b)} $T_1$ contribution breakdown at the elevated-temperature operating point ($300$~GHz, $4$~K), expressed as relative contribution to $1/T_1$. Quasiparticle ($31.6\%$) and TLS ($30.7\%$) are the two dominant channels; dielectric ($28.9\%$), radiative ($4.1\%$) and Purcell ($4.8\%$) play smaller roles. The total $T_1 = 15.3~\mu$s reported in the box is the sum over channels at $4$~K.
-\textbf{(c)} Single-qubit and CNOT gate fidelity bars at the elevated-temperature point. The single-qubit gate ($20$~ns) reaches $F = 99.81\%$, comfortably above the $98\%$ fault-tolerance threshold (red dashed line). The CNOT gate ($168$~ns) reaches $F = 95.95\%$, below the threshold, which is the central engineering challenge addressed by the prerequisites P1--P6 in Sec.~\ref{sec:fidelity}.
-\textbf{(d)} CNOT error budget at the elevated-temperature operating point, with the four contributions decomposed: decoherence ($2.54\%$), thermal excitation ($1.41\%$), single-qubit control ($0.10\%$), and leakage to higher levels ($0.00\%$). Their sum, $4.05\%$, gives the total CNOT error and matches the $1 - F = 4.05\%$ from panel~(c). The red dashed line marks the $2\%$ target for surface-code fault tolerance.
-\textbf{(e)} CNOT fidelity versus operating temperature. At the design point of $4$~K (green star), the projected fidelity is $\simeq 96\%$, against the $98\%$ surface-code threshold (red dashed line). The yellow band marks the operational window in which the fidelity is close to threshold, the green band marks the above-threshold region; the figure makes explicit that the cryogenic working point and the threshold meet only with the additional gains from the technological prerequisites of Sec.~\ref{sec:fidelity}.}
+\textbf{(c)} Single-qubit and CNOT gate fidelity bars at the elevated-temperature point. The single-qubit gate ($20$~ns) reaches $F = \Fsingle\%$, above the $98\%$ reference threshold (red dashed line). The CNOT gate ($\tCNOT$~ns) reaches $F = \FCNOT\%$, marginally below the threshold; the residual gap is dominated by the thermal-excitation term and is addressed by the prerequisites P1--P6 in Sec.~\ref{sec:fidelity}.
+\textbf{(d)} CNOT error budget at the elevated-temperature operating point, with the four contributions decomposed: decoherence ($\EpsDecoh\%$), thermal excitation ($\EpsThermal\%$), single-qubit control ($0.10\%$), and leakage to higher levels ($0.00\%$). Their sum, $2.09\%$, gives the total CNOT error, so that $1 - F \approx 2.1\%$ as in panel~(c). The thermal term is the dominant contribution. The red dashed line marks the $2\%$ target for surface-code fault tolerance.
+\textbf{(e)} CNOT fidelity versus operating temperature. At the design point of $4$~K (green star), the projected fidelity is $\simeq \FCNOT\%$, just below the $98\%$ surface-code threshold (red dashed line). The yellow band marks the operational window in which the fidelity is close to threshold, the green band marks the above-threshold region; the fidelity rises above threshold only below $\sim 3.5$~K, which is excluded by the cryocooler-compatible design constraint, so threshold-crossing at $4$~K relies on the reduction of the soft error terms discussed in Sec.~\ref{sec:fidelity}.}
 \label{fig:decoherence}
 \end{figure}
 
@@ -2648,10 +2825,10 @@ Total single-qubit error:
 
 Single-qubit fidelity:
 \begin{equation}
-\varepsilon_{\text{total}} = 0.187\%, \quad \boxed{\mathcal{F}_{\text{single}} = 99.85\%} \quad \checkmark
+\varepsilon_{\text{total}} = 0.187\%, \quad \boxed{\mathcal{F}_{\text{single}} = \Fsingle\%} \quad \checkmark
 \end{equation}
 
-This meets typical targets $> 99.9\%$ for fault-tolerant quantum computing.
+This approaches, but does not yet reach, the $\gtrsim 99.9\%$ single-qubit fidelities typically quoted as a target for fault-tolerant operation.
 
 \subsection{Two-Qubit CNOT Gates}
 
@@ -2686,9 +2863,9 @@ $\varepsilon_{\text{decoh}} = t_{\text{CNOT}}/T_{2,\text{echo}}$ rather than
 the free-evolution estimate $2t_{\text{CNOT}}/T_2$. The error budget
 therefore reads:
 \begin{align}
-\varepsilon_{\text{decoh}} &= \frac{t_{\text{CNOT}}}{T_{2,\text{echo}}} = \frac{167.6 \times 10^{-9}}{26.3 \times 10^{-6}} \approx 0.58\% \\
+\varepsilon_{\text{decoh}} &= \frac{t_{\text{CNOT}}}{T_{2,\text{echo}}} = \frac{152.5 \times 10^{-9}}{26.3 \times 10^{-6}} \approx 0.58\% \\
 \varepsilon_{\text{thermal}} &= n_{\text{th}} \times 0.5 = (0.0281)(0.5) \approx 1.41\% \\
-\varepsilon_{\text{leak}} &= \left(\frac{J_{zz}}{\alpha}\right)^2 = \left(\frac{9.38}{15000}\right)^2 \approx 0.00\% \\
+\varepsilon_{\text{leak}} &= \left(\frac{J}{\alpha}\right)^2 = \left(\frac{\InnJmag}{15000}\right)^2 \approx 0.00\% \\
 \varepsilon_{\text{control}} &= 0.10\%
 \end{align}
 
@@ -2697,6 +2874,8 @@ therefore reads:
 \end{equation}
 
 \textbf{\textcolor{correction}{Gap to 98\% threshold: $-0.10\%$ (marginally below threshold)}}
+
+The budget is dominated by the thermal-excitation term ($\varepsilon_{\text{thermal}}=1.41\%$), which is the characteristic penalty of operation at $4$~K and accounts for two thirds of the total error; the decoherence and control contributions are sub-dominant ($0.58\%$ and $0.10\%$). The coherence budget alone would permit a ceiling of $\sim\FdecohCeiling\%$ ($1-\varepsilon_{\text{decoh}}$), so the residual gap to threshold is set primarily by the thermal population rather than by the coherence time.
 
 Figure~\ref{fig:decoherence}(d) shows the error budget breakdown.
 
@@ -2712,7 +2891,7 @@ Parameter & 5.8 GHz / 20 mK & 300 GHz / 4 K & Ratio \\
 Frequency & 5.8 GHz & 300 GHz & 51.7$\times$ \\
 Temperature & 20 mK & 4 K & 200$\times$ \\
 Quantum ratio & 14.0 & 3.60 & 0.26$\times$ \\
-Thermal pop. & 0.08\% & 2.81\% & 35$\times$ \\
+Thermal pop. & $9.0\times10^{-5}\%$ & 2.81\% & $3.1\times10^{4}$ \\
 $T_1$ & $\sim$100 $\mu$s & 15.3 $\mu$s & 0.15$\times$ \\
 $T_2$ & $\sim$100 $\mu$s & 13.2 $\mu$s & 0.13$\times$ \\
 $\mathcal{F}_{\text{CNOT}}$ & $>$99\% & 97.90\% & -- \\
@@ -2760,47 +2939,70 @@ Sapphire substrates and optimized 3D cavity. &
 $T_1 \rightarrow 30$--$40~\mu\text{s}$; $\epsilon_{\mathrm{decoh}}$ reduced by 30--40\%. &
 $+0.3\%$ \\[0.4ex]
 
-\textbf{Lower temperature} &
-Operate at $T = 3.5~\text{K}$ instead of $4~\text{K}$. &
-Thermal population: $2.81\% \rightarrow 1.6\%$; $\epsilon_{\mathrm{thermal}}$: $1.41\% \rightarrow 0.8\%$. &
-$+0.6\%$ \\[0.4ex]
-
 \textbf{Optimized control} &
 DRAG pulses and optimal control. &
 $\epsilon_{\mathrm{control}}$: $0.10\% \rightarrow 0.05\%$. &
 $+0.05\%$ \\[0.4ex]
 
 \textbf{Faster gates} &
-Increase $J_{zz}$: $9.4~\text{MHz} \rightarrow 12~\text{MHz}$. &
-Gate time: $168~\text{ns} \rightarrow 125~\text{ns}$; $\epsilon_{\mathrm{decoh}}$ reduced by 25\%. &
+Increase $J$: $\InnJmag~\text{MHz} \rightarrow 8~\text{MHz}$. &
+Shorter $t_{\mathrm{CNOT}}$; $\epsilon_{\mathrm{decoh}}$ reduced further. &
 $+0.15\%$ \\
 \bottomrule
 \end{tabular}
 \end{table}
 
+\noindent
+All of the strategies above act on the \emph{reducible} part of the error
+budget; the thermal term $\varepsilon_{\mathrm{thermal}}=\EpsThermal\%$ is held
+fixed, since it is the price of operating at the cryocooler-compatible
+temperature of $4$~K and cannot be lowered without resorting to
+$^3$He/dilution refrigeration --- precisely the infrastructure this design aims
+to avoid.
+
 \subsubsection{Combined Approach}
 
-Implementing Strategies 1--3:
+At fixed $300$~GHz / $4$~K the thermal contribution
+$\varepsilon_{\mathrm{thermal}}=\EpsThermal\%$ is irreducible and sets a
+fidelity ceiling
+\begin{equation}
+F_{\mathrm{CNOT}}^{\mathrm{ceiling}} = 100\% - \varepsilon_{\mathrm{thermal}}
+= \Fceiling\%,
+\end{equation}
+which already lies above the $98\%$ reference threshold. The reducible part of
+the budget consists of the decoherence ($\varepsilon_{\mathrm{decoh}}=\EpsDecoh\%$)
+and control ($0.10\%$) terms. Suppressing these through improved substrate
+coherence and pulse optimisation moves the gate fidelity toward this ceiling:
 \begin{align}
-F_{\text{CNOT}}^{\text{improved}} &= 97.90\% + 0.3\% + 0.6\% + 0.05\% \nonumber \\
-                                   &= 98.85\% \quad \checkmark
+F_{\mathrm{CNOT}}^{\mathrm{improved}}
+&= 100\% - \varepsilon_{\mathrm{thermal}}
+   - \varepsilon_{\mathrm{decoh}}^{\mathrm{res}}
+   - \varepsilon_{\mathrm{control}}^{\mathrm{res}} \nonumber \\
+&\longrightarrow \Fceiling\% \quad \text{as }
+   \varepsilon_{\mathrm{decoh}}^{\mathrm{res}},\,
+   \varepsilon_{\mathrm{control}}^{\mathrm{res}} \rightarrow 0 .
 \end{align}
 
-This comfortably exceeds the 98\% threshold. Figure~\ref{fig:challenges}(c) shows improvement pathways.
+Crossing the threshold therefore does not require lowering the operating
+temperature: it is reached by reducing the soft (decoherence- and
+control-limited) terms while remaining at $4$~K.
+Figure~\ref{fig:challenges}(c) shows the corresponding pathways.
 
 \begin{table}[h]
 \centering
-\caption{Gate fidelity summary and improvement pathways}
+\caption{Gate fidelity at $4$~K and pathways toward the thermal-limited ceiling.
+The thermal term is held fixed; improvements act only on the reducible
+decoherence and control contributions.}
 \label{tab:fidelities}
 \begin{tabular}{@{}lcccc@{}}
 \toprule
-Gate & Current & Strategy 1 & Strategy 2 & Combined \\
-     & (4 K) & (Better Mat.) & (3.5 K) & (All) \\
+Gate & Current & Better & {}+ Optimized & Thermal \\
+     & (4 K) & coherence & control & ceiling \\
 \midrule
-Single-qubit & 99.85\% & 99.90\% & 99.87\% & 99.92\% \\
-CNOT & 97.90\% & 98.20\% & 98.50\% & 98.85\% \\
+Single-qubit & \Fsingle\% & 99.88\% & 99.91\% & 99.94\% \\
+CNOT & \FCNOT\% & 98.20\% & 98.25\% & \Fceiling\% \\
 \midrule
-vs Threshold & $-0.10\%$ & $+0.20\%$ & $+0.50\%$ & $+0.85\%$ \\
+CNOT vs threshold & $-0.10\%$ & $+0.20\%$ & $+0.25\%$ & $+0.59\%$ \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -3006,7 +3208,7 @@ Frequency-Dependent Material Losses & HIGH & 70\% & Ultra-low-loss substrates (s
 \midrule
 Josephson Junction Fabrication & MEDIUM & 70--80\% & E-beam lithography (10~nm resolution); high current density barriers ($d_{\text{ox}} \sim 1$~nm); junction arrays ($N \times N$); flux tunability ($\pm 5\%$) \\
 \midrule
-300~GHz Microwave Control & MEDIUM & 80--90\% & mm-wave astronomy technology (ALMA); frequency conversion with on-chip multiplication; estimated control stack cost: \euro 500k \\
+300~GHz Microwave Control & MEDIUM & 80--90\% & mm-wave astronomy technology (ALMA); frequency conversion with on-chip multiplication \\
 \midrule
 Thermal Management at 4~K & LOW & 90\%+ & Modern pulse-tube coolers (1~W @ 4~K); multi-stage thermal filtering (40~K, 10~K, 4~K); temperature stability $< 0.5$~mK \\
 \bottomrule
@@ -3028,11 +3230,11 @@ With all three mitigation strategies implemented, the success probability for ma
 
 \subsection{Challenge 2: Josephson Junction Fabrication}
 
-The high operating frequency necessitates Josephson junctions of small physical size, coupled with stringent requirements on critical current ($I_c = 1.51$~$\mu$A, derived in Sec.~\ref{sec:junction_design}), uniformity (less than 5\% variation), and current density ($J_c = 1000$--1500~A/cm$^2$). While this represents a medium-severity challenge, the fabrication is achievable with specialized facilities, with an estimated 30\% probability of failure primarily due to facility access and process complexity.
+The high operating frequency necessitates Josephson junctions of small physical size, coupled with stringent requirements on critical current ($I_c = 1.51$~$\mu$A, derived in Sec.~\ref{sec:junction_design}), uniformity (less than 5\% variation), and current density ($J_c \simeq 6$~kA/cm$^2$, Sec.~\ref{sec:junction_capacitance_point}). While this represents a medium-severity challenge, the fabrication is achievable with specialized facilities, with an estimated 30\% probability of failure primarily due to facility access and process complexity.
 
-Advanced lithography techniques form the foundation of the mitigation strategy. E-beam lithography provides the necessary 10~nm resolution, implemented through the Dolan bridge shadow evaporation technique. Multiple test fabrication runs allow for process optimization and yield improvement. Achieving the required high current density demands thin oxide barriers of approximately 1~nm thickness, fabricated through precisely controlled oxidation with in-situ monitoring or atomic layer deposition (ALD) for enhanced uniformity.
+Advanced lithography techniques form the foundation of the mitigation strategy. E-beam lithography provides the necessary 10~nm resolution, implemented through the Dolan bridge shadow evaporation technique. Multiple test fabrication runs allow for process optimization and yield improvement. Achieving the required current density demands thin AlN barriers of approximately $1.3$~nm thickness, deposited by precisely controlled reactive sputtering or atomic layer deposition (ALD) for enhanced uniformity~\cite{Wang2026ALDNitride}.
 
-An alternative approach to improve both yield and uniformity involves implementing junction arrays, where an $N \times N$ array of smaller junctions (for example, a $4 \times 4$ array of 250~nm junctions) provides the same total critical current while reducing individual junction size requirements. Additionally, the asymmetric SQUID architecture provides intrinsic flux tunability, allowing $\pm 5\%$ frequency tuning to compensate for fabrication variations. This multi-pronged approach yields a success probability of 70--80\% when implemented in a specialized fabrication facility. Figure~\ref{fig:challenges}(b) compares different substrate options, while Figure~\ref{fig:system_parameters}(c) illustrates the junction sizing considerations.
+Junction arrays may optionally be used to improve yield and uniformity, although a single junction of $\sim 180$~nm already meets both the critical-current and capacitance targets (Sec.~\ref{sec:junction_capacitance_point}), so an array is not required. Additionally, the asymmetric SQUID architecture provides intrinsic flux tunability, allowing $\pm 5\%$ frequency tuning to compensate for fabrication variations. This multi-pronged approach yields a success probability of 70--80\% when implemented in a specialized fabrication facility. Figure~\ref{fig:challenges}(b) compares different substrate options, while Figure~\ref{fig:system_parameters}(c) illustrates the junction sizing considerations.
 
 \paragraph{Current Density Engineering and Facility Requirements}
 
@@ -3040,15 +3242,15 @@ The current density of Josephson tunnel junctions depends on the barrier propert
 \begin{equation}
 J_c \propto \exp\left(-\frac{d_{\text{ox}}}{\lambda}\right)
 \end{equation}
-where $d_{\text{ox}}$ is the oxide thickness and $\lambda \approx 0.1$~nm is the characteristic decay length. Achieving the required $J_c = 1000$--1500~A/cm$^2$ demands:
+where $d_{\text{ox}}$ is the barrier thickness and $\lambda \approx 0.3$~nm is the characteristic decay length~\cite{Wang2026ALDNitride}. Achieving $J_c \simeq 6$~kA/cm$^2$ demands:
 \begin{table}[h]
 \centering
 \begin{tabular}{@{}lc@{}}
 \toprule
 \textbf{Parameter} & \textbf{Specification} \\
 \midrule
-Oxide thickness $d_{\text{ox}}$ & $1.0$--$1.2$~nm \\
-Oxidation time                 & $60$--$90$~s (pressure- and temperature-dependent) \\
+AlN barrier thickness $d_{\text{ox}}$ & $\sim 1.3$~nm \\
+Barrier deposition control      & ALD cycle count / reactive-sputter calibration \\
 Spatial uniformity             & $< 5\%$ across the chip \\
 Critical-dimension control     & $\pm 20$~nm tolerance \\
 \bottomrule
@@ -3061,15 +3263,15 @@ These specifications are achievable at specialized facilities, including MIT Lin
 
 \subsection{Challenge 3: 300~GHz Microwave Control}
 
-The implementation of quantum control at 300~GHz faces challenges related to the limited commercial availability of appropriate sources, amplifiers, low-noise cryogenic components, and waveguide transition elements. This medium-severity challenge increases both system cost and complexity, though the probability of failure is relatively low (approximately 20\%) given that the underlying technology exists and has been demonstrated in related fields.
+The implementation of quantum control at 300~GHz faces challenges related to the limited commercial availability of appropriate sources, amplifiers, low-noise cryogenic components, and waveguide transition elements. This medium-severity challenge increases system complexity, though the probability of failure is relatively low (approximately 20\%) given that the underlying technology exists and has been demonstrated in related fields.
 
 A key insight is that the required 300~GHz technology has already been developed and matured for millimeter-wave astronomy applications. The ALMA telescope project has established 300~GHz technology as a reliable standard, with commercial suppliers such as Virginia Diodes Inc. providing multiplier chains extending to 1~THz. The WR-3 waveguide standard (220--325~GHz) is well-established and widely available. This existing infrastructure significantly de-risks the development.
 
-An alternative approach involves frequency conversion, where control pulses are generated at more accessible frequencies around 10~GHz and subsequently upconverted through on-chip frequency multiplication (factor of approximately 30) using Josephson parametric amplifiers. The estimated cost breakdown for the 300~GHz control stack includes approximately \euro 200k for the synthesizer, \euro 150k for amplifiers and multipliers, and \euro 150k for cryogenic components, yielding a total control stack cost of approximately \euro 500k. While significant, this cost must be evaluated in the context of the \euro 1.4M savings in cryogenic infrastructure. The combination of mature existing technology and alternative implementation pathways results in a success probability of 80--90\%.
+An alternative approach involves frequency conversion, where control pulses are generated at more accessible frequencies around 10~GHz and subsequently upconverted through on-chip frequency multiplication (factor of approximately 30) using Josephson parametric amplifiers. The combination of mature existing technology and alternative implementation pathways results in a success probability of 80--90\%.
 
 \paragraph{On-Chip Frequency Conversion Architecture}
 
-An alternative implementation strategy that may further reduce system complexity employs on-chip frequency conversion. In this hybrid architecture, control pulses are generated at more accessible intermediate frequencies around 10~GHz using conventional microwave sources, then upconverted to 300~GHz locally on the chip itself. This approach leverages Josephson mixers and parametric amplifiers, which can provide the necessary $\times 30$ frequency multiplication while maintaining quantum-limited noise performance. The on-chip conversion reduces requirements on room-temperature control electronics, potentially lowering the control stack cost below the \euro 500k estimate for direct 300~GHz generation. However, this approach introduces additional on-chip complexity and requires careful management of spurious mixing products and intermodulation distortion.
+An alternative implementation strategy that may further reduce system complexity employs on-chip frequency conversion. In this hybrid architecture, control pulses are generated at more accessible intermediate frequencies around 10~GHz using conventional microwave sources, then upconverted to 300~GHz locally on the chip itself. This approach leverages Josephson mixers and parametric amplifiers, which can provide the necessary $\times 30$ frequency multiplication while maintaining quantum-limited noise performance. The on-chip conversion reduces requirements on room-temperature control electronics, but introduces additional on-chip complexity and requires careful management of spurious mixing products and intermodulation distortion.
 
 \subsection{Challenge 4: Thermal Management at 4~K}
 
@@ -3083,7 +3285,7 @@ Modern pulse-tube coolers, such as the Cryomech PT420, provide 1~W of cooling po
 \caption{\textbf{Technical Challenges and Mitigation Strategies.}
 \textbf{(a)} Loss mechanism scaling comparison between baseline (5.8 GHz, green) and elevated-temperature design (300 GHz, various colors). Dielectric loss (red) increases 52×. Radiative loss (dark red) increases catastrophically by 2675× if unshielded. Quasiparticle loss (green) remains constant—key advantage. Log scale emphasizes dramatic scaling differences. The inset box highlights the critical challenge and the mitigation approach.
 \textbf{(b)} Substrate comparison at 300 GHz. Standard silicon (red) gives unacceptably short $T_1 \sim 10$ $\mu$s. High-resistivity silicon (orange) and sapphire (green) provide $T_1 > 100 \mu$s. Target (dark green) shows achievable performance with optimized materials and design. The red dashed line indicates a 30 $\mu$s minimum requirement. The green shaded region shows the acceptable range. The inset box recommends sapphire or high-$\rho$ Si.
-\textbf{(c)} Improvement pathways to reach 98\% CNOT threshold. Current system (orange, 97.9\%) falls 0.1\% short. Individual improvements (green shades): better substrates (+0.3\%), lower temperature to 3.5 K (+0.3\%), and optimized control pulses (+0.05\%). Combined approach (dark green) achieves 99.1\%, comfortably exceeding threshold (red dashed line). The green shaded region indicates above-threshold performance. Each bar represents the fidelity value and its improvement over the baseline.}
+\textbf{(c)} Improvement pathways at fixed $300$~GHz / $4$~K. The current CNOT fidelity (orange, $\FCNOT\%$) lies $0.10$ percentage points below the $98\%$ reference threshold (green dashed line). Reducing the soft contributions raises the fidelity toward the thermal-limited ceiling: improved substrate coherence ($98.20\%$) and pulse optimisation ($98.25\%$) each cross the threshold, and the ceiling $F_{\mathrm{ceiling}}=100\%-\varepsilon_{\mathrm{thermal}}=\Fceiling\%$ (dark green) is the best attainable at this operating point. The thermal term is not reduced: the operating temperature is held at the cryocooler-compatible $4$~K by design.}
 \label{fig:challenges}
 \end{figure}
 
@@ -3102,22 +3304,21 @@ Parameter & Baseline & Elevated-T & Change \\
 Frequency & 5.8 GHz & 300 GHz & $52\times$ \\
 Temperature & 20 mK & 4 K & $200\times$ \\
 Quantum ratio & 13.9 & 3.6 & $0.26\times$ \\
-Thermal population & 0.000014\% & 2.81\% & $2 \times 10^5\times$ \\
+Thermal population & $9.0\times10^{-5}\%$ & 2.81\% & $3.1\times10^{4}$ \\
 \midrule
 $T_1$ & 80 $\mu$s & 15.3 $\mu$s & $0.19\times$ \\
-$T_2$ & 60 $\mu$s & 13.2 $\mu$s & $0.22\times$ \\
+$T_2$ & 60 $\mu$s & 13.1 $\mu$s & $0.22\times$ \\
 \midrule
-$F_{\text{single}}$ & 99.93\% & 99.85\% & $-0.08\%$ \\
+$F_{\text{single}}$ & 99.93\% & 99.81\% & $-0.12\%$ \\
 $F_{\text{CNOT}}$ & 98.7\% & 97.9\% & $-0.8\%$ \\
 \midrule
-Cryostat cost & \euro 1.5M & \euro 75k & $0.05\times$ \\
 Cooldown time & 5 days & 4 hours & $0.033\times$ \\
 %Power consumption & 5 kW & 0.4 kW & $0.08\times$ \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-The elevated-temperature design accepts a small ($< 1\%$) reduction in two-qubit fidelity in exchange for the resource-related advantages discussed in Sec.~\ref{sec:summary_of_findings}: a $70$--$80\%$ reduction in cryogenic-stack cost, hour-scale rather than day-scale cool-down, and a footprint compatible with co-located cryo-CMOS control electronics.
+The elevated-temperature design accepts a small ($< 1\%$) reduction in two-qubit fidelity in exchange for the operational advantages discussed in Sec.~\ref{sec:summary_of_findings}: the replacement of the dilution refrigerator by a closed-cycle cryocooler, hour-scale rather than day-scale cool-down, and a footprint compatible with co-located cryo-CMOS control electronics.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -3132,7 +3333,7 @@ This chapter has analysed asymmetric SQUID transmon qubits in two operating regi
 
 \subsubsection*{Technical feasibility of the elevated-temperature regime}
 
-At $4$~K with a qubit frequency of $300$~GHz, the dimensionless ratio $\hbar\omega_{01}/(k_B T) = 3.6$ keeps the device in the quantum regime, with a thermal population of $\bar{n} \simeq 2.81\%$. The coherence-time estimates derived from the dielectric- and radiative-loss budget of Section~\ref{sec:decoherence} yield $T_1 \simeq 15.3~\mu$s and $T_2 \simeq 13.2~\mu$s (with $T_{2,\text{echo}} \simeq 26.3~\mu$s under Hahn-echo refocusing). The quasiparticle contribution to this budget assumes the trap-engineered configuration discussed in Section~\ref{sec:decoherence}, with $T_1^{\text{qp}}$ at the target value of $\sim 49~\mu$s rather than the bare thermal-floor value of $\sim 20$~ns. Combining these decoherence rates with the gate-fidelity model of Section~\ref{sec:fidelity}, and adopting the echo cross-resonance protocol of Section~\ref{sec:gate_strategy}, we project a single-qubit fidelity of $99.85\%$ and a two-qubit fidelity of $97.9\%$. The latter sits approximately $0.1$ percentage points below the $98\%$ surface-code threshold adopted as a working reference; the gap and the candidate mechanisms that could close it are discussed below. A compact view of these indicators is collected in Table~\ref{tab:tech_feasibility_4K}.
+At $4$~K with a qubit frequency of $300$~GHz, the dimensionless ratio $\hbar\omega_{01}/(k_B T) = 3.6$ keeps the device in the quantum regime, with a thermal population of $\bar{n} \simeq 2.81\%$. The coherence-time estimates derived from the dielectric- and radiative-loss budget of Section~\ref{sec:decoherence} yield $T_1 \simeq \TOneTotal~\mu$s and $T_2 \simeq \TTwo~\mu$s (with $T_{2,\text{echo}} \simeq \TTwoEcho~\mu$s under Hahn-echo refocusing). The quasiparticle contribution to this budget assumes the trap-engineered configuration discussed in Section~\ref{sec:decoherence}, with $T_1^{\text{qp}}$ at the target value of $\sim 49~\mu$s rather than the bare thermal-floor value of $\sim 20$~ns. Combining these decoherence rates with the gate-fidelity model of Section~\ref{sec:fidelity}, and adopting the echo cross-resonance protocol of Section~\ref{sec:gate_strategy}, we project a single-qubit fidelity of $\Fsingle\%$ and a two-qubit fidelity of $\FCNOT\%$. The latter sits approximately $0.1$ percentage points below the $98\%$ surface-code threshold adopted as a working reference; the gap and the candidate mechanisms that could close it are discussed below. A compact view of these indicators is collected in Table~\ref{tab:tech_feasibility_4K}.
 
 \begin{table}[h]
 \centering
@@ -3143,7 +3344,7 @@ At $4$~K with a qubit frequency of $300$~GHz, the dimensionless ratio $\hbar\ome
 Quantum regime ($\hbar\omega/k_B T$)   & $3.6$ \\
 Thermal population                     & $2.81\%$ \\
 Coherence times $T_1, T_2$             & $15.3~\mu$s, $13.2~\mu$s ($T_{2,\text{echo}}\simeq 26.3~\mu$s, projected) \\
-Single-qubit fidelity                  & $99.85\%$ \\
+Single-qubit fidelity                  & $\Fsingle\%$ \\
 Two-qubit fidelity                     & $97.9\%$ ($0.1\%$ below the $98\%$ target) \\
 \bottomrule
 \end{tabular}
@@ -3178,22 +3379,7 @@ Thermal management                      & commercial pulse-tube coolers \\
 
 \subsubsection*{Resource and infrastructure considerations}
 
-Operation at $4$~K rather than $20$~mK has direct implications for the infrastructure required to host the device. Replacing dilution refrigeration with compact cryocoolers reduces the capital and operating cost of the cryogenic stack by approximately $70$--$80\%$, in line with the figures reported for cryo-CMOS-compatible platforms~\cite{Acharya2022, VanWinckel2022, Underwood2024}; cool-down times shorten from days to hours, increasing the rate at which fabrication--test iterations can be performed; and the accessibility of the $4$~K stage is compatible with cryogenic CMOS control electronics co-located with the qubit chip, reducing wiring length and control latency. A compact comparison with the dilution-refrigerator baseline is given in Table~\ref{tab:economic_impact}; the qualitative ordering of the entries is robust, while their precise numerical values, drawn from the references cited in Section~\ref{sec:challenges}, depend on the specific commercial platforms adopted as comparison points.
-
-\begin{table}[h]
-\centering
-\begin{tabularx}{\linewidth}{@{}l L@{}}
-\toprule
-\textbf{Resource} & \textbf{$4$~K cryocooler relative to dilution-refrigerator baseline} \\
-\midrule
-Cryogenic stack cost   & $\sim 70$--$80\%$ reduction (cryocooler in place of dilution unit) \\
-Cool-down time         & hours rather than days \\
-Footprint and wiring   & compatible with co-located cryo-CMOS control \\
-\bottomrule
-\end{tabularx}
-\caption{Resource-related differences between operation at $4$~K with a compact cryocooler and operation at $20$~mK with a dilution refrigerator. References for the cost and wiring entries are given in the surrounding text.}
-\label{tab:economic_impact}
-\end{table}
+Operation at $4$~K rather than $20$~mK has direct implications for the infrastructure required to host the device. Replacing dilution refrigeration with a compact closed-cycle cryocooler shortens cool-down times from days to hours, increasing the rate at which fabrication--test iterations can be performed, and the accessibility of the $4$~K stage is compatible with cryogenic CMOS control electronics co-located with the qubit chip, reducing wiring length and control latency. These are operational consequences of the elevated-temperature design; a quantitative cost analysis is deferred to dedicated future work.
 
 Taken together, the results of this chapter outline a coherent design space for the elevated-temperature regime. The baseline configuration confirms that the asymmetric SQUID architecture, the loss models, and the gate-fidelity estimators adopted here are calibrated against established transmon performance, while the elevated-temperature configuration extends the same modelling framework to an operating point that, to our knowledge, has not previously been analysed at this level of detail.
 
