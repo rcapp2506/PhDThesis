@@ -621,7 +621,7 @@ The detection protocol consists of the following steps:
 
     \item \textbf{Laser pulse} ($0 < t < T_a$): Apply laser with parameters $\Omega_{\rm gr}$ and $\Delta_{\rm gr}(B)$ chosen to satisfy Eq.~\ref{eq:facilitation_condition_b}. The avalanche amplifies the initial excitation.
 
-    \item \textbf{Readout} ($t = T_a$): Apply a ramped electric field pulse to selectively ionise atoms in the Rydberg state $|r\rangle$ while leaving ground-state atoms $|g\rangle$ unaffected \cite{Gallagher2005, Zhang2024Review}. The resulting ions or electrons are detected using a microchannel plate (MCP) detector with typical efficiency $\eta_{\rm det} \approx 40\%$ \cite{Ryabtsev2007, Andersen2013}. If the detected ion count exceeds $S_{\rm threshold}$, a photon event is registered.
+    \item \textbf{Readout} ($t = T_a$): Apply a ramped electric field pulse to selectively ionise atoms in the Rydberg state $|r\rangle$ while leaving ground-state atoms $|g\rangle$ unaffected \cite{Gallagher2005, Zhang2024Review}. The resulting ions or electrons are detected using a microchannel plate (MCP) detector with typical efficiency $\eta_{\rm det} \approx 40$--$70\%$ \cite{Ryabtsev2007, Andersen2013}. If the detected ion count exceeds $S_{\rm threshold}$, a photon event is registered.
 
     \item \textbf{Reset}: Return all atoms to $|g\rangle$ and repeat.
 \end{enumerate}
@@ -731,7 +731,7 @@ To contextualise the performance of the Rydberg avalanche detector, we compare i
 Technology & Sensitivity & Dark Rate & $T_{\mathrm{op}}$ & $B_{\mathrm{max}}$ & Bandwidth \\
  & (W) & (Hz) & (K) & (T) & (GHz) \\
 \hline
-\textbf{Rydberg (this work)} & $\mathbf{10^{-22}}$ & $\mathbf{< 10^{-2}}$ & $\mathbf{0.3}$--$\mathbf{4}$ & $\mathbf{> 7}$ & $\mathbf{10}$--$\mathbf{1000}$ \\
+\textbf{Rydberg (this work)} & $\mathbf{10^{-22}}$ & $\mathbf{< 10^{-2}}$ & $\mathbf{0.3}$--$\mathbf{4}$ & $\mathbf{5}$ & $\mathbf{10}$--$\mathbf{1000}$ \\
 TES\cite{Guo2017} & $10^{-21}$ & $\sim 0.1$ & 0.1 & $< 0.01$ & 100--10000 \\
 JJ\cite{Pankratov2022} & $10^{-22}$ & $\sim 1$ & 0.01--0.1 & $< 0.001$ & 1--10 \\
 KID\cite{Guo2017} & $10^{-20}$ & $\sim 1$ & 0.1 & $< 0.1$ & 100--10000 \\
@@ -771,16 +771,13 @@ Frequency range & 2--50 GHz & 10--50 GHz & 10--1000 GHz \\
 
 The architectural differences highlight three genuinely new contributions of the present work that differentiate it from the existing Rydberg-atom-haloscope literature: (i) the use of the facilitation-driven avalanche as a coherent quantum amplifier with $\mathcal{A}\!\sim\!5$, replacing the linear-response paradigm of CARRACK and Graham 2024; (ii) the \emph{dual role} of a \emph{single} high-$Q$ microwave cavity, which both hosts the axion-to-photon conversion process \emph{and} mediates the absorption of the converted photon by the atomic ensemble---a configuration made possible by the active Zeeman compensation through laser retuning analysed in Sec.~\ref{sec:zeeman_correction} and which obviates the second ``detection cavity'' employed by CARRACK and Graham~2024; and (iii) the operating point at $T = 4$~K, two orders of magnitude warmer than the dilution-refrigerator regimes required by CARRACK and by transmon-based single-microwave-photon-counter schemes~\cite{Dixit2025}, with a corresponding reduction in cryogenic infrastructure cost.
 
-The most distinctive feature, however, is the \emph{spatial signature} of the avalanche: as shown in Fig.~\ref{fig:B_field_scan}(d), the single-photon-triggered cascade leaves a characteristic V-shaped density profile $\langle n_r(j,t)\rangle$ in the atomic array, with propagation velocity $v\!\sim\!\Omega_{\mathrm{gr}} a$. Single-atom schemes intrinsically produce a single-mode signal that cannot be distinguished from a random background excitation by readout alone. The avalanche's spatially correlated pattern instead provides an internal discriminator: any spurious atomic excitation that does not propagate ballistically from a localised origin can be vetoed offline, suppressing background events that would otherwise mimic axion candidates. This is a category of background rejection unavailable to any other axion-detector technology.
+The most distinctive feature, however, is the \emph{spatial signature} of the avalanche: as shown in Fig.~\ref{fig:B_field_scan}(d), the single-photon-triggered cascade leaves a characteristic V-shaped density profile $\langle n_r(j,t)\rangle$ in the atomic array, with propagation velocity $v\!\sim\!\Omega_{\mathrm{gr}} a$. Single-atom schemes intrinsically produce a single-mode signal that cannot be distinguished from a random background excitation by readout alone. The avalanche's spatially correlated pattern instead provides an internal discriminator: any spurious atomic excitation that does not propagate ballistically from a localised origin can be vetoed offline, suppressing background events that would otherwise mimic axion candidates. This is a category of background rejection not available to single-mode detectors.
 
 Closely related Rydberg-based detection schemes have appeared in the recent literature. The BREAD-Rydberg proposal~\cite{Banerjee2025} targets the same 0.1--10~meV dark-matter mass window with a dish-antenna geometry and direct ionisation of Rydberg states, complementary to the cavity-resonant scheme considered here. Experimental observation of intrastate and interstate facilitation between $S$, $P$ and $D$ levels~\cite{Pourjafarabadi2026} has further established the facilitation mechanism across the level structure on which the present protocol depends.
 
 
 \subsection*{Sensitivity}
 
-\begin{comment}
-The Rydberg avalanche detector achieves single-photon sensitivity at power levels $\sim 10^{-22}$ W, comparable to the best Josephson junction and superconducting qubit detectors. This is approximately one order of magnitude better than transition edge sensors (TES) at GHz frequencies and two orders better than kinetic inductance detectors (KID). The sensitivity is fundamentally limited by the amplification factor $\mathcal{A} \sim 5$ and the readout fidelity of fluorescence imaging, which is typically $> 99\%$ for individual atoms~\cite{Barredo2018}.
-\end{comment}
 
 
 The Rydberg avalanche detector achieves single-photon sensitivity at power levels $\sim 10^{-22}$ W, comparable to the best Josephson junction and superconducting qubit detectors. This is approximately one order of magnitude better than transition edge sensors (TES) at GHz frequencies and two orders better than kinetic inductance detectors (KID). The sensitivity is fundamentally limited by the amplification factor $\mathcal{A} \sim 5$ and the detection threshold $S_{\text{threshold}} = 3$ atoms, which provides robust discrimination between avalanche events and random fluctuations~\cite{Barredo2018}.
@@ -791,7 +788,7 @@ At $T = 4$ K, the Rydberg detector exhibits dark counts below 0.01 Hz, competiti
 
 \subsection*{Magnetic Field Compatibility}
 
-The Rydberg avalanche detector offers a \textit{unique} advantage in magnetic field compatibility. While all superconducting technologies (TES, JJ, KID, SNSPD, SC qubits) are severely degraded or entirely non-functional in fields above $\sim 0.1$ T, the Rydberg detector operates effectively up to at least 5 T and can likely be extended to 7--10 T with further optimisation. This is the parameter space required by axion haloscope experiments. While magnetic field compatibility has been demonstrated for certain diamond NV-centre ensembles up to 7~T, the Rydberg avalanche detector uniquely combines this compatibility with single-photon sensitivity across the GHz--THz range.
+The Rydberg avalanche detector offers a distinctive advantage in magnetic field compatibility. While all superconducting technologies (TES, JJ, KID, SNSPD, SC qubits) are severely degraded or entirely non-functional in fields above $\sim 0.1$ T, the Rydberg detector operates effectively up to at least 5 T and can likely be extended to 7--10 T with further optimisation. This is the parameter space required by axion haloscope experiments. While magnetic field compatibility has been demonstrated for certain diamond NV-centre ensembles up to 7~T, the Rydberg avalanche detector combines this compatibility with single-photon sensitivity across the GHz--THz range.
 
 The origin of this compatibility lies in the atomic nature of the Rydberg system: the Zeeman effect is a perturbation that can be compensated through laser retuning, and the weak diamagnetic effects at $B < 5$ T do not fundamentally alter the atomic structure. In contrast, superconducting devices rely on the Meissner effect and coherence lengths that are destroyed by modest magnetic fields.
 
@@ -981,7 +978,7 @@ It is important to emphasise that this conclusion concerns only the \emph{readou
 
 \subsubsection{One-Dimensional Geometry}
 
-Our simulations assume a 1D atomic chain. Extension to 2D or 3D geometries would increase the amplification factor ($\mathcal{A} \sim N^{d/2}$ for dimension $d$) but also introduce anisotropic avalanche dynamics and complicate the facilitation condition. The theoretical proposal of Ref.~\cite{Nill2024} also considers 2D extensions of the avalanche scheme, suggesting this generalisation is feasible in principle, although still awaiting experimental confirmation.
+Our simulations assume a 1D atomic chain. Extension to 2D or 3D geometries would increase the coordination number, giving each atom more facilitation pathways but also more configurations in which an atom borders two or more excited neighbours and is pushed off resonance by the antiblockade shift. Whether the net effect enhances or suppresses $\mathcal{A}$ relative to the 1D chain is not determined by the present analysis and would require avalanche simulations on higher-dimensional lattices with a finite-size scaling study. The proposal of Ref.~\cite{Nill2024} also considers 2D extensions of the avalanche scheme, suggesting this generalisation is feasible in principle, although still awaiting experimental confirmation.
 
 \subsubsection{Photon Absorption Efficiency}
 
@@ -991,7 +988,7 @@ We have assumed perfect absorption of cavity photons by the atomic ensemble. In 
     \eta_{\mathrm{abs}} = \frac{N \Gamma_{\mathrm{abs}}}{\kappa + N \Gamma_{\mathrm{abs}}}
 \end{equation}
 
-where $\Gamma_{\mathrm{abs}} = g^2/\Gamma_{\mathrm{sp}}$ is the single-atom absorption rate, $g$ is the atom-cavity coupling, and $\kappa$ is the cavity decay rate. Realistic cavity-atom coupling parameters ($g \sim 2\pi \times 1$~MHz, $\kappa \sim 2\pi \times 0.1$~MHz) yield $\eta_{\mathrm{abs}} \sim 0.5$--$0.8$ for $N=11$ atoms. This reduces the effective detection efficiency but does not affect the single-photon sensitivity claim. For strong coupling ($g \gg \kappa, \Gamma_{\mathrm{sp}}$) and large $N$, near-unity efficiency is still possible~\cite{Hogan2012}.
+where $\Gamma_{\mathrm{abs}} = g^2/\Gamma_{\mathrm{sp}}$ is the single-atom absorption rate, $g$ is the atom-cavity coupling, and $\kappa$ is the cavity decay rate. Realistic cavity-atom coupling parameters ($g \sim 2\pi \times 1$~MHz, $\kappa \sim 2\pi \times 0.05$~MHz) yield $\eta_{\mathrm{abs}} \sim 0.5$--$0.8$ for $N=11$ atoms. This reduces the effective detection efficiency but does not affect the single-photon sensitivity claim. For strong coupling ($g \gg \kappa, \Gamma_{\mathrm{sp}}$) and large $N$, near-unity efficiency is still possible~\cite{Hogan2012}.
 
 \subsubsection{Single-Shot vs. Integrated Detection}
 
