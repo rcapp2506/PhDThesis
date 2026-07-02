@@ -1,6 +1,37 @@
 % !TEX root = ../main.tex
 \begin{comment}
 === Revision log ===
+2026-07-02  R. Cappuccio / Claude  (Sec. 2.9 rewrite -- corrected frequency trade-off)
+
+  Sec. 2.9 rewritten on the corrected physics, ratified by R.C. (options:
+  (i) dielectric+thermal model; (ii) 2.9.7 rewritten; (iii) formal optimum
+  stated, then descent to 300 GHz motivated).
+  * The previous derivation sought a maximum of T1_diel(f); no such maximum
+    exists: d/df[f(1+n)] = (1+n)(1-xn) > 0 since xn = x/(e^x-1) < 1 for all
+    x > 0 (the old Eq. "x n = 1, x ~ 1.26" has no solution; at x = 1.26,
+    xn = 0.499). The old f_opt = 8 GHz was the left edge of the scan, at
+    n_th ~ 10 (classical regime); the old Tab. 2.25 was itself monotone.
+  * The non-monotonicity lives in the FIDELITY: eps(f) = t_CNOT*Gamma_d +
+    n_th/2, with the canonical Q_eff = 1/(p tan d) = 1.0e8 (same input as
+    the 53.1 us budget entry) instead of the inconsistent planar Q = 1e6.
+    Formal optimum 540 GHz (eps 0.58%); 300 GHz = feasibility compromise
+    (eps 1.69%; junction C_Sigma, control electronics, pair-breaking
+    margin, tan-delta extrapolation).
+  * 2.9.7 (dual-frequency) rewritten as in-situ tunability: the ratio
+    between the two sweet spots is eta^{-1/2} ~ 3 (eta = 11.1%), not >100;
+    the old eta ~ 0.95 statement was inverted (E_J ratio 1.05), and the
+    8 <-> 300 GHz scheme needs eta ~ 1e-3 AND would gate at n_th ~ 4-10
+    (thermally inoperable). Fixed-frequency operation is the conclusion.
+  * SSoT: new script qh_hardware/frequency_tradeoff_canonical.py generates
+    Fig. 2.19 (frequency_tradeoff_analysis.png) and the Tab. 2.25 rows;
+    asserts monotonicity and the optimum location. eps_single realigned to
+    the ratified 0.152/0.187 (rounding drift introduced on 2026-07-02
+    corrected back to SSoT).
+
+\end{comment}
+
+\begin{comment}
+=== Revision log ===
 2026-06-17  R. Cappuccio / Claude  (Branch wave-physics-cap2 -- holistic physics/editorial revision of Ch. 2)
 
   Holistic, single-source-of-truth revision of the hardware chapter,
@@ -2853,19 +2884,19 @@ Leakage        & $\epsilon_{\text{leak}} \sim (\alpha/\omega_q)^2$ (excitation t
 For $t_{\text{gate}} = 20$ ns:
 
 \begin{align}
-\varepsilon_{\text{decoh}} &= \frac{t_{\text{single}}}{T_2} = \frac{20 \times 10^{-9}}{\TTwo \times 10^{-6}} = 0.153\% \\
+\varepsilon_{\text{decoh}} &= \frac{t_{\text{single}}}{T_2} = \frac{20 \times 10^{-9}}{13.14 \times 10^{-6}} = 0.152\% \\
 \varepsilon_{\text{control}} &= 0.010\% \\
 \varepsilon_{\text{leak}} &= \left(\frac{15 \text{ GHz}}{300 \text{ GHz}}\right)^2 \times 0.1 = \left(\frac{\alpha}{\omega_q}\right)^2 \times 0.1 = 0.025\%
 \end{align}
 
 Total single-qubit error:
 \begin{equation}
-\epsilon_{\text{single}} = 0.153\% + 0.01\% + 0.025\% = 0.188\%
+\epsilon_{\text{single}} = 0.152\% + 0.01\% + 0.025\% = 0.187\%
 \end{equation}
 
 Single-qubit fidelity:
 \begin{equation}
-\varepsilon_{\text{total}} = 0.188\%, \quad \boxed{\mathcal{F}_{\text{single}} = \Fsingle\%} \quad \checkmark
+\varepsilon_{\text{total}} = 0.187\%, \quad \boxed{\mathcal{F}_{\text{single}} = \Fsingle\%} \quad \checkmark
 \end{equation}
 
 This approaches, but does not yet reach, the $\gtrsim 99.9\%$ single-qubit fidelities typically quoted as a target for fault-tolerant operation.
@@ -3052,177 +3083,294 @@ CNOT vs threshold & $-0.10\%$ & $+0.20\%$ & $+0.25\%$ & $+0.59\%$ \\
 
 \subsection{The Non-Monotonic Fidelity Problem}
 
-At elevated temperatures (T = \SI{4}{\kelvin}), we observe a counter-intuitive phenomenon: gate fidelity does \textit{not} monotonically increase with frequency, despite thermal occupation $n_{\text{th}}$ decreasing exponentially. This section analyses the physical origin of this effect and its implications for optimal qubit design.
+At elevated temperatures ($T = \SI{4}{\kelvin}$) the choice of qubit frequency
+is governed by two competing error sources. The thermal-excitation error,
+$\varepsilon_{\text{th}} = \bar{n}_{\text{th}}/2$, falls exponentially with
+frequency; the decoherence error accumulated during a gate,
+$\varepsilon_{\text{dec}} = t_{\text{CNOT}}\,\Gamma_d$, grows approximately
+linearly with it. Their sum is non-monotonic and admits an interior optimum.
+This section derives that optimum, locates it quantitatively, and explains why
+the design nevertheless operates at \SI{300}{\giga\hertz}, below the formal
+optimum.
 
-The analysis in this section deliberately uses a \emph{simplified, dielectric-loss-only model} of $T_1$, without the 3D-cavity radiative shielding, the echo cross-resonance protocol, or pulse shaping considered in Sec.~\ref{sec:decoherence}--\ref{sec:fidelity}, in order to isolate the competition between $\omega/Q$ (linear in $\omega$) and the thermal enhancement $(1+n_{\text{th}})$ (exponentially suppressed in $\omega$) that produces the non-monotonic landscape. The fidelity numbers reported below (e.g.\ $F_{\text{CNOT}}=34.2\%$ at \SI{300}{\giga\hertz}/\SI{4}{\kelvin}) reflect this simplified model and are \emph{not} the projections for the elevated-temperature design point, which are computed with the full coherence and gate-protocol budget in Sec.~\ref{sec:fidelity} ($F_{\text{CNOT}}\simeq 97.9\%$).
+The analysis deliberately uses a \emph{simplified, dielectric-plus-thermal
+model}: the only decay channel retained is dielectric loss, with the canonical
+loss model of Sec.~\ref{sec:dielectric_loss_300ghz}
+($Q_{\text{eff}} = 1/(p\tan\delta) \simeq 1.0\times10^{8}$ for $p = 0.1$ and
+$\tan\delta = 10^{-7}$, the same inputs that yield the $53.1~\mu$s budget entry
+of Sec.~\ref{sec:decoherence}), and the gate time is the canonical
+$t_{\text{CNOT}} = \tCNOT$~ns. Radiative shielding, quasiparticle and TLS
+channels, and pulse-level details are excluded in order to isolate the
+frequency competition; the full design-point projections remain those of
+Sec.~\ref{sec:fidelity} ($F_{\text{CNOT}} \simeq \FCNOT\%$). All numbers and
+figures in this section are generated by a single script
+(\texttt{frequency\_tradeoff\_canonical.py} in the \texttt{qh\_hardware}
+repository) from the canonical parameter set.
 
 \subsection{Competing Physical Effects}
 
-The dielectric loss rate, which dominates decoherence at \SI{4}{\kelvin}, is given by:
+The dielectric loss rate at finite temperature is
 \begin{equation}
-\Gamma_d = \frac{\omega}{Q} (1 + n_{\text{th}})
+\Gamma_d = \frac{\omega}{Q_{\text{eff}}} \left(1 + \bar{n}_{\text{th}}\right),
 \label{eq:dielectric_loss_full}
 \end{equation}
-
-This expression contains two competing frequency-dependent terms:
-
-a \textbf{linear growth} term, $\omega/Q \propto f$, that increases linearly with frequency, and an \textbf{exponential suppression} factor $(1 + n_{\text{th}})$ that decreases as $\exp(-hf/k_B T)$.
-
-The total $T_1$ limited by dielectric loss becomes:
+with $\bar{n}_{\text{th}} = [\exp(hf/k_BT) - 1]^{-1}$. The corresponding
+dielectric-limited relaxation time is
 \begin{equation}
-T_1^{\text{diel}} = \frac{Q}{\omega(1 + n_{\text{th}})} = \frac{Q}{2\pi f} \cdot \frac{1}{1 + n_{\text{th}}}
+T_1^{\text{diel}} = \frac{Q_{\text{eff}}}{\omega\,(1 + \bar{n}_{\text{th}})} .
 \end{equation}
 
-At \SI{4}{\kelvin}, the exponential suppression of $n_{\text{th}}$ is \textit{insufficient} to compensate for the linear growth of $\omega$, resulting in a maximum $T_1^{\text{diel}}$ at intermediate frequencies.
+It is tempting to expect a maximum of $T_1^{\text{diel}}(f)$ at intermediate
+frequency, from the competition between the linear factor $\omega$ and the
+exponentially decaying $\bar{n}_{\text{th}}$. This expectation is incorrect.
+Writing $x = hf/k_BT$ and $n = \bar{n}_{\text{th}}$,
+\begin{equation}
+\frac{d}{df}\!\left[f\,(1+n)\right] = (1+n)\,(1 - x\,n),
+\qquad
+x\,n = \frac{x}{e^{x}-1} < 1 \quad \forall\, x > 0,
+\label{eq:monotonicity_proof}
+\end{equation}
+so $f(1+n)$ is strictly increasing and $T_1^{\text{diel}}(f)$ is
+\emph{strictly decreasing} at every frequency, with a low-frequency plateau
+$\Gamma_d \to 2\pi k_B T/(h\,Q_{\text{eff}})$ (equivalent to
+$T_1^{\text{diel}} \to 197~\mu$s at \SI{4}{\kelvin} for the canonical
+$Q_{\text{eff}}$) in the classical regime $x \ll 1$. There is therefore no
+frequency that maximises the coherence time itself
+(Fig.~\ref{fig:frequency_tradeoff}b); any apparent maximum in a finite scan is
+an artefact of the scan window. The non-monotonic quantity is the gate
+\emph{fidelity}, to which we now turn.
 
-\subsection{Quantitative Analysis}
+\subsection{Quantitative Analysis: the Fidelity Optimum}
 
-Figure~\ref{fig:frequency_tradeoff} presents a comprehensive analysis of this trade-off across the frequency range 3--300~GHz. Panel (a) shows the thermal occupation: at \SI{4}{\kelvin}, $n_{\text{th}} > 1$ below $\sim$\SI{15}{\giga\hertz}, indicating classical behaviour, while $n_{\text{th}} \ll 1$ is only achieved above \SI{100}{\giga\hertz}.
-
-Panel (b) decomposes the dielectric loss into its constituent terms. The $\omega/Q$ term grows linearly from \SI{63}{\kilo\hertz} at \SI{10}{\giga\hertz} to \SI{1897}{\kilo\hertz} at \SI{300}{\giga\hertz}—a factor of \textbf{30$\times$ increase}. Meanwhile, the thermal enhancement $(1+n_{\text{th}})$ decreases from 8.8 to 1.03—only a factor of \textbf{8.5$\times$ decrease}. The net effect is a \textit{worsening} of decoherence at higher frequencies.
+The per-gate error in the simplified model is
+\begin{equation}
+\varepsilon(f)
+= \underbrace{t_{\text{CNOT}}\,\frac{\omega}{Q_{\text{eff}}}\,(1+\bar{n}_{\text{th}})}_{\text{decoherence}}
+\;+\; \underbrace{\tfrac{1}{2}\,\bar{n}_{\text{th}}}_{\text{thermal}} .
+\label{eq:eps_frequency_model}
+\end{equation}
+Setting $d\varepsilon/df = 0$ and using
+Eq.~\eqref{eq:monotonicity_proof} gives the transcendental optimum condition
+\begin{equation}
+\frac{t_{\text{CNOT}}\,\omega}{Q_{\text{eff}}}\,\bigl(1 - x\,\bar{n}_{\text{th}}\bigr)
+= \frac{x\,\bar{n}_{\text{th}}}{2} ,
+\label{eq:optimal_frequency_condition}
+\end{equation}
+which balances the linear growth of the decoherence term against the
+exponential decay of the thermal term. For the canonical inputs the numerical
+solution is
+\begin{equation}
+f_{\text{opt}} \simeq \SI{540}{\giga\hertz},
+\qquad
+\varepsilon_{\min} \simeq 0.58\%
+\quad (F \simeq 99.4\%).
+\end{equation}
+The optimum is broad: every frequency between roughly \SI{400}{} and
+\SI{800}{\giga\hertz} keeps $\varepsilon \leq 0.8\%$
+(Fig.~\ref{fig:frequency_tradeoff}c and
+Table~\ref{tab:frequency_comparison}). Below $\sim$\SI{200}{\giga\hertz} the
+thermal term dominates and the error grows steeply; a qubit at
+\SI{50}{\giga\hertz} and \SI{4}{\kelvin} sits at $\bar{n}_{\text{th}} = 1.2$
+and is thermally inoperable, its long dielectric $T_1$ notwithstanding.
 
 \begin{figure}[p]
 \centering
 \includegraphics[width=\textwidth]{chapters/qh_figures/frequency_tradeoff_analysis.png}
-\caption{\textbf{Frequency trade-off analysis at T = \SI{4}{\kelvin}.} (a) Thermal occupation shows exponential suppression with frequency, but remains $>1$ below \SI{15}{\giga\hertz}. (b) Dielectric loss components: the linear growth of $\omega/Q$ (blue) outpaces the exponential decay of $(1+n_{\text{th}})$ (red). (c) Net dielectric-limited $T_1$ exhibits a maximum at $\sim$\SI{8}{\giga\hertz}. (d) Total $T_1$ comparison between \SI{4}{\kelvin} and \SI{20}{\milli\kelvin} shows divergent trends. (e) Gate fidelity demonstrates non-monotonic behaviour: optimal performance at \SI{8}{\giga\hertz} (80.8\%), degrading to 34\% at \SI{300}{\giga\hertz}. At \SI{20}{\milli\kelvin}, fidelity monotonically increases with frequency. The vertical purple line indicates optimal frequency.}
+\caption{\textbf{Frequency trade-off analysis at $T = \SI{4}{\kelvin}$}
+(canonical dielectric-plus-thermal model,
+$Q_{\text{eff}} = 1.0\times10^{8}$, $t_{\text{CNOT}} = \tCNOT$~ns).
+\textbf{(a)}~Thermal occupation $\bar{n}_{\text{th}}(f)$; the shaded region
+marks the classical regime $\bar{n}_{\text{th}} > 1$, and the design point has
+$\bar{n}_{\text{th}}(\SI{300}{\giga\hertz}) = 0.028$.
+\textbf{(b)}~Dielectric-limited $T_1(f)$ is strictly decreasing, with the
+low-frequency plateau of Eq.~\eqref{eq:monotonicity_proof} and the canonical
+budget value ($53.1~\mu$s, star) at \SI{300}{\giga\hertz}; the \SI{20}{\milli\kelvin}
+curve ($\Gamma_d \approx \omega/Q$) is shown for comparison.
+\textbf{(c)}~Gate error $\varepsilon(f)$ of Eq.~\eqref{eq:eps_frequency_model}:
+the thermal term (red) and the decoherence term (blue) cross near
+\SI{430}{\giga\hertz}, producing the formal optimum at
+$f_{\text{opt}} \simeq \SI{540}{\giga\hertz}$ ($\varepsilon = 0.58\%$, purple);
+the \SI{300}{\giga\hertz} design point (orange star) sits at
+$\varepsilon = 1.69\%$.
+\textbf{(d)}~Sensitivity to the sub-THz loss-tangent extrapolation: with the
+factor-of-three $\tan\delta$ uncertainty band of
+Sec.~\ref{sec:dielectric_loss_300ghz}, the optimum moves between
+$\sim$\SI{450}{} and \SI{540}{\giga\hertz} and the design-point error spans
+$1.7$--$2.2\%$.}
 \label{fig:frequency_tradeoff}
 \end{figure}
 
-Table~\ref{tab:frequency_comparison} quantifies this trade-off at key frequencies. The optimal operating point occurs at $f_{\text{opt}} = \SI{8}{\giga\hertz}$, where $T_1 = \SI{1.73}{\micro\second}$ and $F_{\text{CNOT}} = 80.8\%$. Operating at higher frequencies degrades performance: at \SI{100}{\giga\hertz}, $T_1$ drops to \SI{1.10}{\micro\second} ($F = 69.7\%$), and at \SI{300}{\giga\hertz}, $T_1 = \SI{0.51}{\micro\second}$ ($F = 34.2\%$).
+Table~\ref{tab:frequency_comparison} quantifies the trade-off at
+representative frequencies. Two consistency checks anchor the simplified model
+to the full budget of Sec.~\ref{sec:fidelity}: at \SI{300}{\giga\hertz} the
+thermal term is identical by construction
+($\varepsilon_{\text{th}} = \EpsThermal\%$), and the dielectric-only
+decoherence term ($0.29\%$) accounts for roughly half of the full decoherence
+error ($\EpsDecoh\%$), the remainder coming from the quasiparticle, TLS and
+Purcell channels and from pure dephasing that this model deliberately omits.
 
 \begin{table}[h]
 \centering
-\caption{Frequency-dependent performance at T = \SI{4}{\kelvin}}
+\caption{Frequency-dependent performance at $T = \SI{4}{\kelvin}$ in the
+canonical dielectric-plus-thermal model
+(Eq.~\eqref{eq:eps_frequency_model}; $Q_{\text{eff}} = 1.0\times10^{8}$,
+$t_{\text{CNOT}} = \tCNOT$~ns). $T_1^{\text{diel}}$ decreases monotonically;
+the fidelity optimum arises from the crossing of the two error terms.}
 \label{tab:frequency_comparison}
-\begin{tabular}{cccccc}
+\begin{tabular}{ccccccl}
 \toprule
-Frequency & $n_{\text{th}}$ & $\omega/Q$ & $(1+n_{\text{th}})$ & $T_1$ & $F_{\text{CNOT}}$ \\
-(GHz) & & (kHz) & & ($\mu$s) & (\%) \\
+Frequency & $\bar{n}_{\text{th}}$ & $T_1^{\text{diel}}$ &
+$\varepsilon_{\text{dec}}$ & $\varepsilon_{\text{th}}$ &
+$\varepsilon$ & $F$ \\
+(GHz) & & ($\mu$s) & (\%) & (\%) & (\%) & (\%) \\
 \midrule
-8 & 9.95 & 50.9 & 10.95 & \textbf{1.73} & \textbf{80.8} \\
-10 & 7.80 & 63.2 & 8.80 & 1.73 & 80.7 \\
-20 & 3.66 & 126.5 & 4.66 & 1.66 & 79.9 \\
-50 & 1.23 & 312.0 & 2.23 & 1.42 & 76.5 \\
-100 & 0.44 & 624.7 & 1.44 & 1.10 & 69.7 \\
-300 & 0.03 & 1897.1 & 1.03 & 0.51 & 34.2 \\
+50  & 1.22    & 147.8 & 0.10 & 60.8 & 60.9 & 39.1 \\
+100 & 0.43    & 114.4 & 0.13 & 21.6 & 21.7 & 78.3 \\
+200 & 0.10    & 74.5  & 0.20 & 4.99 & 5.20 & 94.8 \\
+300 & 0.028   & 53.1  & 0.29 & 1.41 & 1.69 & 98.3 \; (design) \\
+400 & 0.0083  & 40.6  & 0.38 & 0.42 & 0.79 & 99.2 \\
+540 & 0.0015  & 30.3  & 0.50 & 0.08 & 0.58 & 99.4 \; (\emph{optimum}) \\
+800 & $7\times10^{-5}$ & 20.5 & 0.75 & 0.00 & 0.75 & 99.3 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-While recent work has demonstrated operation up to 250 mK using frequencies up to 24 GHz~\cite{Anferov2024HighTemp}, our target of 4-10 K operation necessitates the 300 GHz regime to maintain thermal populations below acceptable thresholds for quantum computation.
-
 \subsection{Comparison with Cryogenic Operation}
 
-This behaviour starkly contrasts with operation at \SI{20}{\milli\kelvin}, where $n_{\text{th}} \ll 1$ across all frequencies of interest. In this regime:
+This behaviour contrasts with operation at \SI{20}{\milli\kelvin}, where
+$\bar{n}_{\text{th}} \ll 1$ across all frequencies of interest. In this regime
 \begin{equation}
-\Gamma_d \approx \frac{\omega}{Q} \quad \text{(cryogenic limit)}
+\Gamma_d \approx \frac{\omega}{Q} \quad \text{(cryogenic limit)},
 \end{equation}
+the thermal error is negligible, and both $T_1$ and the fidelity improve
+monotonically as the frequency is \emph{lowered}: the optimal cryogenic
+strategy is to operate at the lowest practical frequency
+($\sim$\SI{4}{}--\SI{6}{\giga\hertz}), as conventional transmon platforms do.
+At \SI{4}{\kelvin} this intuition fails, and the optimum moves to the sub-THz
+regime.
 
-The thermal enhancement factor $(1+n_{\text{th}}) \approx 1$ is frequency-independent, so $T_1 \propto 1/f$ decreases monotonically. Consequently, at \SI{20}{\milli\kelvin}, higher frequencies \textit{always} degrade coherence, and the optimal strategy is to operate at the lowest practical frequency ($\sim$\SI{4}{\giga\hertz}--\SI{6}{\giga\hertz}).
+\subsection{Why \SI{300}{\giga\hertz}: Descending from the Formal Optimum}
+\label{subsec:why_300ghz}
 
-At \SI{4}{\kelvin}, this intuition \textit{fails}: the strong frequency dependence of $n_{\text{th}}$ creates a non-trivial optimisation landscape with a distinct maximum at intermediate frequencies.
+The formal optimum of Eq.~\eqref{eq:optimal_frequency_condition} lies at
+$\simeq \SI{540}{\giga\hertz}$; the design nevertheless targets
+\SI{300}{\giga\hertz}. The fidelity cost of this choice is modest---
+$\varepsilon$ rises from $0.58\%$ to $1.69\%$, about $1.1$ percentage
+points, and the full budget of Sec.~\ref{sec:fidelity} remains within reach of
+the surface-code threshold---while the feasibility cost of climbing towards
+the optimum grows rapidly:
 
-\subsection{Mathematical Derivation of Optimal Frequency}
+\begin{itemize}
+\item \emph{Junction capacitance.} At fixed $E_J/E_C = 50$ the charging energy
+scales linearly with frequency, so the total shunt capacitance scales as
+$C_\Sigma \propto 1/\omega$: from $1.29$~fF at \SI{300}{\giga\hertz} to
+$0.72$~fF at \SI{540}{\giga\hertz}. Since the junction self-capacitance budget
+of Sec.~\ref{sec:junction_design} tightens as
+$c_s/J_c \leq C_\Sigma/I_c \propto 1/\omega^{2}$, moving to the optimum would
+harden the already binding fabrication constraint by roughly a factor of
+three.
+\item \emph{Control electronics.} \SI{300}{\giga\hertz} is reachable with
+established millimetre-wave multiplier and mixer chains; the
+\SI{450}{}--\SI{550}{\giga\hertz} range pushes into markedly less mature
+territory for phase-coherent pulsed control at cryogenic interfaces
+(Sec.~\ref{subsec:control-electronics}).
+\item \emph{Pair-breaking margin.} The qubit frequency must remain well below
+the pair-breaking threshold $2\Delta_{\text{gap}}/h \approx 1.35$~THz of the
+NbN electrodes; at \SI{540}{\giga\hertz} the second harmonic of the drive
+already reaches $80\%$ of the gap, eroding the margin that protects the
+quasiparticle budget of Sec.~\ref{sec:decoherence}.
+\item \emph{Loss-tangent uncertainty.} The $\tan\delta$ values entering
+$Q_{\text{eff}}$ are extrapolated from $1$--$30$~GHz cryogenic data
+(Sec.~\ref{sec:dielectric_loss_300ghz}); the extrapolation uncertainty grows
+with frequency, and within the factor-of-three band the optimum itself moves
+(Fig.~\ref{fig:frequency_tradeoff}d). Anchoring the design at
+\SI{300}{\giga\hertz} keeps it on the steep, thermally-dominated side of the
+curve, where the location of the optimum is insensitive to $\tan\delta$.
+\end{itemize}
 
-We can analytically determine the optimal frequency by finding the maximum of $T_1^{\text{diel}}(f)$. Taking the derivative:
+For context at the opposite end of the frequency axis, Anferov
+\emph{et~al.}~\cite{Anferov2024HighTemp} demonstrated operation up to
+\SI{250}{\milli\kelvin} with qubits up to \SI{24}{\giga\hertz}; at
+\SI{4}{\kelvin}, frequencies of that order sit deep in the thermally dominated
+regime (Table~\ref{tab:frequency_comparison}), which is why the present design
+requires the sub-THz range. In summary, \SI{300}{\giga\hertz} is not the
+unconstrained optimum of the error model; it is the knee of the
+feasibility-adjusted curve, where most of the thermal suppression has been
+banked at a fabrication and control cost that Sec.~\ref{sec:challenges}
+assesses as demanding but tractable.
+
+\subsection{In-Situ Frequency Tunability of the Asymmetric SQUID}
+\label{subsec:insitu_tunability}
+
+The asymmetric SQUID offers two flux-insensitive sweet spots per flux period,
+at $E_J(\Phi{=}0) = E_\Sigma$ and
+$E_J(\Phi{=}\Phi_0/2) = |E_\Delta| = \eta\,E_\Sigma$,
 \begin{equation}
-\frac{dT_1^{\text{diel}}}{df} = \frac{Q}{2\pi} \frac{d}{df}\left[\frac{1}{f(1+n_{\text{th}})}\right] = 0
+E_J(\Phi) = \sqrt{E_\Sigma^2 \cos^2\!\left(\frac{\pi\Phi}{\Phi_0}\right)
++ E_\Delta^2 \sin^2\!\left(\frac{\pi\Phi}{\Phi_0}\right)} ,
 \end{equation}
+so that, in the harmonic limit $\omega \propto \sqrt{E_J}$, the in-situ
+frequency ratio between the two protected points is
+$\omega_{\text{upper}}/\omega_{\text{lower}} \approx \eta^{-1/2}$. For the
+reference asymmetry $\eta = 11.1\%$ (Tab.~\ref{tab:squid_design_params}) this
+is a factor $\approx 3$---e.g.\ a \SI{300}{\giga\hertz} upper sweet spot paired
+with a lower one near \SI{95}{\giga\hertz}.
 
-Using $n_{\text{th}} = [\exp(hf/k_BT) - 1]^{-1}$ and applying the chain rule:
-\begin{align}
-0 &= -\frac{1}{f^2(1+n_{\text{th}})} + \frac{1}{f(1+n_{\text{th}})^2} \cdot \frac{dn_{\text{th}}}{df} \\
-&= -\frac{1}{f^2(1+n_{\text{th}})} + \frac{1}{f(1+n_{\text{th}})^2} \cdot \left(-\frac{hf}{k_BT}\right) n_{\text{th}}(1+n_{\text{th}})
-\end{align}
+Two limitations bound what this tunability can and cannot do at
+\SI{4}{\kelvin}. First, a ``dual-band'' scheme that stores at
+\SI{300}{\giga\hertz} and gates at $\sim$\SI{10}{\giga\hertz} would require
+$\eta \approx (10/300)^2 \sim 10^{-3}$, an asymmetry so extreme that the lower
+sweet spot loses the finite Josephson energy and anharmonicity that make it
+usable---precisely the feature the architecture is built on. Second, and more
+fundamentally, the corrected error model of
+Eq.~\eqref{eq:eps_frequency_model} shows that a gate executed at
+\SI{10}{}--\SI{20}{\giga\hertz} and \SI{4}{\kelvin} would sit at
+$\bar{n}_{\text{th}} \approx 4$--$10$, i.e.\ in a thermally depolarised
+regime: low-frequency gating at elevated temperature is not merely
+suboptimal, it is inoperable. Since \SI{300}{\giga\hertz} is simultaneously
+adequate for storage ($\varepsilon_{\text{th}} = 1.41\%$) and for gates
+($\varepsilon_{\text{dec}} \leq 0.58\%$ in the full budget), fixed-frequency
+operation at the upper sweet spot is the design choice, and no frequency
+scheduling is required.
 
-Simplifying:
-\begin{equation}
-\frac{hf}{k_BT} n_{\text{th}} = 1
-\end{equation}
+The factor-$\approx 3$ tunability retains genuine, more modest uses: material
+and junction spectroscopy at reduced frequency, where control electronics are
+simpler; avoidance of TLS collisions by small flux excursions around either
+sweet spot; and the fact that both endpoints are first-order flux-insensitive,
+so this diagnostic flexibility comes without a dephasing penalty at the
+operating points.
 
-This yields the transcendental equation:
-\begin{equation}
-\frac{hf_{\text{opt}}}{k_BT} \cdot \frac{1}{\exp(hf_{\text{opt}}/k_BT) - 1} = 1
-\label{eq:optimal_frequency_condition}
-\end{equation}
+\subsection{Sensitivity and Alternative Platforms}
 
-For T = \SI{4}{\kelvin}, this gives $hf_{\text{opt}}/k_BT \approx 1.26$, corresponding to:
-\begin{equation}
-f_{\text{opt}} \approx \frac{1.26 \, k_B T}{h} = \SI{10.5}{\giga\hertz}
-\end{equation}
-
-Our numerical analysis finds $f_{\text{opt}} = \SI{8}{\giga\hertz}$, which is close to this prediction. The small discrepancy arises because Purcell and quasiparticle contributions (neglected in this pure dielectric analysis) also influence the total $T_1$.
-
-\subsection{Implications for Quantum Computing at \SI{4}{\kelvin}}
-
-This analysis reveals a fundamental constraint for elevated-temperature quantum computing: \textit{single-frequency operation cannot simultaneously optimise storage and gates}.
-
-\subsubsection{Storage Optimisation}
-
-For qubit storage (idle periods), minimising thermal excitation is paramount:
-\begin{equation}
-\Gamma_{\text{excitation}} = \gamma_1 \cdot n_{\text{th}}
-\end{equation}
-
-This favours the \textit{highest} possible frequency. At \SI{300}{\giga\hertz}, $n_{\text{th}} = 0.03 \ll 1$, providing excellent storage ($\tau_{\text{storage}} \sim 10 T_1$).
-
-\subsubsection{Gate Optimisation}
-
-For gate operations, maximising coherence time is critical:
-\begin{equation}
-F_{\text{gate}} \approx 1 - \frac{t_{\text{gate}}}{T_2}
-\end{equation}
-
-This favours \textit{intermediate} frequencies where $T_1$ is maximised. At \SI{8}{\giga\hertz}--\SI{20}{\giga\hertz}, dielectric loss is minimised despite elevated $n_{\text{th}}$.
-
-\subsection{The Dual-Frequency Strategy}
-
-The asymmetric SQUID transmon resolves this dilemma through \textbf{flux-tunable frequency}:
-The dual-frequency strategy proceeds in three phases. In the
-\emph{storage phase} the qubit is flux-biased to $f_{\text{idle}} = \SI{300}{\giga\hertz}$,
-where the thermal population is essentially zero and the qubit remains safely
-in the computational basis. For the \emph{gate phase} the qubit is flux-tuned
-down to $f_{\text{gate}} = \SI{8}{\giga\hertz}$--$\SI{20}{\giga\hertz}$, where
-$T_1$ is maximised and gate operations can be performed at the highest available
-fidelity. After the gate the qubit is returned to the storage frequency by
-flux-biasing it back to $\SI{300}{\giga\hertz}$.
-
-This requires a large frequency tunability:
-\begin{equation}
-\frac{f_{\text{idle}}}{f_{\text{gate}}} = \frac{300}{10} = 30\times
-\end{equation}
-
-For a transmon, frequency scales as $f \propto \sqrt{E_J E_C}$, so:
-\begin{equation}
-\frac{E_J(\Phi_{\text{idle}})}{E_J(\Phi_{\text{gate}})} = \left(\frac{f_{\text{idle}}}{f_{\text{gate}}}\right)^2 = 900
-\end{equation}
-
-The asymmetric SQUID achieves this through:
-\begin{equation}
-E_J(\Phi) = \sqrt{E_\Sigma^2 \cos^2\left(\frac{\pi\Phi}{\Phi_0}\right) + E_\Delta^2 \sin^2\left(\frac{\pi\Phi}{\Phi_0}\right)}
-\end{equation}
-
-With asymmetry $\eta = (E_{J1} - E_{J2})/(E_{J1} + E_{J2}) \sim 0.95$, the ratio $E_J(\Phi=0)/E_J(\Phi=\Phi_0/2)$ can exceed 100, providing the required tunability.
-
-\subsection{Alternative Approaches}
-
-If flux tunability is unavailable, the following alternative strategies can be considered.
-
-\subsubsection{Compromise Frequency}
-
-Operate at a single intermediate frequency ($\sim$\SI{50}{\giga\hertz}) that balances storage and gates. This yields $n_{\text{th}} \sim 1$ and $F_{\text{CNOT}} \sim 76\%$—suboptimal for both regimes but avoiding the worst-case scenarios.
-
-\subsubsection{Ultra-High Quality Factor}
-
-Improve substrate quality factor to $Q > 5\times10^6$. This reduces $\omega/Q$ by 5$\times$, shifting the optimum to higher frequencies and improving fidelity across the board. With $Q = 10^7$, even \SI{300}{\giga\hertz} operation becomes viable ($F > 95\%$).
-
-\subsubsection{Protected Qubits}
-
-Use architectures inherently insensitive to dielectric loss (e.g., fluxonium, 0-$\pi$ qubits). These devices can operate at lower frequencies while maintaining coherence, avoiding the elevated-temperature trade-off entirely.
+The location of the optimum scales with the quality factor: within the
+factor-of-three $\tan\delta$ uncertainty band, $f_{\text{opt}}$ moves between
+$\sim$\SI{450}{} and \SI{540}{\giga\hertz} and the design-point error spans
+$1.7$--$2.2\%$ (Fig.~\ref{fig:frequency_tradeoff}d). The dedicated cryogenic
+sub-THz substrate characterisation already identified as a hardware
+prerequisite (Sec.~\ref{sec:dielectric_loss_300ghz}) would directly sharpen
+this plot and is, in this sense, the single most informative measurement for
+the frequency choice. Protected low-frequency architectures (fluxonium,
+$0$--$\pi$ qubits) are attractive at millikelvin temperatures but do not evade
+the thermal term of Eq.~\eqref{eq:eps_frequency_model}: at \SI{4}{\kelvin} any
+single-mode qubit below $\sim$\SI{100}{\giga\hertz} inherits
+$\bar{n}_{\text{th}} \gtrsim 0.4$, so the trade-off analysed here applies to
+the platform class, not to the transmon specifically.
 
 \subsection{Interpretation of the Results}
 
-At T = \SI{4}{\kelvin}, the interplay between linear frequency growth in $\omega/Q$ and exponential suppression of thermal enhancement $(1+n_{\text{th}})$ creates a non-monotonic dependence of gate fidelity on frequency. The optimal operating point occurs at $f \sim \SI{8}{\giga\hertz}$--\SI{20}{\giga\hertz}, \textit{not} at the highest frequencies where thermal occupation is minimised. This finding motivates the dual-frequency approach enabled by the asymmetric SQUID: high-frequency storage (\SI{300}{\giga\hertz}) for thermal protection and intermediate-frequency gates (\SI{8}{\giga\hertz}--\SI{20}{\giga\hertz}) for coherence optimisation. This strategy could result \textit{essential} for achieving fault-tolerant quantum computing at elevated temperatures, as single-frequency operation cannot simultaneously satisfy both requirements.
+At $T = \SI{4}{\kelvin}$ the dielectric-limited $T_1$ decreases monotonically
+with frequency, but the gate fidelity does not: the exponential suppression of
+the thermal-excitation error against the linear growth of the decoherence
+error produces a broad fidelity optimum at
+$f_{\text{opt}} \simeq \SI{540}{\giga\hertz}$
+($\varepsilon_{\min} \simeq 0.58\%$). The \SI{300}{\giga\hertz} design point
+concedes about $1.1$ percentage points of error relative to this optimum in
+exchange for substantially relaxed junction, control-electronics and
+pair-breaking constraints, and sits where the conclusion is robust to the
+dominant model uncertainty (the sub-THz loss tangent). Within this picture,
+single-frequency operation at the upper flux-insensitive sweet spot is
+sufficient: the frequency that protects the qubit thermally is also a
+frequency at which it can be operated.
 
 % =============================================================================
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
