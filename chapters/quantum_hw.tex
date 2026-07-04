@@ -1278,37 +1278,57 @@ Equation~\eqref{eq:omega_ZX} is non-monotonic in $\Delta_q$: at small
 $\Delta_q$ the prefactor $1/[\Delta_q(\Delta_q+\alpha)]$ enhances $\Omega_{ZX}$,
 but the drive amplitude is throttled by the constraint
 $\Omega < \min(|\alpha|/3,\,\Delta_q/3)$ to suppress single-qubit leakage and
-crosstalk. The qualitative behaviour at fixed $J$ and $\alpha$ is mapped in
-Figure~\ref{fig:tradeoff_Dq}: there is a clear sweet spot in the
-\emph{stretched-CR} regime~\cite{Sheldon2016}, where $\Delta_q \gtrsim 1.4|\alpha|$
-and the static $\zeta_{zz}$ remains far from the resonant divergence at
-$\Delta_q = |\alpha|$.
+crosstalk. The qualitative behaviour at fixed $g$ and $\alpha$ is mapped in
+Figure~\ref{fig:tradeoff_Dq}: gate speed favours the lower end of the
+\emph{stretched-CR} regime~\cite{Sheldon2016}, $\Delta_q \gtrsim 1.4|\alpha|$,
+while the static $\zeta_{zz}$ and the robustness margins favour detunings far
+from the resonant divergence at $\Delta_q = |\alpha|$.
 
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=\textwidth]{chapters/qh_figures/qubit_detuning_tradeoff_baseline.png}
     \caption{Qubit--qubit detuning trade-off for the baseline mK system
-    ($g/2\pi=80$~MHz, $\alpha/2\pi=-200$~MHz). 
+    ($g/2\pi=80$~MHz, $\alpha/2\pi=-200$~MHz, drive
+    $\Omega = \min(60~\mathrm{MHz},\,\Delta_q/3)$).
     \textbf{(A)}~CR gate time
-    $t_{\mathrm{CR}}=\pi/(2|\Omega_{ZX}|)$ falls below 250~ns only for
-    $\Delta_q \lesssim 300$~MHz. 
+    $t_{\mathrm{CR}}=1/(4|\Omega_{ZX}|)$ falls below 250~ns only for
+    $\Delta_q \lesssim 400$~MHz; the red marker is the canonical operating
+    point $\Delta_q = 600$~MHz ($t_{\mathrm{CR}} \simeq 714$~ns).
     \textbf{(B)}~Static cross-Kerr $|\zeta_{zz}|$ diverges at the straddling
-    resonance $\Delta_q\!\to\!|\alpha|=200$~MHz, which must be avoided. 
+    resonance $\Delta_q\!\to\!|\alpha|=200$~MHz, which must be avoided; at
+    the canonical point it is suppressed to the $10^{2}$~kHz level.
     \textbf{(C)}~Spectral selectivity (green) and crosstalk (orange) constrain
-    $\Delta_q\gtrsim 230$~MHz. 
-    \textbf{(D)}~Decoherence-limited fidelity exceeds 99\% for
-    $\Delta_q\lesssim 350$~MHz; the red marker shows the chosen operating point
-    $\Delta_q^*=280$~MHz.}
+    $\Delta_q\gtrsim 230$~MHz and keep improving with $\Delta_q$.
+    \textbf{(D)}~Decoherence-limited fidelity ($T_1 = T_2 = 100~\mu$s,
+    Tab.~\ref{tab:comparison_regimes}) remains above 99\% across the scan;
+    at the canonical point $F \simeq 99.1\%$ (red marker), consistent with
+    the ratified $F_{\mathrm{CNOT}} = \FCNOTbase\%$ once control errors are
+    added.}
     \label{fig:tradeoff_Dq}
 \end{figure}
 
-The chosen operating points (Table~\ref{tab:gate_params}) avoid the straddling
-divergence by a comfortable margin while maintaining $\Omega_{ZX}$ in the
-multi-MHz range, yielding sub-microsecond gate times. The optimal $\Delta_q$
-identified here is a \emph{fabrication} target: it is fixed by the chosen
-qubit frequencies and reached with the SQUID at its flux-insensitive sweet
-spot, so that operation remains fixed-frequency and no active flux tuning is
-applied during gates.
+The unconstrained speed optimum lies in the 230--350~MHz window
+(panel~A), but the canonical operating point---for both configurations---is
+$\Delta_q/2\pi = \BaseDeltaQ$~MHz (Table~\ref{tab:gate_params}), deeper in
+the stretched regime at $\Delta_q = 3|\alpha|$. The choice trades gate speed
+for three margins. First, distance from the $\zeta_{zz}$ divergence at
+$\Delta_q = |\alpha| = 200$~MHz: a target of $280$~MHz would leave only
+$80$~MHz of margin, comparable to typical frequency-targeting scatter of
+fixed-frequency transmons, whereas $600$~MHz is robust to realistic
+fabrication spread. Second, the static cross-Kerr drops from
+$|\zeta_{zz}| \sim 0.9$~MHz near the fast window to
+$|\xi_{ZZ}|/2\pi = \BaseXiZZmag$~kHz at the canonical point (exact
+diagonalisation, Sec.~\ref{sec:cavity_mediated_couplings}). Third, the
+spectral selectivity between the two qubits doubles (panel~C). The cost is
+$|\Omega_{ZX}|/2\pi \simeq 0.35$~MHz and $t_{\mathrm{CR}} \simeq 714$~ns,
+still more than two orders of magnitude below the baseline coherence time
+($T_2 \sim 100~\mu$s, Sec.~\ref{sec:decoherence}): the decoherence-limited
+fidelity at the canonical point is $\simeq 99.1\%$ (panel~D), consistent
+with the ratified $F_{\mathrm{CNOT}} = \FCNOTbase\%$ once control errors are
+included. The canonical $\Delta_q$ is a \emph{fabrication} target: it is
+fixed by the chosen qubit frequencies and reached with the SQUID at its
+flux-insensitive sweet spot, so that operation remains fixed-frequency and no
+active flux tuning is applied during gates.
 
 \begin{table}[htbp]
 \centering
@@ -1319,15 +1339,20 @@ applied during gates.
 System & $\Delta_q/2\pi$ & $|\alpha|/2\pi$ & $\Omega/2\pi$ & $|\Omega_{ZX}|/2\pi$ &
 $t_{\mathrm{CR}}$ & Comment \\
 \midrule
-Baseline mK         & 280~MHz & 200~MHz & 60~MHz  & 3.8~MHz & 210~ns
-                    & stretched-CR sweet spot \\
+Baseline mK         & 600~MHz & 200~MHz & 60~MHz  & 0.35~MHz & 714~ns
+                    & deeply stretched, $\Delta_q = 3|\alpha|$ \\
 Innovation 300~GHz  & 600~MHz & 15~GHz  & 200~MHz & 1.8~MHz & 138~ns
                     & deeply stretched, $|\alpha|$ large \\
 \bottomrule
 \end{tabular}
 \caption{Cross-resonance parameters and predicted gate times for the two
-elevated-temperature configurations. Drive amplitudes are chosen at the leakage-safe
-threshold $\Omega = \min(|\alpha|/3,\Delta_q/3)$.}
+device configurations at the canonical qubit--qubit detuning
+$\Delta_q/2\pi = \BaseDeltaQ$~MHz. Drive amplitudes are chosen at or below the
+leakage-safe threshold $\Omega = \min(|\alpha|/3,\Delta_q/3)$. Gate times
+follow the ZX$(\pi/2)$ convention $t_{\mathrm{CR}} = 1/(4|\Omega_{ZX}|)$; the
+echoed CNOT adds two refocusing $\pi$-pulses (Sec.~\ref{subsec:echoCR}),
+giving $\approx 0.75~\mu$s for the baseline and $\tCNOT$~ns for the 300~GHz
+device.}
 \label{tab:gate_params}
 \end{table}
 
@@ -1346,9 +1371,14 @@ the desired ZX term is reinforced.
 
 We have validated this protocol via direct integration of the master equation
 (QuTiP~5.2~\cite{Johansson2013, qutip5}) for the parameters of
-Table~\ref{tab:gate_params}, including realistic decoherence
-($T_1=25~\mu$s, $T_2=12~\mu$s) and thermal occupation
-$\bar{n}_{\text{th}} = 0.028$ at $T=4$~K. The results are summarised in
+Table~\ref{tab:gate_params}, including decoherence at fixed illustrative
+values ($T_1=25~\mu$s, $T_2=12~\mu$s, chosen before the final budget of
+Sec.~\ref{sec:decoherence} was consolidated) and thermal occupation
+$\bar{n}_{\text{th}} = 0.028$ at $T=4$~K. With the canonical budget values
+($T_1 = \TOneTotal~\mu$s, $T_2 = \TTwo~\mu$s) the decoherence contribution
+to the gate error changes only at the $10^{-3}$ level, leaving the
+conclusions of this validation unchanged: the dominant error of the unshaped
+drive is coherent, not dissipative. The results are summarised in
 Figure~\ref{fig:lindblad_validation}.
 
 \begin{figure}[htbp]
@@ -1437,7 +1467,7 @@ Figure~\ref{fig:dispersive_shifts} demonstrates the dispersive frequency shifts 
 
 \subsubsection{ZZ Coupling and Gate Operations}
 
-Figure~\ref{fig:zz_coupling_timing} characterises the effective qubit--qubit interaction and gate performance. Panel~(a) shows the basis-state energy levels under the cavity-mediated transverse exchange of Eq.~\ref{eq:J_dispersive}: at qubit--qubit degeneracy the single-excitation states hybridise into the symmetric and antisymmetric combinations $(\ket{01}\pm\ket{10})/\sqrt{2}$, split by $\pm|J|$ with $|J|/2\pi \simeq \BaseJmag$~MHz at the baseline operating point, while $\ket{00}$ and $\ket{11}$ are unshifted at this order; at the operating detuning $\Delta_q \gg |J|$ the hybridisation is strongly suppressed and the levels are only weakly repelled. Panel~(b) compares the timing of the elementary operations: single-qubit gates (20~ns), the CNOT realised as an echo cross-resonance ($\sim$250~ns at the baseline gate operating point of Sec.~\ref{sec:gate_strategy}), and dispersive readout (300~ns including cavity ring-up and signal integration). The echo-CR gate sits slightly above the 200~ns ``fast-gate'' threshold but well within the coherence-limited fidelity budget at \SI{4}{\kelvin} (Sec.~\ref{sec:decoherence}).
+Figure~\ref{fig:zz_coupling_timing} characterises the effective qubit--qubit interaction and gate performance. Panel~(a) shows the basis-state energy levels under the cavity-mediated transverse exchange of Eq.~\ref{eq:J_dispersive}: at qubit--qubit degeneracy the single-excitation states hybridise into the symmetric and antisymmetric combinations $(\ket{01}\pm\ket{10})/\sqrt{2}$, split by $\pm|J|$ with $|J|/2\pi \simeq \BaseJmag$~MHz at the baseline operating point, while $\ket{00}$ and $\ket{11}$ are unshifted at this order; at the operating detuning $\Delta_q \gg |J|$ the hybridisation is strongly suppressed and the levels are only weakly repelled. Panel~(b) compares the timing of the elementary operations: single-qubit gates (20~ns), the CNOT realised as an echo cross-resonance ($\approx 0.75~\mu$s at the baseline operating point of Sec.~\ref{sec:gate_strategy}), and dispersive readout (300~ns including cavity ring-up and signal integration). The echo-CR gate sits well above the 200~ns ``fast-gate'' band, but remains more than two orders of magnitude shorter than the baseline coherence time ($T_2 \sim 100~\mu$s), so its decoherence cost is small (Sec.~\ref{sec:decoherence}).
 
 The system operates without flux control, using only fixed-frequency qubits and microwave pulses, making it well-suited for elevated-temperature operation at 4--6~K where thermal stability is important.
 
@@ -1448,7 +1478,7 @@ The system operates without flux control, using only fixed-frequency qubits and 
     \textbf{(a)} Basis-state energy levels under the cavity-mediated transverse exchange. The interaction Hamiltonian
     $H_{J} = J\,\hat{\sigma}_+^{(1)}\hat{\sigma}_-^{(2)} + \mathrm{h.c.}$
     in the rotated frame splits the degenerate single-excitation manifold into the symmetric/antisymmetric doublet $(\ket{01}\pm\ket{10})/\sqrt{2}$ at $\pm|J|$, with $|J|/2\pi \simeq \BaseJmag$~MHz from Eq.~\ref{eq:J_dispersive} for $g_1 = g_2 = 80$~MHz, $\Delta_1 = \BaseDeltaOne$~GHz, $\Delta_2 = \BaseDeltaTwo$~GHz ($\ket{00}$ and $\ket{11}$ are unshifted at this order). The longitudinal cross-Kerr is computed separately by exact diagonalisation (Eq.~\ref{eq:zeta_zz_correct}); with $|\xi_{ZZ}|/2\pi \simeq \BaseXiZZmag$~kHz it is too small to drive a free-evolution CZ at high fidelity (Fig.~\ref{fig:CZ_unfeasible}), motivating the echo-CR gate strategy of Sec.~\ref{sec:gate_strategy}.
-    \textbf{(b)} Gate timing comparison. Single-qubit gates (20~ns), echo-CR CNOT ($\sim 250$~ns at the baseline gate operating point), and dispersive readout (300~ns) all sit within or close to the ``fast-gate'' band; cavity ring-up and signal integration dominate the readout window.}
+    \textbf{(b)} Gate timing comparison. Single-qubit gates (20~ns), echo-CR CNOT ($\approx 0.75~\mu$s at the canonical baseline operating point $\Delta_q = \BaseDeltaQ$~MHz), and dispersive readout (300~ns). The CNOT exceeds the 200~ns ``fast-gate'' reference by design---the canonical detuning trades speed for $\zeta_{zz}$ suppression and robustness (Sec.~\ref{subsec:dq_optimization})---while remaining far below the coherence limit.}
     \label{fig:zz_coupling_timing}
 \end{figure}
 
@@ -1465,13 +1495,13 @@ The two-qubit system meets the requirements for fault-tolerant operation:
 Dispersive regime         & $|\Delta_1|/g_1 = 8.8$ and $|\Delta_2|/g_2 = 16.2$ (above the $|\Delta|/g > 5$ requirement) \\
 Transverse exchange $J$   & $|J|/2\pi = \BaseJmag$~MHz (Eq.~\eqref{eq:J_dispersive}; cross-Kerr $|\xi_{ZZ}|/2\pi \simeq \BaseXiZZmag$~kHz from Eq.~\eqref{eq:zeta_zz_correct}) \\
 Two-qubit gate            & echo-CR (Sheldon~\textit{et~al.}~\cite{Sheldon2016}); see Section~\ref{subsec:echoCR} \\
-Predicted $t_{\mathrm{CNOT}}$ & $\sim 250$~ns at the baseline gate operating point ($\Delta_q/2\pi = 280$~MHz, set by fabrication) \\
+Predicted $t_{\mathrm{CNOT}}$ & $\approx 0.75~\mu$s at the baseline operating point ($\Delta_q/2\pi = \BaseDeltaQ$~MHz, set by fabrication) \\
 Predicted gate fidelity   & $F_{\mathrm{avg}} \gtrsim 99\%$ with full pulse-engineering (Table~\ref{tab:fidelity_budget}) \\
 Readout                   & all four computational states distinguishable (Section~\ref{sec:dispersive}) \\
 \bottomrule
 \end{tabular}
 \caption{Performance summary of the baseline-mK two-qubit system at the redesigned
-$\Delta_q = 280$~MHz operating point. Gate-protocol details and fidelity budget
+$\Delta_q/2\pi = \BaseDeltaQ$~MHz operating point. Gate-protocol details and fidelity budget
 are discussed in Section~\ref{sec:gate_strategy}.}
 \label{tab:performance_summary_baseline}
 \end{table}
@@ -1481,8 +1511,9 @@ The system operates without flux control, using only fixed-frequency qubits and 
 The CNOT gate at the baseline gate operating point is implemented as the echo
 cross-resonance protocol of Sec.~\ref{sec:gate_strategy}
 (Sheldon~\textit{et~al.}~\cite{Sheldon2016}), with a predicted duration of
-order 250~ns (Table~\ref{tab:gate_params}); the precise gate duration depends
-on the calibration of the CR drive and on the DRAG/echo cancellation overhead.
+$\approx 0.75~\mu$s (Table~\ref{tab:gate_params}); the precise gate duration
+depends on the calibration of the CR drive and on the DRAG/echo cancellation
+overhead.
 
 \subsubsection{Two-Qubit Operation Take-away}
 
@@ -1492,7 +1523,7 @@ In summary, the two-qubit subsystem operates cleanly in the dispersive regime
 relies on the dominant transverse exchange coupling $|J|/2\pi \simeq \BaseJmag$~MHz
 identified in Section~\ref{sec:cavity_mediated_couplings}, and uses the echo
 cross-resonance protocol of Section~\ref{sec:gate_strategy} to deliver a CNOT
-gate whose target performance ($\sim 250$~ns, $F_{\mathrm{avg}} \gtrsim 99\%$
+gate whose target performance ($\approx 0.75~\mu$s, $F_{\mathrm{avg}} = \FCNOTbase\%$
 with full pulse engineering) lies above the surface-code threshold.
 
 These results validate the design for two-qubit quantum operations at elevated temperatures, with performance parameters consistent with state-of-the-art superconducting quantum processors operating at millikelvin temperatures.
@@ -1513,7 +1544,7 @@ A consolidated validation of the baseline configuration is summarised in Table~\
 Single-qubit fidelity   & $> 99.9\%$ \\
 Two-qubit fidelity      & $\FCNOTbase\%$ \\
 Single-qubit gate time  & $20$~ns \\
-Two-qubit gate time     & $\sim 250$~ns (echo CR, see Section~\ref{sec:gate_strategy}) \\
+Two-qubit gate time     & $\approx 0.75~\mu$s (echo CR, see Section~\ref{sec:gate_strategy}) \\
 Dispersive ratio        & $|\Delta|/g > 8$ \\
 Thermal noise           & $n_{\text{th}} < 10^{-5}$ \\
 \bottomrule
@@ -2633,21 +2664,21 @@ x_{\text{qp}}(T) \;\equiv\; \frac{n_{\text{qp}}}{n_{\text{cp}}}
 \label{eq:nqp}
 \end{equation}
 normalised to the Cooper-pair density $n_{\text{cp}} = 2 N(0)
-\Delta_{\text{sc}}$, where $\Delta_{\text{sc}} = \Delta_{\rm NbN}\simeq
-2.8$~meV is the superconducting gap of the NbN electrodes of the
-junctions. At $T = 4$~K,
-$\Delta_{\text{sc}}/\kB T \approx 8$ and
-$x_{\text{qp}}^{\,\text{th}} \simeq 2.7\times 10^{-4}$.
+\Delta_{\text{sc}}$, where $\Delta_{\text{sc}} = \Delta_{\rm NbN} =
+2.6$~meV is the superconducting gap of the NbN electrodes of the
+junctions ($2\Delta = 5.2$~meV, canonical value). At $T = 4$~K,
+$\Delta_{\text{sc}}/\kB T \approx 7.5$ and
+$x_{\text{qp}}^{\,\text{th}} \simeq 4.8\times 10^{-4}$.
 Combined with the quasiparticle-tunneling rate
 $1/T_1^{\text{qp}} = (\omega_{01}/\pi)\,x_{\text{qp}}\,
 \sqrt{2\Delta_{\text{sc}}/\hbar\omega_{01}}$~\cite{Catelani2011QP},
 for $\omega_{01}/2\pi = 5$~GHz this yields
 \begin{equation}
-T_1^{\text{qp,\,intrinsic}} \;\simeq\; \boxed{20~\text{ns}} \,.
+T_1^{\text{qp,\,intrinsic}} \;\simeq\; \boxed{13~\text{ns}} \,.
 \end{equation}
 
 \textbf{Key Insight:} The intrinsic quasiparticle-limited coherence at
-$4$~K is roughly three orders of magnitude shorter than the operational
+$4$~K is more than three orders of magnitude shorter than the operational
 target set by the algorithms of Chapter~3. Reducing $x_{\text{qp}}$
 below its thermal-equilibrium value is therefore a defining requirement
 of the elevated-temperature design rather than an optional optimisation,
@@ -2846,7 +2877,7 @@ reductions of Sec.~\ref{sec:fidelity}.
 \centering
 \includegraphics[width=0.95\textwidth]{chapters/qh_figures/CORRECTED_fig3_decoherence_fidelity.png}
 \caption{\textbf{Comprehensive decoherence analysis.}
-\textbf{(a)} $T_1$ versus frequency for the different loss mechanisms considered; each curve is anchored to the corresponding panel-(b) budget value at $300$~GHz. Dielectric loss (red, solid) scales as $1/\omega$ at constant effective quality factor and passes through $53~\mu$s at $300$~GHz. Radiative loss is catastrophic at $300$~GHz when unshielded (dark red, dashed) but is brought back to $374~\mu$s by a 3D cavity providing $\sim 30$~dB of electromagnetic shielding (cyan). Quasiparticle tunneling (green, $48.6~\mu$s) is set by the thermal quasiparticle density at $4$~K and is approximately frequency-independent in the regime considered here. The star marking the elevated-temperature total ($300$~GHz, $4$~K, $T_1 = \TOneTotal~\mu$s) lies below every individual curve, as it must for a sum of rates; the green circle marks the mK baseline reference ($5.8$~GHz, $20$~mK).
+\textbf{(a)} $T_1$ versus frequency for the different loss mechanisms considered; each curve is anchored to the corresponding panel-(b) budget value at $300$~GHz. Dielectric loss (red, solid) scales as $1/\omega$ at constant effective quality factor and passes through $53~\mu$s at $300$~GHz. Radiative loss is catastrophic at $300$~GHz when unshielded (dark red, dashed) but is brought back to $374~\mu$s by a 3D cavity providing a $10^{3}$ suppression factor (60~dB in the amplitude convention of Sec.~\ref{sec:decoherence}, cyan). Quasiparticle tunneling (green, $48.6~\mu$s) is set by the thermal quasiparticle density at $4$~K and is approximately frequency-independent in the regime considered here. The star marking the elevated-temperature total ($300$~GHz, $4$~K, $T_1 = \TOneTotal~\mu$s) lies below every individual curve, as it must for a sum of rates; the green circle marks the mK baseline reference ($5.8$~GHz, $20$~mK).
 \textbf{(b)} $T_1$ contribution breakdown at the elevated-temperature operating point ($300$~GHz, $4$~K), expressed as relative contribution to $1/T_1$. Quasiparticle ($31.6\%$) and TLS ($30.7\%$) are the two dominant channels; dielectric ($28.9\%$), radiative ($4.1\%$) and Purcell ($4.8\%$) play smaller roles. The total $T_1 = 15.3~\mu$s reported in the box is the sum over channels at $4$~K.
 \textbf{(c)} Single-qubit and CNOT gate fidelity bars at the elevated-temperature point. The single-qubit gate ($20$~ns) reaches $F = \Fsingle\%$, above the $98\%$ reference threshold (red dashed line). The CNOT gate ($\tCNOT$~ns) reaches $F = \FCNOT\%$, marginally below the threshold; the residual gap is dominated by the thermal-excitation term and is addressed by the prerequisites P1--P6 in Sec.~\ref{sec:fidelity}.
 \textbf{(d)} CNOT error budget at the elevated-temperature operating point, with the four contributions decomposed: decoherence ($\EpsDecoh\%$), thermal excitation ($\EpsThermal\%$), single-qubit control ($0.10\%$), and leakage to higher levels ($0.00\%$). Their sum, $2.09\%$, gives the total CNOT error, so that $1 - F \approx 2.1\%$ as in panel~(c). The thermal term is the dominant contribution. The red dashed line marks the $2\%$ target for surface-code fault tolerance.
@@ -2955,6 +2986,7 @@ Figure~\ref{fig:decoherence}(d) shows the error budget breakdown.
 \begin{table}[H]
 \centering
 \caption{Comparison of figures of merit between the baseline mK configuration (5.8~GHz, 20~mK) and the elevated-temperature configuration (300~GHz, 4~K). The ratio column quantifies the trade-offs accepted by the elevated-temperature design: a $\sim\!50\times$ higher operating frequency and $\sim\!200\times$ higher temperature in exchange for projected coherence times an order of magnitude shorter, with a CNOT fidelity gap of $\sim\!1$ percentage point relative to the millikelvin reference.}
+\label{tab:comparison_regimes}
 \begin{tabular}{@{}lccc@{}}
 \toprule
 Parameter & 5.8 GHz / 20 mK & 300 GHz / 4 K & Ratio \\
@@ -3275,10 +3307,10 @@ established millimetre-wave multiplier and mixer chains; the
 territory for phase-coherent pulsed control at cryogenic interfaces
 (Sec.~\ref{subsec:control-electronics}).
 \item \emph{Pair-breaking margin.} The qubit frequency must remain well below
-the pair-breaking threshold $2\Delta_{\text{gap}}/h \approx 1.35$~THz of the
-NbN electrodes; at \SI{540}{\giga\hertz} the second harmonic of the drive
-already reaches $80\%$ of the gap, eroding the margin that protects the
-quasiparticle budget of Sec.~\ref{sec:decoherence}.
+the pair-breaking threshold $2\Delta_{\text{gap}}/h \approx 1.26$~THz of the
+NbN electrodes (canonical $2\Delta = 5.2$~meV); at \SI{540}{\giga\hertz} the
+second harmonic of the drive already reaches $86\%$ of the gap, eroding the
+margin that protects the quasiparticle budget of Sec.~\ref{sec:decoherence}.
 \item \emph{Loss-tangent uncertainty.} The $\tan\delta$ values entering
 $Q_{\text{eff}}$ are extrapolated from $1$--$30$~GHz cryogenic data
 (Sec.~\ref{sec:dielectric_loss_300ghz}); the extrapolation uncertainty grows
@@ -3664,7 +3696,7 @@ and is identified here as a key prerequisite.
 Direct pair-breaking by the qubit photon is energetically forbidden when
 $\hbar\omega_q < 2\Delta_{\text{gap}}$. The NbN/AlN/NbN
 junctions of Refs.~\cite{nakamura2011epitaxialNbN, Delahaye2015} have
-$2\Delta_{\text{gap}}/h \approx 1.35$~THz (for $\Delta_{\text{sc}} \simeq 2.8$~meV), well above $\omega_q = 300$~GHz,
+$2\Delta_{\text{gap}}/h \approx 1.26$~THz (canonical $2\Delta = 5.2$~meV), well above $\omega_q = 300$~GHz,
 so this channel is closed at the operating frequency.  The
 complementary contribution from the thermally-populated quasiparticle
 density---which is \emph{not} suppressed by the
