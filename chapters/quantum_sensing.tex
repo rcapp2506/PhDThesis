@@ -482,30 +482,89 @@ In a haloscope cavity immersed in a strong magnetic field, axions from the dark 
 
 where:
 \begin{itemize}
-    \item $g_{a\gamma\gamma}$ is the axion-photon coupling constant (typically $\sim 10^{-15}$ GeV$^{-1}$)
+    \item $g_{a\gamma\gamma}$ is the axion-photon coupling. For QCD-band
+    axions it is tied to the mass through
+    $g_{a\gamma\gamma} = (\alpha/2\pi f_a)\,|E/N - 1.92|$ with
+    $m_a = 5.69~\mu\mathrm{eV} \times (10^{12}~\mathrm{GeV}/f_a)$;
+    the two standard benchmarks are KSVZ ($E/N = 0$) and DFSZ
+    ($E/N = 8/3$), whose values at the working mass are listed in
+    Table~\ref{tab:axion_benchmarks}
     \item $m_a$ is the axion mass
-    \item $\rho_{\mathrm{DM}} \sim 0.3$ GeV/cm$^3$ is the local dark matter density
+    \item $\rho_{\mathrm{DM}} = 0.45$ GeV/cm$^3$ is the local dark matter
+    density, in the reporting convention adopted by the haloscope
+    collaborations (ADMX, HAYSTAC, ORGAN)~\cite{Zhong2018, Backes2021} so
+    that sensitivities are directly comparable across experiments;
+    astrometric determinations span $0.3$--$0.5$ GeV/cm$^3$, and all rates
+    below scale linearly with $\rho_{\mathrm{DM}}$
     \item $B$ is the magnetic field strength
     \item $V$ is the cavity volume
     \item $C \sim 0.5$ is a cavity form factor
     \item $Q \sim 10^5$ is the cavity quality factor
 \end{itemize}
 
-For representative parameters and an axion mass of $m_a = 20$ $\mu$eV (corresponding to a frequency $f = m_a c^2/h \approx 4.8$ GHz), the conversion power is:
+Equation~\eqref{eq:axion_power} coincides with the standard haloscope
+expression (e.g.\ HAYSTAC~\cite{Zhong2018}) at critical antenna coupling,
+where the extracted power fraction $\beta/(1+\beta)$ equals $1/2$; in the
+present architecture the antenna-extraction step is replaced by in-cavity
+atomic absorption, whose efficiency is treated separately in
+Sec.~\ref{sec:backaction}.
+
+The benchmark axion mass is chosen to match the seeding transition of the
+simulated system: the dipole-allowed pair
+$\ket{68S_{1/2}} \to \ket{70P_{3/2}}$ lies at $56.7$~GHz (rubidium quantum
+defects), corresponding to
+\begin{equation}
+    m_a = 234.6~\mu\mathrm{eV}, \qquad f = m_a c^2/h = 56.7~\mathrm{GHz},
+\end{equation}
+squarely inside the post-inflationary QCD-axion mass window targeted by the
+high-mass haloscope programme. With the cavity parameters listed above
+($B = 5$~T, $V = 1$~L, $C = 0.5$, $Q = 10^5$) and the QCD-band couplings at
+this mass, Eq.~\eqref{eq:axion_power} gives:
+
+\begin{table}[htbp]
+\centering
+\caption{Axion-photon coupling benchmarks at the working mass
+$m_a = 234.6~\mu$eV, with the corresponding on-resonance conversion power
+(Eq.~\eqref{eq:axion_power}, critical coupling) and photon rate
+$R_\gamma = P_{\mathrm{conv}}/hf$. The formula and its numerical
+implementation are validated against the published HAYSTAC benchmark
+($P \simeq 5\times10^{-24}$~W at $m_a \approx 24~\mu$eV, KSVZ, with the
+HAYSTAC cavity parameters)~\cite{Zhong2018, Backes2021}.}
+\label{tab:axion_benchmarks}
+\begin{tabular}{lccc}
+\hline\hline
+Model & $g_{a\gamma\gamma}$ (GeV$^{-1}$) & $P_{\mathrm{conv}}$ (W) & $R_\gamma$ (s$^{-1}$) \\
+\hline
+KSVZ & $9.2\times10^{-14}$ & $9.4\times10^{-23}$ & $2.5$ \\
+DFSZ & $3.6\times10^{-14}$ & $1.4\times10^{-23}$ & $0.38$ \\
+\hline\hline
+\end{tabular}
+\end{table}
 
 \begin{equation}
-    P_{\mathrm{conv}} \sim 10^{-22} \text{ W}
+    P_{\mathrm{conv}} \approx 9.4\times10^{-23} \text{ W \quad (KSVZ benchmark)}
     \label{eq:axion_power_typical}
 \end{equation}
 
-This corresponds to a photon production rate:
+corresponding to a photon production rate
 
 \begin{equation}
-    R_\gamma = \frac{P_{\mathrm{conv}}}{h f} \approx 24 \text{ photons/s}
+    R_\gamma = \frac{P_{\mathrm{conv}}}{h f} \approx 2.5 \text{ photons/s
+    \quad (KSVZ; } 0.38 \text{ s}^{-1} \text{ for DFSZ)}.
     \label{eq:photon_rate}
 \end{equation}
 
-Despite this rate being significantly higher than the value originally quoted in early haloscope-detector proposals,\footnote{The conversion-rate estimate is derived from the parameters listed above; the resulting value, $R_\gamma\!\sim\!\mathcal{O}(10)$--$\mathcal{O}(10^2)$ photons per second per cavity volume of order one litre at $g_{a\gamma\gamma}\!=\!10^{-15}\,\mathrm{GeV}^{-1}$ and $B\!=\!5$~T, is consistent with the rate estimates reported by the ADMX and HAYSTAC collaborations~\cite{Backes2021,Zhong2018}.} detection remains exceptionally challenging, since the corresponding power $P_{\mathrm{conv}}\!\sim\!10^{-22}$~W lies orders of magnitude below the noise floor of conventional radio-frequency receivers and demands single-photon-sensitive readout combined with extremely low background rates.
+Detection at these rates is exceptionally challenging: the corresponding
+power lies orders of magnitude below the noise floor of conventional
+radio-frequency receivers and demands single-photon-sensitive readout
+combined with extremely low background rates.\footnote{All values in
+Table~\ref{tab:axion_benchmarks} are computed from first principles by the
+detector-parameter module in the \texttt{qh\_sensing} repository, which
+includes a self-validation against the published HAYSTAC expected signal
+power; an earlier version of this estimate, based on a hard-coded power
+normalisation, quoted $R_\gamma \approx 24$~s$^{-1}$ at
+$g_{a\gamma\gamma} = 10^{-15}$~GeV$^{-1}$ and $m_a = 20~\mu$eV, and is
+superseded by the present calculation.}
 
 \subsection*{Thermal Background Suppression}
 
@@ -530,7 +589,7 @@ corresponding, for the $N\!=\!11$-atom array, to a total detector-level thermal 
     \label{eq:thermal_rate_total}
 \end{equation}
 
-The relevant figure of merit is the ratio of the total thermal background to the axion photon rate~\eqref{eq:photon_rate}; with the parameters above one obtains $N\,\Gamma_{\mathrm{thermal}}/R_\gamma\!\sim\!5\!\times\!10^{-4}$, i.e.\ the thermal background lies more than three orders of magnitude below the signal rate, making it negligible for single-shot detection. Further cooling to $T\!\sim\!300$~mK reduces $\Gamma_{\mathrm{thermal}}$ by an additional factor of $\sim\!10^{8}$.
+The relevant figure of merit is the ratio of the total thermal background to the axion photon rate~\eqref{eq:photon_rate}; with the parameters above one obtains $N\,\Gamma_{\mathrm{thermal}}/R_\gamma \approx 4.4\times10^{-3}$ at the KSVZ benchmark ($2.9\times10^{-2}$ for DFSZ), i.e.\ the thermal background lies more than two orders of magnitude below the signal rate for KSVZ couplings, and a factor $\sim\!30$ below it in the more conservative DFSZ case, making it subdominant for single-shot detection. Further cooling to $T\!\sim\!300$~mK reduces $\Gamma_{\mathrm{thermal}}$ by an additional factor of $\sim\!10^{8}$.
 
 %==============================================================================
 \section{Avalanche Detector Model}
@@ -651,10 +710,11 @@ Parameter & Symbol & Value \\
 \hline
 System size & $N$ & 11 atoms \\
 Rydberg state & $|r\rangle$ & $|68S_{1/2}\rangle$ \\
+Seeding target state & $|e\rangle$ & $|70P_{3/2}\rangle$ ($|r\rangle\!\to\!|e\rangle$ at 56.7 GHz) \\
 Ground-Rydberg Rabi frequency & $\Omega_{\mathrm{gr}}/(2\pi)$ & 0.2 MHz \\
 Interaction strength (zero field) & $V_{rr}(0)/(2\pi)$ & 12.5 MHz \\
 Operating temperature & $T$ & 4.0 K \\
-Axion mass & $m_a$ & 20 $\mu$eV \\
+Axion mass (benchmark) & $m_a$ & 234.6 $\mu$eV ($m_a c^2/h = 56.7$ GHz) \\
 Magnetic field range & $B$ & 0--5 T \\
 \hline\hline
 \end{tabular}
@@ -727,21 +787,21 @@ While the simulations presented above assume $T = 4$ K, the detector can operate
 
 \begin{table}[htbp]
 \centering
-\caption{Performance metrics versus operating temperature at $B = 5$ T, computed with the calibrated thermal-rate model of Eq.~\eqref{eq:thermal_rate} for an array of $N=11$ atoms. The signal-to-background ratio is defined as $\mathrm{SNR}=R_\gamma/(N\,\Gamma_{\mathrm{thermal}})$, with $R_\gamma\!\approx\!24$ photons/s as in Eq.~\eqref{eq:photon_rate}.}
+\caption{Performance metrics versus operating temperature at $B = 5$ T, computed with the calibrated thermal-rate model of Eq.~\eqref{eq:thermal_rate} for an array of $N=11$ atoms. The signal-to-background ratio is defined as $\mathrm{SNR}=R_\gamma/(N\,\Gamma_{\mathrm{thermal}})$, with $R_\gamma\!\approx\!2.5$ photons/s (KSVZ benchmark) as in Eq.~\eqref{eq:photon_rate}; DFSZ values are a factor $6.6$ lower.}
 \label{tab:temperature_scan}
 \begin{tabular}{lcccc}
 \hline\hline
 $T$ (K) & $\mathcal{A}$ & $\Gamma_{\mathrm{thermal}}$ (Hz/atom) & $N\,\Gamma_{\mathrm{thermal}}$ (Hz) & $R_\gamma/(N\,\Gamma_{\mathrm{thermal}})$ \\
 \hline
-4.0 & 5.3 & $1.0\times 10^{-3}$ & $1.1\times 10^{-2}$ & $2.2\times 10^{3}$ \\
-1.0 & 5.3 & $1.0\times 10^{-5}$ & $1.1\times 10^{-4}$ & $2.2\times 10^{5}$ \\
-0.5 & 5.3 & $2.1\times 10^{-8}$ & $2.4\times 10^{-7}$ & $1.0\times 10^{8}$ \\
-0.3 & 5.3 & $5.9\times 10^{-12}$ & $6.5\times 10^{-11}$ & $3.7\times 10^{11}$ \\
+4.0 & 5.3 & $1.0\times 10^{-3}$ & $1.1\times 10^{-2}$ & $2.3\times 10^{2}$ \\
+1.0 & 5.3 & $1.0\times 10^{-5}$ & $1.1\times 10^{-4}$ & $2.3\times 10^{4}$ \\
+0.5 & 5.3 & $2.1\times 10^{-8}$ & $2.4\times 10^{-7}$ & $1.0\times 10^{7}$ \\
+0.3 & 5.3 & $5.9\times 10^{-12}$ & $6.5\times 10^{-11}$ & $3.8\times 10^{10}$ \\
 \hline\hline
 \end{tabular}
 \end{table}
 
-The amplification factor is essentially independent of temperature, confirming that the avalanche mechanism is driven by coherent quantum dynamics rather than thermal processes. In contrast, the per-atom thermal rate $\Gamma_{\mathrm{thermal}}$ decreases by many orders of magnitude as temperature is lowered, and the array-level total rate $N\,\Gamma_{\mathrm{thermal}}$ falls from $\sim\!10^{-2}$ Hz at 4 K to $\sim\!10^{-10}$ Hz at sub-Kelvin temperatures. Even at the practically convenient $T=4$ K, the ratio $R_\gamma/(N\,\Gamma_{\mathrm{thermal}})$ exceeds $10^{3}$, indicating that the axion photon rate dominates over thermal background by more than three orders of magnitude already at the highest temperature considered.
+The amplification factor is essentially independent of temperature, confirming that the avalanche mechanism is driven by coherent quantum dynamics rather than thermal processes. In contrast, the per-atom thermal rate $\Gamma_{\mathrm{thermal}}$ decreases by many orders of magnitude as temperature is lowered, and the array-level total rate $N\,\Gamma_{\mathrm{thermal}}$ falls from $\sim\!10^{-2}$ Hz at 4 K to $\sim\!10^{-10}$ Hz at sub-Kelvin temperatures. Even at the practically convenient $T=4$ K, the ratio $R_\gamma/(N\,\Gamma_{\mathrm{thermal}})$ exceeds $2\times10^{2}$ at the KSVZ benchmark, indicating that the axion photon rate dominates over the atomic thermal background by more than two orders of magnitude already at the highest temperature considered.
 
 %==============================================================================
 \section{Benchmarking Against Existing Technologies}
@@ -959,7 +1019,9 @@ which scales as $n^{-3}$. For rubidium, adjacent-manifold transitions give
 \end{itemize}
 while $\Delta n = 0$ pairs split only by the quantum-defect difference
 (e.g.\ $nS \to nP$) lie a factor of $\sim 2$--$4$ lower at the same $n$,
-extending the accessible band to a few GHz for $n \gtrsim 90$. Together
+extending the accessible band to a few GHz for $n \gtrsim 90$. The working
+point of this chapter, $m_a = 234.6~\mu$eV ($56.7$~GHz), corresponds to the
+$\ket{68S_{1/2}} \to \ket{70P_{3/2}}$ pair of the simulated system. Together
 with higher-$\Delta n$ transitions, this tunability enables coverage of a
 substantial part of the QCD axion mass window ($1$--$1000~\mu$eV) with a
 single detector platform, a significant advantage over fixed-frequency
@@ -1028,7 +1090,7 @@ where $\Gamma_{\mathrm{abs}} = g^2/\Gamma_{\mathrm{sp}}$ is the single-atom abso
 
 \subsubsection{Single-Shot vs. Integrated Detection}
 
-The simulations model the single-shot detection of individual photons. In practice, axion experiments integrate over long times ($\sim 100$ s) to accumulate signal. The avalanche detector must be reset after each detection cycle, limiting the maximum detection rate to $\sim 1/(T_a + T_{\mathrm{reset}}) \sim 10$ kHz. For the axion photon rates relevant here, $R_\gamma\!\sim\!\mathcal{O}(10)$--$\mathcal{O}(10^2)$~s$^{-1}$ (cf.\ Eq.~\ref{eq:photon_rate}), this maximum detection rate is more than adequate.
+The simulations model the single-shot detection of individual photons. In practice, axion experiments integrate over long times ($\sim 100$ s) to accumulate signal. The avalanche detector must be reset after each detection cycle, limiting the maximum detection rate to $\sim 1/(T_a + T_{\mathrm{reset}}) \sim 10$ kHz. For the axion photon rates relevant here, $R_\gamma\!\sim\!\mathcal{O}(1)$~s$^{-1}$ (cf.\ Eq.~\ref{eq:photon_rate}), this maximum detection rate is more than adequate.
 
 \section{Alternative Rydberg Detection Schemes}
 
