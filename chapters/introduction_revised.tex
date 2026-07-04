@@ -36,26 +36,29 @@ systems---superconducting circuits, trapped atoms, photonic channels---can be
 prepared, controlled, and measured with sufficient fidelity to attempt tasks
 that stretch the limits of classical methods.  The maturity of the enabling
 hardware and of full software stacks has ushered in what is sometimes called
-the second quantum revolution: a transition from passively exploiting quantum
-phenomena (the transistor, the laser) to actively engineering coherence and
-entanglement for computing and sensing purposes (Fig.~\ref{fig:revolutions}).
+the second quantum revolution~\cite{DowlingMilburn2003, Deutsch2020}: a
+transition from passively exploiting quantum phenomena (the transistor, the
+laser) to actively engineering coherence and entanglement for computing and
+sensing purposes (Fig.~\ref{fig:revolutions}).
 
 \begin{figure}[h!]
   \centering
   \includegraphics[width=\linewidth]{chapters/in_figures/two_quantum_revolutions_improved_2.png}
   \caption{From observation to engineering of quantum phenomena.
-    Adapted from Dowling \& Milburn, \emph{Phil.\ Trans.\ R.\ Soc.\ A}
-    (2003) and Deutsch, \emph{PRX Quantum} (2020).}
+    Adapted from Dowling \& Milburn~\cite{DowlingMilburn2003} and
+    Deutsch~\cite{Deutsch2020}.}
   \label{fig:revolutions}
 \end{figure}
 
 Progress is rapid, yet several practical obstacles remain.  Superconducting
 quantum processors require dilution refrigerators operating below
-50\,mK---expensive, slow to cool, and difficult to scale.  Hybrid
-quantum-classical algorithms show promise for near-term hardware, but
-the nature and extent of their advantage over purely classical approaches
-is still debated.  Single-photon detectors for fundamental-physics searches
-must operate in strong magnetic fields where conventional devices suffer from
+50\,mK~\cite{krantz2019, kjaergaard2020}---expensive, slow to cool, and
+difficult to scale.  Hybrid quantum-classical algorithms show promise for
+near-term hardware~\cite{Preskill2018, biamonte2017, cerezo2021}, but the
+nature and extent of their advantage over purely classical approaches is
+still debated.  Single-photon detectors for fundamental-physics searches,
+most notably axion haloscopes~\cite{Sikivie1983, Lamoreaux2013}, must
+operate in strong magnetic fields where conventional devices suffer from
 prohibitive noise.
 
 This thesis addresses one problem from each of these fronts.  The three
@@ -70,9 +73,12 @@ implementations.
 The remainder of this dissertation is organised as follows.
 
 \paragraph{Chapter~\ref{ch:quantum_hardware} --- Quantum Hardware.}
-We develop a system-level design for an asymmetric-SQUID transmon qubit
-based on NbN/AlN/NbN Josephson junctions, targeting operation at
-$\sim$\,4\,K.  The analysis proceeds in two stages: a baseline at
+We develop a system-level design for an asymmetric-SQUID transmon
+qubit~\cite{Koch2007Transmon}, framed within circuit quantum
+electrodynamics~\cite{Blais2004, blais2021circuit}, based on NbN/AlN/NbN
+Josephson junctions and targeting operation at $\sim$\,4\,K, well beyond
+the elevated-temperature transmon regime demonstrated to
+date~\cite{Anferov2024HighTemp}.  The analysis proceeds in two stages: a baseline at
 5.8\,GHz and 20\,mK that anchors the modelling against established
 transmon performance, and an elevated-temperature configuration at
 300\,GHz and 4\,K where thermal noise, loss mechanisms, and qubit
@@ -86,8 +92,10 @@ interactions.
 
 \paragraph{Chapter~\ref{ch:quantum_algorithms} --- Quantum Algorithms.}
 We design, train and physically validate a hybrid quantum-classical
-convolutional neural network (Q-CNN) for binary satellite-image
-classification on a subset of EuroSAT. The architecture inserts a
+convolutional neural network (Q-CNN)~\cite{Mitarai2018, Sebastianelli2021}
+for binary satellite-image classification on a subset of
+EuroSAT~\cite{Helber2019}. The architecture, whose hyperparameters descend
+from the architectural search of Ref.~\cite{Filippi2025Thesis}, inserts a
 nine-qubit, eighteen-parameter quanvolutional layer into a classical
 convolutional trunk; pixel patches are encoded via rotation angles,
 processed through a shallow hardware-efficient entangling block, and
@@ -109,13 +117,17 @@ superconducting processor, where parameter-shift gradients restore
 $100\%$ validation accuracy in two on-device epochs.
 
 \paragraph{Chapter~\ref{ch:quantum_sensing} --- Quantum Sensing.}
-We construct a master-equation model of a Rydberg-atom avalanche
-single-photon detector, motivated by the readout requirements of
-axion-haloscope experiments.  The model tracks the spatiotemporal
-dynamics of a dipole-dipole-driven excitation cascade across a chain
-of atoms, and its predictions are examined as a function of an external
-magnetic field spanning 0--5\,T.  Sensitivity is analysed through the
-quantum Fisher information formalism, and the proposed scheme is
+We construct a master-equation model of a Rydberg-atom~\cite{Saffman2010,
+Adams2020} avalanche single-photon detector, building on the facilitated
+excitation avalanches demonstrated in cold Rydberg
+gases~\cite{Valado2016, Simonelli2016} and on their recent theoretical
+characterisation~\cite{Nill2024}, motivated by the readout requirements of
+axion-haloscope experiments~\cite{Sikivie1983, Lamoreaux2013}.  The model
+tracks the spatiotemporal dynamics of a dipole-dipole-driven excitation
+cascade across a chain of atoms, and its predictions are examined as a
+function of an external magnetic field spanning 0--5\,T.  Sensitivity is
+analysed through the quantum Fisher information
+formalism~\cite{Giovannetti2011, Degen2017}, and the proposed scheme is
 benchmarked against transition-edge sensors, kinetic-inductance
 detectors, and superconducting nanowire single-photon detectors.
 

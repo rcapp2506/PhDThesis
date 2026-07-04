@@ -280,7 +280,11 @@ introduction.
 An alkali atom in which the valence electron is excited to a state of
 high principal quantum number $n$ is called a \emph{Rydberg state}. In
 the regime relevant here ($n \sim 60$--$80$) the outer electron is
-weakly bound (binding energy of a few meV, scaling as $n^{-2}$), the
+weakly bound: the binding energy $E_b = \mathrm{Ry}/n_{\rm eff}^{2}$
+(with $n_{\rm eff} = n - \delta_\ell$ the effective quantum number)
+ranges from $4.2$ to $2.3$~meV across this window and equals
+$3.2$~meV for the $\ket{68S_{1/2}}$ state adopted in the simulations,
+scaling as $n^{-2}$. The
 orbit is large (radius scaling as $n^{2}$), and the transition dipole
 moment to a neighbouring Rydberg state is correspondingly large
 (scaling as $n^{2}$). Two consequences matter for the present work.
@@ -658,6 +662,29 @@ Magnetic field range & $B$ & 0--5 T \\
 
 The interaction strength $V_{rr}(0)$ corresponds to a lattice spacing of approximately 6 $\mu$m, achievable with optical tweezer arrays~\cite{Barredo2018}. The detuning $\Delta_{\mathrm{gr}}$ is automatically adjusted at each magnetic field to maintain the facilitation condition~\eqref{eq:facilitation_condition_b}.
 
+\paragraph{Choice of the array size.}
+The array size is fixed at $N = 11$ throughout the main analysis; larger
+arrays are treated only through the dedicated scaling study of
+Secs.~\ref{sec:scalability_atoms} and~\ref{sec:detection_fidelity}, and we
+anticipate here the three reasons for this choice. First, the exact
+integration of the many-body dynamics scales exponentially,
+$\mathcal{O}(2^N)$ in memory and time: direct \texttt{sesolve} runs are
+practical up to $N = 17$ ($\sim 1$~h per magnetic-field point on a single
+core), so a systematic scan of the full $0$--$5$~T range at multiple array
+sizes is affordable only for small chains. Second, nothing qualitative is
+expected to change at larger $N$: the photon-absorption (seeding) stage
+saturates already at $N = \mathcal{O}(1)$, since the single-atom
+cooperativity is $C_1 \approx 2\times 10^{4}$
+(Sec.~\ref{sec:backaction}), and the avalanche amplification grows only
+linearly, $\mathcal{A}(N) = 2.31 + 0.286\,N$, uniformly across the
+magnetic-field range, as verified by direct simulation at
+$N = 11$--$17$ (Sec.~\ref{sec:detection_fidelity}). $N = 11$ therefore
+captures the complete detection mechanism, and larger ensembles change the
+quantitative budget, not the physics. Third, the minimal-resource
+configuration that reaches $3\sigma$ single-shot detection is itself only
+moderately larger ($N = 15$ with loss-imaging readout), well inside the
+directly simulated range.
+
 \subsection*{Magnetic Field Dependence}
 
 Figure~\ref{fig:B_field_scan} presents the key results of our magnetic field scan, demonstrating single-photon detection across the range 0--5 T.
@@ -914,20 +941,29 @@ There exists an optimal system size $N^*$ that maximises detection efficiency wh
 
 \subsection*{Frequency Range}
 
-The detector frequency is determined by the Rydberg state energy:
-
+The detector resonance is not the binding energy of the Rydberg state (which
+is of order meV, i.e.\ sub-THz, and sets instead the field-ionisation and
+thermal-robustness scales discussed above) but the frequency of the
+dipole-allowed transition between the two Rydberg states addressed by the
+axion-converted photon,
 \begin{equation}
-    f = \frac{E_{\mathrm{ion}} - E_n}{h}
+    f = \frac{E_{n'} - E_{n}}{h}
+    \;\approx\; \frac{2\,\mathrm{Ry}}{h\, n_{\rm eff}^{3}}
+    \qquad (\Delta n = 1),
 \end{equation}
-
-where $E_{\mathrm{ion}}$ is the ionisation energy and $E_n \propto n^{-2}$. By changing $n$:
+which scales as $n^{-3}$. For rubidium, adjacent-manifold transitions give
 \begin{itemize}
-    \item $n = 50$: $f \sim 100$ GHz (100 $\mu$eV axions)
-    \item $n = 70$: $f \sim 5$ GHz (20 $\mu$eV axions)
-    \item $n = 100$: $f \sim 1$ GHz (4 $\mu$eV axions)
+    \item $n = 50$: $f \approx 64$ GHz ($\sim 260~\mu$eV axions)
+    \item $n = 70$: $f \approx 22$ GHz ($\sim 90~\mu$eV axions)
+    \item $n = 100$: $f \approx 7$ GHz ($\sim 30~\mu$eV axions)
 \end{itemize}
-
-This tunability enables coverage of the QCD axion mass range (1--1000 $\mu$eV) with a single detector platform, a significant advantage over fixed-frequency superconducting detectors.
+while $\Delta n = 0$ pairs split only by the quantum-defect difference
+(e.g.\ $nS \to nP$) lie a factor of $\sim 2$--$4$ lower at the same $n$,
+extending the accessible band to a few GHz for $n \gtrsim 90$. Together
+with higher-$\Delta n$ transitions, this tunability enables coverage of a
+substantial part of the QCD axion mass window ($1$--$1000~\mu$eV) with a
+single detector platform, a significant advantage over fixed-frequency
+superconducting detectors.
 
 \section{Detection-fidelity caveats and modelling assumptions}
 
@@ -965,7 +1001,7 @@ To map the trade-off between these two factors we have repeated the avalanche si
 The two readout technologies relevant to the present scheme are state-selective field ionisation (SSFI) and loss imaging. They are based on fundamentally different physical mechanisms and operate at opposite ends of the efficiency--complexity trade-off. We describe each in turn.
 
 \paragraph{State-selective field ionisation (SSFI).}
-This is the standard readout technique in cold-Rydberg experiments~\cite{Gallagher2005, Saffman2016}, in which the Rydberg atoms are detected through their own ionisation rather than through optical interaction with the ground state. The protocol exploits the fact that the outer electron of a Rydberg atom is bound by only a few meV, so that a moderate static or pulsed electric field is sufficient to ionise it. The ionisation field for a state of principal quantum number $n$ scales as $E_{\rm cr} \sim 3.2 \times 10^8 / n_{\rm eff}^4$~V/cm, where $n_{\rm eff} = n - \delta_\ell$ accounts for the quantum defect $\delta_\ell$~\cite{Gallagher2005}. For the principal quantum numbers of interest here ($n \sim 70$), critical fields of a few V/cm are sufficient. Operationally, after the avalanche has completed its dynamics, a ramp of electric field is applied to the array via planar or cylindrical electrodes; atoms in the targeted Rydberg state ionise with essentially unit probability~\cite{Ryabtsev2007} as soon as the ramp crosses $E_{\rm cr}$, and the freed ions (or, equivalently, electrons) are directed to a microchannel-plate (MCP) detector. Because the ionisation threshold $E_{\rm cr}$ depends sharply on $n$, an appropriately tuned ramp slew rate provides spectral resolution between adjacent Rydberg manifolds, which is the origin of the ``state-selective'' qualifier~\cite{Tada1999}. The end-to-end detection efficiency is set by the product of three loss factors: the MCP collection efficiency (set by the electrostatic optics that guide the charged particles, typically $60$--$80\%$), the MCP quantum efficiency (set by the secondary-electron yield of the first plate at the impact energy chosen, typically $60$--$80\%$ for keV ions or electrons), and incidental losses from collisional ionisation, off-resonant decay during the ramp, or non-ideal selectivity ($1$--$5\%$). In state-of-the-art implementations the product yields $\eta_{\rm det} \approx 40$--$70\%$~\cite{Ryabtsev2007, Andersen2013}, with the upper end of the range corresponding to dedicated geometries optimised for single-atom resolution; preliminary results from chip-integrated SSFI~\cite{Seery2024} suggest that further improvement is possible in highly engineered settings. The technique is intrinsically destructive on the atomic state, since each detection event annihilates a Rydberg atom and ejects an ion; this is not a problem for axion-haloscope operation, where each detection cycle is a separate shot, but it imposes the limit that the same atomic ensemble cannot be re-interrogated within a single avalanche event.
+This is the standard readout technique in cold-Rydberg experiments~\cite{Gallagher2005, Saffman2016}, in which the Rydberg atoms are detected through their own ionisation rather than through optical interaction with the ground state. The protocol exploits the fact that the outer electron of a Rydberg atom is bound by only a few meV, so that a moderate static or pulsed electric field is sufficient to ionise it. The ionisation field for a state of principal quantum number $n$ scales as $E_{\rm cr} \sim 3.2 \times 10^8 / n_{\rm eff}^4$~V/cm, where $n_{\rm eff} = n - \delta_\ell$ accounts for the quantum defect $\delta_\ell$~\cite{Gallagher2005}. For the principal quantum numbers of interest here ($n \sim 70$, $n_{\rm eff} \approx 65$--$67$), critical fields of order $15$~V/cm are sufficient. Operationally, after the avalanche has completed its dynamics, a ramp of electric field is applied to the array via planar or cylindrical electrodes; atoms in the targeted Rydberg state ionise with essentially unit probability~\cite{Ryabtsev2007} as soon as the ramp crosses $E_{\rm cr}$, and the freed ions (or, equivalently, electrons) are directed to a microchannel-plate (MCP) detector. Because the ionisation threshold $E_{\rm cr}$ depends sharply on $n$, an appropriately tuned ramp slew rate provides spectral resolution between adjacent Rydberg manifolds, which is the origin of the ``state-selective'' qualifier~\cite{Tada1999}. The end-to-end detection efficiency is set by the product of three loss factors: the MCP collection efficiency (set by the electrostatic optics that guide the charged particles, typically $60$--$80\%$), the MCP quantum efficiency (set by the secondary-electron yield of the first plate at the impact energy chosen, typically $60$--$80\%$ for keV ions or electrons), and incidental losses from collisional ionisation, off-resonant decay during the ramp, or non-ideal selectivity ($1$--$5\%$). In state-of-the-art implementations the product yields $\eta_{\rm det} \approx 40$--$70\%$~\cite{Ryabtsev2007, Andersen2013}, with the upper end of the range corresponding to dedicated geometries optimised for single-atom resolution; preliminary results from chip-integrated SSFI~\cite{Seery2024} suggest that further improvement is possible in highly engineered settings. The technique is intrinsically destructive on the atomic state, since each detection event annihilates a Rydberg atom and ejects an ion; this is not a problem for axion-haloscope operation, where each detection cycle is a separate shot, but it imposes the limit that the same atomic ensemble cannot be re-interrogated within a single avalanche event.
 
 \paragraph{Loss imaging.}
 This technique is widely used in modern tweezer arrays for ground-state qubit readout~\cite{Endres2016, Bluvstein2024} and is applied to Rydberg detection by reversing the question: rather than detecting the Rydberg atoms themselves, one detects the \emph{absence} of those atoms from their original tweezer sites. A short ``blowout'' step is applied first --- this can be a rapid field-ionisation pulse, a Rydberg-to-untrapped-state transfer via microwave, or a resonant push beam --- and removes every Rydberg atom from the trap with near-unit efficiency. A subsequent fluorescence-imaging step then images the ground-state atoms that remained in place via a closed cycling transition; the absence of fluorescence at a site that was loaded before the avalanche indicates that the atom was promoted to a Rydberg state, while sites where fluorescence is recovered indicate atoms that remained in the ground state throughout. All detection losses are therefore confined to the single photon-scattering step on the ground-state transition, where modern implementations achieve site-discrimination fidelities of $99.97\%$ on $10^4$ lattice sites~\cite{Tao2024} and $99.99\%$ on arrays of $6\,100$ atoms~\cite{Manetsch2025}, with imaging-induced atom loss in the $0.01\%$ range. The end-to-end efficiency $\eta_{\rm det} \geq 95\%$ used in this chapter is therefore conservative with respect to the current state of the art. The price paid for this gain in efficiency is a more complex experimental sequence: an additional blowout pulse with accurate calibration of the depletion fidelity (any residual Rydberg population that is not removed introduces a systematic offset in the count), an imaging beam with low-noise camera optics, and the requirement that the tweezer positions be stable on the timescale of the imaging exposure. None of these is a fundamental obstacle, and several proposals~\cite{Bluvstein2024, Manetsch2025} have demonstrated integrated tweezer-imaging architectures consistent with the Rydberg-haloscope geometry envisioned here.
