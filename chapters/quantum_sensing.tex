@@ -1088,6 +1088,39 @@ We have assumed perfect absorption of cavity photons by the atomic ensemble. In 
 
 where $\Gamma_{\mathrm{abs}} = g^2/\Gamma_{\mathrm{sp}}$ is the single-atom absorption rate, $g$ is the atom-cavity coupling, and $\kappa$ is the cavity decay rate. Realistic cavity-atom coupling parameters ($g \sim 2\pi \times 1$~MHz, $\kappa \sim 2\pi \times 0.05$~MHz) yield $\eta_{\mathrm{abs}} \sim 0.5$--$0.8$ for $N=11$ atoms. This reduces the effective detection efficiency but does not affect the single-photon sensitivity claim. For strong coupling ($g \gg \kappa, \Gamma_{\mathrm{sp}}$) and large $N$, near-unity efficiency is still possible~\cite{Hogan2012}.
 
+\subsubsection{Cavity Thermal Occupation}
+
+The thermal-background model of Eq.~\eqref{eq:thermal_rate} accounts for
+spurious \emph{atomic} excitations driven by black-body radiation. A distinct
+background channel, not included in the simulations, is the thermal
+occupation of the \emph{cavity mode itself} at the seeding frequency: a
+thermal photon resident in the mode would seed an avalanche indistinguishable
+from an axion-converted one. At $f = 56.7$~GHz the Bose--Einstein occupation
+is
+\begin{equation}
+    \bar{n}_{\rm cav}(T) = \frac{1}{e^{hf/k_BT}-1}
+    \;=\; 1.0,\ 7.0\times10^{-2},\ 1.2\times10^{-4}
+    \quad \text{at } T = 4,\ 1,\ 0.3~\mathrm{K},
+\end{equation}
+so that single-photon counting requires the cavity mode to be held at
+$\bar{n}_{\rm cav} \ll 1$, i.e.\ an effective mode temperature
+$\lesssim 0.6$~K (for $\bar{n}_{\rm cav} \leq 10^{-2}$)---the same
+requirement faced by every single-photon haloscope readout at these
+frequencies, and one reason such readouts are typically operated at
+sub-Kelvin mode temperatures. Two remarks delimit the scope of this caveat.
+First, the present chapter studies the physics of the avalanche
+amplification mechanism in the $4$~K thermal regime, not the engineering of
+a deployed detector: the avalanche dynamics, the magnetic-field robustness,
+and the atomic dark-count analysis presented above are unaffected, and the
+temperature scan of Table~\ref{tab:temperature_scan} already covers the
+sub-Kelvin range where the cavity-mode occupation becomes negligible.
+Second, the choice of the working mass mitigates this channel considerably:
+at the low-frequency benchmark sometimes adopted for haloscope readouts
+($\sim 5$~GHz), the same occupation at $4$~K would be
+$\bar{n}_{\rm cav} \approx 17$, whereas at $56.7$~GHz it is already of order
+unity, and an order-of-magnitude reduction in temperature suffices to
+suppress it.
+
 \subsubsection{Single-Shot vs. Integrated Detection}
 
 The simulations model the single-shot detection of individual photons. In practice, axion experiments integrate over long times ($\sim 100$ s) to accumulate signal. The avalanche detector must be reset after each detection cycle, limiting the maximum detection rate to $\sim 1/(T_a + T_{\mathrm{reset}}) \sim 10$ kHz. For the axion photon rates relevant here, $R_\gamma\!\sim\!\mathcal{O}(1)$~s$^{-1}$ (cf.\ Eq.~\ref{eq:photon_rate}), this maximum detection rate is more than adequate.
