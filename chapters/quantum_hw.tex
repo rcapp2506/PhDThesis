@@ -960,7 +960,11 @@ Figure~\ref{fig:system_schematic} shows the physical architecture of the two-qub
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.95\textwidth]{chapters/qh_figures/fig1_system_schematic_clean.pdf}
+    % NOTE: use the *outlined* version (text converted to vector paths, no embedded
+    % fonts): the deposit workflow (ABBYY FineReader re-processing on 2026-07-08)
+    % stripped the Greek glyphs from the matplotlib Type-3 DejaVu fonts of the
+    % previous fig1_system_schematic_clean.pdf. The outlined file is immune.
+    \includegraphics[width=0.95\textwidth]{chapters/qh_figures/fig1_system_schematic_outlined.pdf}
     \caption{\textbf{Two-qubit cavity QED system architecture.} 
     Two transmon qubits (Q1 at 5.8~GHz, Q2 at 5.2~GHz) couple to a shared cavity resonator at 6.5~GHz with coupling strengths $g_1 = g_2 = 80$~MHz. The qubits are red-detuned from the cavity ($\Delta_1 = \BaseDeltaOne$~GHz, $\Delta_2 = \BaseDeltaTwo$~GHz), enabling dispersive operation. Virtual photon exchange through the cavity mediates a transverse exchange coupling $J/2\pi \simeq \BaseJ$~MHz between the qubits (Sec.~\ref{sec:cavity_mediated_couplings}); the residual longitudinal cross-Kerr is $|\xi_{ZZ}|/2\pi \simeq \BaseXiZZmag$~kHz, too small to drive a free-evolution CZ at high fidelity (Fig.~\ref{fig:CZ_unfeasible}), and the two-qubit gate is implemented as an echo cross-resonance instead. }
     \label{fig:system_schematic}
