@@ -2580,7 +2580,9 @@ and is unsuitable even with 3D cavities; high-resistivity silicon
 ($\tan\delta \sim 5\times 10^{-8}$, $\rho > 10~\text{k}\Omega\cdot\text{cm}$)
 yields $\sim 106~\mu$s and is viable but more expensive; crystalline c-axis
 sapphire is the recommended substrate, with $T_{1,\text{diel}}\sim 53~\mu$s
-in the standard grade and exceeding $530~\mu$s in the high-purity variant.
+in the standard grade, $\sim 177~\mu$s in the high-Q variant
+($\tan\delta = 3\times10^{-8}$), and beyond $500~\mu$s at the
+$\tan\delta = 10^{-8}$ target grade.
 
 \paragraph{Gate Fidelity Implications.}
 For typical gate times $t_{\text{gate}} \sim 150$~ns and $T_{1,\text{diel}} = 53~\mu$s (sapphire with $p=0.1$), the dielectric-induced decoherence error is:
@@ -2847,7 +2849,7 @@ At the flux-insensitive sweet spot the first-order flux sensitivity vanishes; th
     \centering
     \includegraphics[width=\textwidth]{chapters/qh_figures/T2_ramsey_simulation.png}
     \caption{\textbf{Ramsey fringe simulations showing $T_2$ dephasing regimes.} 
-    Three panels demonstrate numerically simulated Ramsey interference experiments for different dephasing scenarios with $T_1 = 100$~ns fixed. 
+    Three panels demonstrate numerically simulated Ramsey interference experiments ($\pi/2$ pulse -- free evolution $t$ -- $\pi/2$ pulse) for different dephasing scenarios with $T_1 = 100$~ns fixed. The fringes oscillate at the deliberate drive--qubit detuning $\delta/2\pi = 8$~MHz: during the free evolution the Bloch vector precesses in the drive rotating frame at $\delta$, and the second $\pi/2$ pulse converts the accumulated phase $2\pi\delta t$ into the population modulation $P_1(t) = \tfrac{1}{2} + \tfrac{1}{2}e^{-t/T_2}\cos(2\pi\delta t)$.
     \textbf{Left}: Pure $T_1$ limit ($T_\phi \to \infty$), where $1/T_2 = 1/(2T_1)$ gives $T_2 = 2T_1 = 200$~ns: clean oscillations (blue solid) decay slowly inside the exponential envelope (red dashed) set by energy relaxation alone.
     \textbf{Centre}: Weak pure dephasing with $T_\phi = 200$~ns giving $T_2 = 100$~ns via $1/T_2 = 1/(2T_1) + 1/T_\phi$. The Ramsey fringes decay visibly faster than in the pure-$T_1$ case, with oscillations still discernible beyond 150~ns.
     \textbf{Right}: Strong pure dephasing with $T_\phi = 50$~ns yielding $T_2 = 40$~ns, showing rapid decay that significantly outpaces energy relaxation. The oscillations are heavily damped within the first 40~ns.
@@ -3255,7 +3257,8 @@ $\varepsilon = 1.69\%$.
 factor-of-three $\tan\delta$ uncertainty band of
 Sec.~\ref{sec:dielectric_loss_300ghz}, the optimum moves between
 $\sim$\SI{450}{} and \SI{540}{\giga\hertz} and the design-point error spans
-$1.7$--$2.2\%$.}
+$1.7$--$2.3\%$ (only the decoherence term scales with $\tan\delta$; the
+thermal term is unaffected).}
 \label{fig:frequency_tradeoff}
 \end{figure}
 
@@ -3531,8 +3534,8 @@ Modern pulse-tube coolers, such as the Cryomech PT420, provide 1~W of cooling po
 \includegraphics[width=0.95\textwidth]{chapters/qh_figures/fig4_technical_challenges.png}
 \caption{\textbf{Technical Challenges and Mitigation Strategies.}
 \textbf{(a)} Loss-mechanism scaling comparison: for each mechanism, the green bar is the baseline rate (5.8 GHz, 20 mK, normalised to 1) and the red bar the elevated-temperature design (300 GHz, 4 K). Dielectric loss ($\propto\omega$) increases 52×; unshielded radiative loss ($\propto\omega^2$) increases catastrophically by 2675×, which is why the 3D-cavity shielding of Sec.~\ref{sec:decoherence} is mandatory; quasiparticle loss remains constant—key advantage of the large-gap NbN platform. Log scale emphasises the scaling differences.
-\textbf{(b)} Substrate comparison at 300 GHz. Standard silicon (red, $\tan\delta = 10^{-6}$) gives unacceptably short $T_1 \sim 10$ $\mu$s. High-resistivity silicon (orange, $\tan\delta = 5\times10^{-8}$, $T_1 \simeq 200~\mu$s) and sapphire (green, $\tan\delta = 10^{-7}$, $T_1 \simeq 100~\mu$s) both clear the requirement, making high-$\rho$ Si or sapphire the recommended choices. Target (dark green, $\tan\delta = 10^{-8}$) shows the performance achievable with optimised materials. The red dashed line indicates the 30 $\mu$s minimum requirement.
-\textbf{(c)} Improvement pathways at fixed $300$~GHz / $4$~K. The current CNOT fidelity (orange, $\FCNOT\%$) lies $0.10$ percentage points below the $98\%$ reference threshold (green dashed line). Reducing the soft contributions raises the fidelity toward the thermal-limited ceiling: improved substrate coherence ($98.20\%$) and pulse optimisation ($98.25\%$) each cross the threshold, and the ceiling $F_{\mathrm{ceiling}}=100\%-\varepsilon_{\mathrm{thermal}}=\Fceiling\%$ (dark green) is the best attainable at this operating point. The thermal term is not reduced: the operating temperature is held at the cryocooler-compatible $4$~K by design.}
+\textbf{(b)} Substrate comparison at 300 GHz (logarithmic scale; values from Tab.~\ref{tab:substrate_t1_diel}, participation ratio $p=0.1$). Standard silicon (red, $\tan\delta = 10^{-5}$) gives an unusable $T_1 \simeq 0.5$ $\mu$s. High-resistivity silicon (orange, $\tan\delta = 5\times10^{-8}$, $T_1 \simeq 106~\mu$s) and sapphire (green, $\tan\delta = 10^{-7}$, $T_1 \simeq 53~\mu$s) both clear the requirement, making sapphire or high-$\rho$ Si the recommended choices. The target grade (dark green, $\tan\delta = 10^{-8}$, $T_1 \simeq 531~\mu$s) shows the performance achievable with optimised materials. The red dashed line indicates the 30 $\mu$s minimum requirement.
+\textbf{(c)} Improvement pathways at fixed $300$~GHz / $4$~K, built on the error budget of Fig.~\ref{fig:decoherence}(d). The current CNOT fidelity (orange, $\FCNOT\%$) lies $0.10$ percentage points below the $98\%$ reference threshold (green dashed line). ``Better coherence'' assumes a substrate upgrade that suppresses the dielectric and TLS channels ($\simeq 60\%$ of $1/T_1$), roughly halving the $0.58\%$ decoherence term ($F \to 98.20\%$); ``optimized control'' assumes removal of the $0.10\%$ control error together with a shorter, DRAG-optimised echo-CR gate that reduces the decoherence exposure ($F \to 98.25\%$). Both cross the threshold, and the ceiling $F_{\mathrm{ceiling}}=100\%-\varepsilon_{\mathrm{thermal}}=\Fceiling\%$ (dark green) is the best attainable at this operating point: the thermal term is not reduced, since the operating temperature is held at the cryocooler-compatible $4$~K by design.}
 \label{fig:challenges}
 \end{figure}
 
