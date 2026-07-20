@@ -1968,7 +1968,7 @@ The two branches do exhibit a measurable difference during the first three epoch
 \begin{figure}[tb]
   \centering
   \includegraphics[width=0.95\linewidth]{chapters/qa_figures/noise_resilience_paired_diff.png}
-  \caption{Paired difference $\Delta_{\mathrm{val\_loss}} = \mathrm{NL} - \mathrm{N}$, per epoch and per seed (red dots). Boxplots show the $R=10$ distribution; horizontal labels indicate significance level under two-sided paired Wilcoxon test (\textbf{**} $p<0.01$, \textbf{*} $p<0.05$, n.s.\ otherwise).}
+  \caption{Per-epoch paired differences of the validation loss between the noiseless (NL) and noisy (N) branches, $\Delta_{\mathrm{val\_loss}} = \mathrm{NL} - \mathrm{N}$. Each red dot is one paired observation: the same seed trained under both branches ($R=10$ dots per epoch); negative values mean the noisy branch has the larger loss. Light-blue boxplots summarise the across-seed distribution (dark-blue line: median; box: interquartile range; whiskers: $1.5\times$IQR; black-edged dots: boxplot outliers, duplicating the corresponding per-seed dots). The grey dashed line at $\Delta=0$ marks the no-noise-effect level. Under each epoch number, the marker reports the two-sided paired Wilcoxon significance for that epoch: \textbf{**} $p<0.01$, \textbf{*} $p<0.05$, n.s.\ otherwise. The noise-induced transient of epochs 1--3 (\textbf{**}), marginal at epoch 4 (\textbf{*}), is fully absorbed from epoch 5 onwards.}
   \label{fig:noise_paired_diff}
 \end{figure}
 
