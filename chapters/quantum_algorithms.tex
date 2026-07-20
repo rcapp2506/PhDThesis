@@ -1270,7 +1270,7 @@ hybrid Q-CNN and fine-tunes it for two epochs directly on the IQM Emerald
 54-qubit superconducting processor (Sec.~\ref{sec:hw_validation}). The
 fine-tuning recovers a validation accuracy of $100\%$ on the on-device
 validation subset of $N_{\mathrm{val}}=20$ images by the second epoch,
-in line with the simulator pretraining target; the Wilson $95\%$
+in line with the simulator pre-training target; the Wilson $95\%$
 confidence interval on a single binomial proportion at $N_{\mathrm{val}}=20$
 is, however, broad ($[0.84,\,1.00]$ at $p=1.0$), so the result is
 qualitative and should be read as a feasibility statement on
@@ -1863,7 +1863,7 @@ Two diagnostic batches were submitted in this phase. A 20-circuit calibration ba
 \subsubsection{Fine-tuning results on Emerald}
 \label{subsec:finetune_results}
 
-We executed two fine-tuning epochs on Emerald, with the per-epoch decision to proceed taken manually after inspection of the dashboard credit balance. The simulator pre-trained checkpoint loaded at the start of the run achieved $\text{val acc}=100\%$ ($20/20$) with $\text{val loss}=0.148$ on the Aer reference simulator. We use this point as the \emph{epoch 0} benchmark in the convergence plots that follow.
+We executed two fine-tuning epochs on Emerald, with the per-epoch decision to proceed taken manually after inspection of the dashboard credit balance. The simulator-pretrained checkpoint loaded at the start of the run achieved $\text{val acc}=100\%$ ($20/20$) with $\text{val loss}=0.148$ on the Aer reference simulator. We use this point as the \emph{epoch 0} benchmark in the convergence plots that follow.
 
 \paragraph{Convergence summary.}
 Tab.~\ref{tab:emerald_convergence} reports the per-epoch metrics, and Fig.~\ref{fig:emerald_finetune_curves} plots the validation accuracy along the trajectory.
@@ -1877,7 +1877,7 @@ Tab.~\ref{tab:emerald_convergence} reports the per-epoch metrics, and Fig.~\ref{
 
 \begin{table}[h]
 \centering
-\caption{Validation metrics, gradient norm of the trainable quantum weights $\boldsymbol{w}$, and credit cost per epoch on Emerald. Epoch~0 is the simulator pre-trained checkpoint loaded as initial point; Epochs~1--2 are the two on-device fine-tuning epochs. The ``credits (estimated)'' column is the in-flight projection from the wall-time-based coefficient of Eq.~\ref{eq:wall_rate}; the ``credits (billed)'' column is the actual amount charged by IQM, recovered \emph{a posteriori} from the dashboard. The systematic overestimation by the in-flight model (Sec.~\ref{subsec:cost_model}) is conservative and reflects the wall vs.\ QPU-runtime discrepancy of Fig.~\ref{fig:iqm_job_anatomy}.}
+\caption{Validation metrics, gradient norm of the trainable quantum weights $\boldsymbol{w}$, and credit cost per epoch on Emerald. Epoch~0 is the simulator-pretrained checkpoint loaded as initial point; Epochs~1--2 are the two on-device fine-tuning epochs. The ``credits (estimated)'' column is the in-flight projection from the wall-time-based coefficient of Eq.~\ref{eq:wall_rate}; the ``credits (billed)'' column is the actual amount charged by IQM, recovered \emph{a posteriori} from the dashboard. The systematic overestimation by the in-flight model (Sec.~\ref{subsec:cost_model}) is conservative and reflects the wall vs.\ QPU-runtime discrepancy of Fig.~\ref{fig:iqm_job_anatomy}.}
 \label{tab:emerald_convergence}
 \begin{tabular}{lccccc}
 \toprule
