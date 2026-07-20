@@ -1562,6 +1562,7 @@ Thermal noise           & $n_{\text{th}} < 10^{-5}$ \\
 \part[Innovation]{Elevated-Temperature Operation at 300~GHz}
 
 \section[High-frequency, high-temperature environment system]{High-frequency, high-temperature\\ environment system}
+\label{sec:high_freq_env}
 
 The contrast between conventional dilution-refrigerator-based platforms and the
 proposed pulse-tube-cooled architecture is summarised in
@@ -1918,14 +1919,17 @@ Uniformity        & the total $E_J$ is more accurately controlled \\
 \section{Two-qubit system: elevated-temperature configuration}
 \label{sec:two_qubit_innovation}
 
-\subsection{Design requirements at 300\,GHz / 4\,K}
+\subsection{Reference asymmetric-SQUID design: microwave-domain baseline}
 \label{sub:tqi_design}
 
 The three parameters that fix the device — the charging energy $E_C$, the
 two junction Josephson energies $E_{J1},\,E_{J2}$, and the resulting SQUID
 asymmetry $\eta$ — are not independent design choices but are tied together
-by the physics of the transmon and by the intended high-temperature
-operating point. We therefore briefly motivate each value in
+by the physics of the transmon. The parameter set analysed here is a
+standard microwave-domain (mK-baseline) asymmetric SQUID: it is the
+reference device whose flux-tunability and anharmonicity structure carry
+over, suitably rescaled, to the 300~GHz design of
+Sec.~\ref{sec:high_freq_env}. We therefore briefly motivate each value in
 Tab.~\ref{tab:squid_design_params} before presenting the table itself.
 
 The charging energy $E_C = e^{2}/(2 C_{\Sigma})$ is set by the total qubit
@@ -2029,7 +2033,7 @@ Comparing with the theoretical prediction $\alpha \approx -E_C = \SI{-200}{MHz}$
 \frac{|\alpha|}{\omega_{01}} = \frac{362}{1972} \approx 18.4\%
 \end{equation}
 
-This is within the acceptable range for transmon operation. We note that the relatively large \(|\alpha|/\omega_{01}\) at the sweet spot enhances spectral selectivity, but it also indicates that the device is less deep in the transmon limit at that bias point, implying a trade-off between tunability, noise protection, and level structure.  While typical Al-based transmons operate with $|\alpha|/\omega_{01} \sim 1-5\%$, the larger relative anharmonicity here is a consequence of the lower qubit frequency necessitated at this temperature regime of operation.
+This is within the acceptable range for transmon operation. We note that the relatively large \(|\alpha|/\omega_{01}\) at the sweet spot enhances spectral selectivity, but it also indicates that the device is less deep in the transmon limit at that bias point, implying a trade-off between tunability, noise protection, and level structure.  While typical Al-based transmons operate with $|\alpha|/\omega_{01} \sim 1-5\%$, the larger relative anharmonicity here is a consequence of the reduced Josephson energy at the lower sweet spot ($E_J(\Phi_0/2)=\SI{3}{GHz}$, $E_J/E_C=15$), which lowers the qubit frequency to $1.97$~GHz while $|\alpha|$ grows towards $E_C$ and beyond.
 
 \subsubsection{Significance of Negative Anharmonicity for Quantum Gates}
 
